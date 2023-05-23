@@ -7,13 +7,13 @@ module.exports = {
   connections: {
 
     default: {
-      user: 'root',
-      password: '',
-      database: 'dbase',
+      user: 'uyjbcm8ddyx2txf8',
+      password: 'pC00ea32hCybFQWjsg6m',
+      database: 'bssxral1uw8cnncfwhkg',
       options: {
-        host: 'localhost',
+        host: 'bssxral1uw8cnncfwhkg-mysql.services.clever-cloud.com',
         port: '3306',
-        dialect: 'mariadb',
+        dialect: 'mysql',
         dialectOptions: {
           useUTC: false, //for reading from database
           dateStrings: true,
