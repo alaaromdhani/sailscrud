@@ -11,6 +11,8 @@
 
 const createFakeData = require('../seeders/createFakeData');
 module.exports.bootstrap = async function() {
+  console.log('A.L.A')
+  console.log(sails.config.port)
 
   // By convention, this is a good place to set up fake data during development.
   //
