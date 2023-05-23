@@ -1,0 +1,22 @@
+{
+  "generators": {
+    "modules": {
+      "db:sync": "./generators/sails-generate-sequelize-sync",
+      "schema": "./generators/sails-generate-schema",
+      "controller": "./generators/sails-generate-crud-controller",
+      "route": "./generators/sails-generate-route",
+      "api": "./generators/sails-generate-api"
+    }
+  },
+  "_generatedWith": {
+    "sails": "1.5.4",
+    "sails-generate": "2.0.8"
+  },
+ "hooks": {
+    "grunt": false,
+    "views": false,
+    "orm": false,
+    "pubsub": false,
+    "sockets":false
+  }
+}
