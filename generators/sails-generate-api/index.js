@@ -5,10 +5,10 @@ require('colors');
 /**
  * @description Automaticly generates schema, controller, route and unit tests for the given schema name.
  * @docs https://sailsjs.com/docs/concepts/extending-sails/generators/custom-generators
- *
+ * 
  * Usage:
  * This handler should be added to your .sailsrc file for registering
- * a custom sails generator.
+ * a custom sails generator. 
  * The shell command to be executed will be:
  * `sails generate <generator-name> <schema-name> --type <type>`,
  * where:
@@ -23,9 +23,7 @@ module.exports = {
     const filename = scope.args[0];
     const type = scope.type;
 
-    console.log('Generating Model:', filename)
-    console.log('Model type:', type)
-
+    console.log('my args', filename, type);
     if (!filename || _.isUndefined(filename)) {
       return done('Please provide a name for this controller.'.yellow);
     }
@@ -36,7 +34,7 @@ module.exports = {
     }
 
     let subTypes;
-
+    console.log('Generating model ');
 
     if (type === 'sql') {
       subTypes = 'json,sql';
@@ -45,11 +43,9 @@ module.exports = {
     } else {
       return done('Unsupported api type (%s). Please provide  "sql" or "mongo".'.yellow);
     }
-
-    scope.args.shift()
-     console.log('Model Fields : ',scope.args);
-
-    shell.exec(`sails generate schema ${filename} --types ${subTypes} --fields ${scope.args}`);
+    
+    console.log('Generating model ', type, subTypes);
+    shell.exec(`sails generate schema ${filename} --types ${subTypes}`);
     shell.exec(`sails generate controller ${filename} --type ${type}`);
     shell.exec(`sails generate route ${filename}`);
     return done();

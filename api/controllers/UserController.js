@@ -5,18 +5,40 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const { Op } = require("sequelize");
+const ValidationError = require("../../utils/errors/validationErrors");
+const schemaValidation = require("../../utils/validations");
+const {UserShema, updateUserSchema} = require("../../utils/validations/UserSchema");
+const { ErrorHandlor } = require("../../utils/translateResponseMessage");
+
 
 module.exports = {
   async create(req, res) {
-    try {
-      const data = await User.create(req.body);
-      return res.status(201).json(data);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      const bodyValidation = schemaValidation(UserShema)(req.body)
+      if(bodyValidation.isValid){
+
+        sails.services.userservice.create(req,req.body,(err,user)=>{
+          console.log(err)
+          if(err){
+             ErrorHandlor(req,err,res)      
+          }
+          else{
+            res.status(200).send(user)
+          }
+
+
+      })
+      }
+      else{
+        ErrorHandlor(req,new ValidationError(bodyValidation),res)
+      }
+   
+      
+     
   },
 
   async find(req, res) {
+    
     try {
       const page = req.query.page || 1;
       const limit = req.query.limit || 10;
@@ -24,10 +46,10 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(User.sequelize.models.User.rawAttributes);
-
+      
 
       // Create the filter conditions based on the search query
-      const where = search
+      let where = search
         ? {
           [Sequelize.Op.or]: attributes.map((attribute) => ({
             [attribute]: {
@@ -36,13 +58,23 @@ module.exports = {
           })),
         }
         : {};
-
+      
+       
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await User.findAndCountAll({
         where,
+        include:{
+          model:Role,
+          where:{
+            weight:{
+              [Op.gt]:req.role.weight 
+            }
+          }
+        
+       },
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
@@ -63,10 +95,21 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await User.findByPk(req.params.id);
+      const data = await User.findByPk(req.params.id,{
+          include:{
+            model:Permission,
+            through:'users_permissions',
+            include:{
+              model:Model,
+              attributes: ['name']
+            }
+          }
+
+      });
       if (!data) {
         return res.status(404).json({ error: 'User not found' });
       }
+      
       return res.json(data);
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -74,16 +117,28 @@ module.exports = {
   },
 
   async update(req, res) {
-    try {
-      const data = await User.findByPk(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      const updatedUser = await data.update(req.body);
-      return res.json(updatedUser);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+    const bodyValidation = schemaValidation(updateUserSchema)(req.body)
+    if(bodyValidation.isValid){
+
+      sails.services.userservice.update(req,req.body,(err,user)=>{
+          console.log(err)
+          if(err){
+            ErrorHandlor(req,err,res)
+          }
+          else{
+            res.status(200).send(user)
+          }
+
+
+      })
     }
+    else{
+      ErrorHandlor(req,new ValidationError(bodyValidation),res)
+      
+    }
+ 
+
+    
   },
 
   async destroy(req, res) {

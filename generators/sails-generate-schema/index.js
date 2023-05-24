@@ -2,22 +2,21 @@ const util = require('util');
 const path = require('path');
 const _ = require('lodash');
 require('colors');
-const fs = require('fs');
 
 /**
  * @description Generates CRUD JSON/Sequelize schemas with ability to specify a list of fields to be added.
  * @docs https://sailsjs.com/docs/concepts/extending-sails/generators/custom-generators
- *
+ * 
  * Usage:
  * This handler should be added to your .sailsrc file for registering
- * a custom sails generator.
+ * a custom sails generator. 
  * The shell command to be executed will be:
  * `sails generate <generator-name> <schema-name> --types <types-list> --fields <fields-list>`,
  * where:
  *   a) `generator-name` is a name used for generator in .sailsrc file
  *   b) `schema-name` is a name of schema to be added
  *   c) `types-list` is a comma-separated list of schema types, possible values are `json` and `sql`
- *   d) `fields-list` is a comma-separated list of unique field names (should not contain `id`),
+ *   d) `fields-list` is a comma-separated list of unique field names (should not contain `id`), 
  */
 module.exports = {
   /**
@@ -31,7 +30,6 @@ module.exports = {
    * @param  {Function} done
    */
   before(scope, done) {
-
     // 1. Check whether schema name was specified
     if (_.isUndefined(scope.args[0])) {
       return done('Please provide a name for this schema.'.yellow);
@@ -40,7 +38,7 @@ module.exports = {
     if (!_.isString(scope.args[0])) {
       return done(
         new Error(`Expected a string for \`scope.args[0]\`, but instead got:
-          ${util.inspect(scope.args[0], {depth: null})}`)
+          ${util.inspect(scope.args[0], { depth: null })}`)
       );
     }
 
@@ -62,7 +60,6 @@ module.exports = {
     }
     scope.fields = scope.fields.split(',').map(e => e.trim());
 
-    console.log(scope.fields)
     // 4. Provide defaults for the scope.
     scope = _.defaults(scope, {
       createdAt: new Date(),
@@ -73,30 +70,16 @@ module.exports = {
     scope.entity = _.snakeCase(scope.args[0]);
 
     scope.types.forEach((type) => {
-      if (type === 'sql') {
-        console.info('Generating a new schema of type %s for entity %s as ', type, scope.entity);
-        // console.info(`${type}.template`);
-        const folder = type === 'json' ? 'schema' : 'sql';
-        this.targets[`./api/models/:filename`] = {};
-        this.targets[`./api/models/:filename`].template = `${type}.template`;
-      }
+      console.info('Generating a new schema of type %s for entity %s as ', type, scope.entity);
+      console.info(`${type}.template`);
+      const folder = type === 'json' ? 'schema' : 'sql';
+      this.targets[`./api/models/${folder}/:filename`] = {};
+      this.targets[`./api/models/${folder}/:filename`].template = `${type}.template`;
     });
 
     // 6. Check whether schema is generated for sql database
     scope.isSql = !!scope.types.find(type => type === 'sql');
 
-
-    /** Overwrite Existant Model **/
-    var fs = require('fs');
-    var pathx = path.resolve(__dirname, '../../api/models/' + scope.filename);
-
-    fs.exists(pathx, function (exists) {
-      if (exists) {
-        // do something
-        fs.unlinkSync(pathx);
-        console.log('---- Overwrite Existant Model ----');
-      }
-    });
     return done();
   },
 

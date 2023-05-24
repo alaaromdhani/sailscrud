@@ -1,62 +1,127 @@
 /**
  * User.js
  *
- * @description :: TODO: You might write a short summary of
- *                 how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/#!documentation/models
+ * @description :: A model definition represents a database table/collection.
+ * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
+const {
+  DataTypes, Op 
+} = require('sequelize'); 
 
-  const { DataTypes } = require('sequelize');
-
-/*
-// event hooks => http://docs.sequelizejs.com/manual/tutorial/hooks.html
-const eventCallback = () => { // items, options
-  // do something like stringifying data...
-};
-*/
+const bcrypt = require('bcrypt');
 
 module.exports = {
-    attributes: {
-       id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
+  options: {
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
+    scopes: {},
+    tableName: 'users',
+    hooks:{
+      beforeSave:async (user,options)=>{
+        user.password = await bcrypt.hash(user.password,10)
+
       },
-      name: {
-        type: DataTypes.STRING,
-      },
-      
-      email: {
-        type: DataTypes.STRING,
-      },
-      
-      password: {
-        type: DataTypes.STRING,
-      },
-      
+      beforeDestroy:(user,options)=>{
+        console.log('deleted user with id ='+user.id)
+
+      }
+
+    }
+  },
+  datastore: 'default',
+  tableName: 'users',
+  attributes: {
+    id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
     },
-      // Create relations
-    associations: function() {
+    email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true
+
+
     },
-    defaultScope: function() {
-    },
-    options: {
-      charset: 'utf8',
-      collate: 'utf8_general_ci',
-      timestamps: true,
-      createdAt: true,
-      updatedAt: true,
-      classMethods: {},
-      instanceMethods: {},
-      hooks: {
-             // beforeSave: eventCallback,
-             // beforeValidate: eventCallback,
-             // afterFind: eventCallback,
-             // beforeBulkCreate: eventCallback,
-             // beforeBulkUpdate: eventCallback,
-           },
-      scopes: {},
-    },
-    connection: 'default'    // Can be omitted, so default sails.config.models.connection will be used //
+
+    username:{ type:DataTypes.STRING,allowNull:false,
+      unique:true },
+      phonenumber:{ type:DataTypes.STRING,allowNull:false,
+        unique:true },
+    password:{ type:DataTypes.STRING },
+    isDeleted:{ type:DataTypes.BOOLEAN }
+
+   
+    
+    
+  },
+
+  
+    
+  
+  
+  associations : function(){
+    User.belongsToMany(Feature, { through: 'users_features'});
+    User.belongsTo(Role,{
+      foreignKey:'role_id'
+    
+    })
+    
+    User.hasMany(User,{
+      as:'updatedUsers',
+      foreignKey:'updatedBy',
+      sourceKey:'id'
+
+    })
+    User.hasMany(User,{
+      as:'addedUsers',
+      foreignKey:'addedBy',
+      sourceKey:'id'
+
+    })
+    
+    
+    User.belongsTo(User,{
+      as:'adder',
+      foreignKey:'addedBy',
+      targetKey:'id'
+
+    })
+    User.belongsTo(User,{
+      as:'updater',
+      foreignKey:'updatedBy',
+      targetKey:'id'
+
+    })
+    User.hasMany(Role,{
+      foreignKey:'addedBy',
+      sourceKey:'id'
+    })
+    User.hasMany(Role,{
+      foreignKey:'updatedBy',
+      sourceKey:'id'
+    })
+
+    User.hasMany(UserToken,{
+        foreignKey:'user_id',
+        sourceKey:'id'
+
+    })
+    
+    User.hasMany(UserAuthSettings,{
+      foreignKey:'user_id',
+      sourceKey:'id'
+
+
+
+    })
+    User.hasMany(RequestLog,{
+      foreignKey:'user_id'
+    })
+    User.belongsToMany(Permission, { through: 'users_permissions'});
+     
+
+  }
+   // Can be omitted, so default sails.config.models.connection will be used
 };
+

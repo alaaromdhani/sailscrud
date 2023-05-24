@@ -9,6 +9,13 @@
  */
 
 module.exports.policies = {
+  '*':['lang','passport','role','tokenVerifier','permissions'],
+  AuthController:{
+    '*':['lang','passport','role'],
+    logout:['lang','passport','role','tokenVerifier']
+
+  },
+  
 
   /***************************************************************************
   *                                                                          *
@@ -18,14 +25,5 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
-
-  /******* ALL POLICIES *******/
-
-
-
-
-
-
-
 
 };

@@ -21,7 +21,7 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
-
+    
     /***************************************************************************
     *                                                                          *
     * The order in which middleware should be run for HTTP requests.           *

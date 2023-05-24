@@ -5,18 +5,21 @@
       "schema": "./generators/sails-generate-schema",
       "controller": "./generators/sails-generate-crud-controller",
       "route": "./generators/sails-generate-route",
-      "api": "./generators/sails-generate-api"
+      "api": "./generators/sails-generate-api",
+      "validation": "./generators/sails-generate-validation"
     }
   },
   "_generatedWith": {
     "sails": "1.5.4",
     "sails-generate": "2.0.8"
   },
- "hooks": {
+ 
+    "hooks": {
     "grunt": false,
     "views": false,
     "orm": false,
-    "pubsub": false,
-    "sockets":false
-  }
+    "pubsub": false
+    
+    }
+  
 }

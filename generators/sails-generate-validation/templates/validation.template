@@ -1,0 +1,7 @@
+const joi = require('joi')
+const <%=entityName%>Shema = joi.object({
+    <%Object.keys(joiObject).forEach(attribute=>{%>
+    <%=attribute%>: <%=joiObject[attribute]%>,
+    <%}) %>
+})
+module.exports = <%=entityName%>Shema

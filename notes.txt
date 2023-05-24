@@ -1,0 +1,8 @@
+what is missing in the login page 
+//put everything in the env file 
+// session cookies along side with verifiying the useerToken in the database
+//restrict some attributes in some models 
+//translate all messages 
+//put everything that is in the utils in the helpers
+//have to make sure that when a user is added all all role permissions are added with him
+//make global variables

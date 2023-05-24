@@ -5,8 +5,7 @@
  *                 how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/#!documentation/models
  */
-
-  const { DataTypes } = require('sequelize');
+const Sequelize = require('sequelize');
 
 /*
 // event hooks => http://docs.sequelizejs.com/manual/tutorial/hooks.html
@@ -16,39 +15,53 @@ const eventCallback = () => { // items, options
 */
 
 module.exports = {
+  identity: '<%= entity %>',
+  tableName: '<%= entity %>',
+  entity: {
     attributes: {
-       id: {
-        type: DataTypes.INTEGER,
+      _id: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },<% for (var i = 0; i < fields.length; i++) { %>
       <%=fields[i] %>: {
-        type: DataTypes.STRING,
-      },
-      <% } %>
-    },
-      // Create relations
-    associations: function() {
-    },
-    defaultScope: function() {
+        type: Sequelize.STRING,
+      },<% } %>
     },
     options: {
-      charset: 'utf8',
-      collate: 'utf8_general_ci',
+      // disable the modification of tablenames; By default, sequelize will automatically
+      // transform all passed model names (first parameter of define) into plural.
+      // if you don't want that, set the following
+      freezeTableName: true,
+      // Table Name
+      tableName: '<%= entity %>',
+      // Enable TimeStamp
       timestamps: true,
-      createdAt: true,
-      updatedAt: true,
-      classMethods: {},
-      instanceMethods: {},
+      // createdAt should be createdOn
+      createdAt: 'createdOn',
+      // updatedAt should be lastModifiedOn
+      updatedAt: 'lastModifiedOn',
+      // Hooks. see => http://docs.sequelizejs.com/manual/tutorial/hooks.html
       hooks: {
-             // beforeSave: eventCallback,
-             // beforeValidate: eventCallback,
-             // afterFind: eventCallback,
-             // beforeBulkCreate: eventCallback,
-             // beforeBulkUpdate: eventCallback,
-           },
-      scopes: {},
+        // beforeSave: eventCallback,
+        // beforeValidate: eventCallback,
+        // afterFind: eventCallback,
+        // beforeBulkCreate: eventCallback,
+        // beforeBulkUpdate: eventCallback,
+      },
+      indexes: [
+      // {
+      //  unique: false,
+      //  fields: ['userId'],
+      // },
+      ]
     },
-    connection: 'default'    // Can be omitted, so default sails.config.models.connection will be used //
+    // Create relations
+    associations: (models) => {
+    },
+    // list default join
+    defaultScope: () => ({
+    }),
+  }
 };

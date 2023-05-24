@@ -1,4 +1,13 @@
 {
-  "Welcome": "Welcome",
-  "A brand new app.": "A brand new app."
+  "Welcome":                                                                "Welcome",
+  "Bad Credentials":                                                        "Bad Credentials",
+  "Your account has been locked due to too many failed login attempts.":    "Your account has been locked due to too many failed login attempts.",
+  "some error accured come back later":                                     "some error accured come back later",
+  "Missing credentials"                                                     :"Missing credentials",
+  "is already used"                                                        :"%s is already used",
+    "your account will be unlocked in seconds"              :"your account will be unlocked in %s seconds",
+    "your account will be unlocked in minutes seconds"      :"your account will be unlocked in %s seconds and %s minutes",
+    "your account will be unlocked in hours seconds minutes":"your account will be unlocked in %s seconds %s minutes and %s hours",
+    "error with input" : "error with input %s",
+    "you are not authorized to access this  ressourse":"you are not authorized to access this  ressourse"        
 }

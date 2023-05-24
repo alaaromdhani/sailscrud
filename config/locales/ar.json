@@ -1,0 +1,16 @@
+{
+    "Welcome":                                                                "مرحباً",
+    "Bad Credentials":                                                        "فشلت محاولة تسجيل الدخول",
+    "Your account has been locked due to too many failed login attempts.":    "لقد تم قفل حسابك بسبب العديد من محاولات تسجيل الدخول الفاشلة",
+    "some error accured come back later":                                     "حدث خطأ ما ، أعود لاحقًا",
+    "Missing credentials"                                                     :"المعلمات المطلوبة لتسجيل الدخول مفقودة" ,
+    "is already used"                                                         :"مستخدم %s",
+    "your account will be unlocked in seconds"                                : "سيتم إلغاء قفل حسابك في  ثانية" ,
+    "your account will be unlocked in minutes seconds minutes"                : "سيتم إلغاء قفل حسابك في٪ s ثانية و٪ s دقيقة" ,
+    "your account will be unlocked in minutes seconds minutes hours"          : "سيتم إلغاء قفل حسابك خلال٪ s ثانية و٪ s دقيقة و٪ s ساعة",
+    "error with input" : "%s خطأ في الإدخال",
+    "you are not authorized to access this  ressourse":"أنت غير مصرح لك للوصول إلى هذا المورد"
+
+    
+    
+}

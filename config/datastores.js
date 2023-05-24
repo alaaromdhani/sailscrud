@@ -33,24 +33,25 @@ module.exports.datastores = {
   ***************************************************************************/
 
   default: {
-
-    /***************************************************************************
-    *                                                                          *
-    * Want to use a different database during development?                     *
-    *                                                                          *
-    * 1. Choose an adapter:                                                    *
-    *    https://sailsjs.com/plugins/databases                                 *
-    *                                                                          *
-    * 2. Install it as a dependency of your Sails app.                         *
-    *    (For example:  npm install sails-mysql --save)                        *
-    *                                                                          *
-    * 3. Then pass it in, along with a connection URL.                         *
-    *    (See https://sailsjs.com/config/datastores for help.)                 *
-    *                                                                          *
-    ***************************************************************************/
-  //  adapter: 'sails-mysql',
-   // url: 'mysql://root:password@host:3306/dbase',
-
+    user: 'uyjbcm8ddyx2txf8',
+    password: 'pC00ea32hCybFQWjsg6m',
+    database: 'bssxral1uw8cnncfwhkg',
+    options: {
+      host: 'bssxral1uw8cnncfwhkg-mysql.services.clever-cloud.com',
+      port: '3306',
+      dialect: 'mysql',
+      dialectOptions: {
+        useUTC: false, //for reading from database
+        dateStrings: true,
+        typeCast: true,
+      },
+      timezone: 'Africa/Tunis', //for writing to database
+      pool: {
+        max: 5,
+        min: 0,
+        idle: 10000
+      }
+    }
   },
 
 

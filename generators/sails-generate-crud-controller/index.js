@@ -2,15 +2,14 @@ const util = require('util');
 const path = require('path');
 const _ = require('lodash');
 require('colors');
-const fs = require('fs');
 
 /**
  * @description Generates CRUD controller for the given schema name.
  * @docs https://sailsjs.com/docs/concepts/extending-sails/generators/custom-generators
- *
+ * 
  * Usage:
  * This handler should be added to your .sailsrc file for registering
- * a custom sails generator.
+ * a custom sails generator. 
  * The shell command to be executed will be:
  * `sails generate <generator-name> <schema-name> --type <type>`,
  * where:
@@ -30,7 +29,6 @@ module.exports = {
    * @param  {Function} done
    */
   before(scope, done) {
-
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // // scope.args are the raw command line arguments.
     // //
@@ -63,14 +61,13 @@ module.exports = {
     // Decide the output filename for use in targets below:
     scope.entityName = _.startCase(scope.args[0]).replace(/ /g, '');
     scope.filename = `${scope.entityName}Controller.js`;
-    scope.entity = _.snakeCase(scope.args[0]);
 
+    scope.entity = _.snakeCase(scope.args[0]);
 
     console.log('Generating a new controller of type %s for entity %s  as ', scope.type, scope.entity);
     console.log(`${scope.type}.template`);
     this.targets['./api/controllers/:filename'].template = `${scope.type}.template`;
-    console.log(this.targets)
-  //  this.targets['./test/api/:entityName/api.test.js'].template = `test.template`;
+    this.targets['./test/api/:entityName/api.test.js'].template = `test.template`;
 
     //scope.field = 'field';
     //scope.sails = 'sails';
@@ -83,20 +80,6 @@ module.exports = {
     //
     // > Or call `done()` with an Error for first argument to signify a fatal error
     // > and halt generation of all targets.
-
-    /** Overwrite Existant Controller **/
-    var fs = require('fs');
-    var pathx = path.resolve(__dirname, '../../api/controllers/' + scope.filename);
-
-    fs.exists(pathx, function (exists) {
-      if (exists) {
-        // do something
-        fs.unlinkSync(pathx);
-        console.log('---- Overwrite Existant Controller ----');
-
-      }
-    });
-
     return done();
   },
 
@@ -121,7 +104,10 @@ module.exports = {
     './api/controllers/:filename': {
       template: 'type.template.js',
     },
-
+    './test/api/:entityName': {
+      folder: {}
+    },
+    './test/api/:entityName/api.test.js': {},
     // ```
     //
     // • See https://sailsjs.com/docs/concepts/extending-sails/generators for more documentation.

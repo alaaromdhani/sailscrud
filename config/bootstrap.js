@@ -8,12 +8,53 @@
  * For more information on seeding your app with fake data, check out:
  * https://sailsjs.com/config/bootstrap
  */
-
-const createFakeData = require('../seeders/createFakeData');
+const _ = require('@sailshq/lodash')
+const permissionSeeders = require('../utils/seeders/permission');
+const featureSeeders = require('../utils/seeders/features')
+const modelSeasers = require('../utils/seeders/model');
+const userSeesers = require('../utils/seeders/user');
+const roleSeeders = require('../utils/seeders/roles')
 module.exports.bootstrap = async function() {
-  console.log('A.L.A')
-  console.log(sails.config.port)
+  /*function getAllKeys(object){
+    Object.keys(object).forEach(k=>{
+      console.log(k)
+      if(typeof(object[k]=='object' && typeof(k)=='string' && k.length>5)){
+        getAllKeys(object[k])
 
+      }
+    })
+    
+
+
+  }*/
+  
+  
+
+  await modelSeasers()
+   await featureSeeders()
+   await roleSeeders()
+    await permissionSeeders()
+   await userSeesers()
+   
+    
+
+
+  /*import _ from 'lodash'
+  exports.createModels = function () {
+    sails.log.verbose('sails-hook-permissions: syncing waterline models');
+  
+    var models = _.compact(_.map(sails.models, function (model, name) {
+      return model && model.globalId && model.identity && {
+        name: model.globalId,
+        identity: model.identity,
+        attributes: _.omit(model.attributes, _.functions(model.attributes))
+      };
+    }));
+  
+    return Promise.all(_.map(models, function (model) {
+      return sails.models.model.findOrCreate({ name: model.name }, model);
+    }));
+  };*/
   // By convention, this is a good place to set up fake data during development.
   //
   // For example:
@@ -30,11 +71,4 @@ module.exports.bootstrap = async function() {
   // ]);
   // ```
 
-  process.env.TZ = 'Africa/Tunis';
-
-
-  // SEED DATA //
-  const createFakeData = require('../seeders/createFakeData');
-  await createFakeData();
-  console.log('Seeder executed successfully!');
 };

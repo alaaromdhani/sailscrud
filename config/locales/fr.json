@@ -1,4 +1,13 @@
 {
-  "Welcome": "Bienvenue",
-  "A brand new app.": "Une toute nouvelle application."
+  "Welcome":                                                                "Accueillir",
+  "Bad Credentials":                                                        "Mauvaises qualifications",
+  "Your account has been locked due to too many failed login attempts.":    "Votre compte a été verrouillé en raison d'un trop grand nombre de tentatives de connexion infructueuses.",
+  "some error accured come back later":                                     "une erreur s'est produite revenir plus tard"       ,
+  "Missing credentials"                                                     :"Identifiants manquants"      ,
+  "is already used"                                                        :"%s est déja utilisé"   ,
+  "your account will be unlocked in seconds"              :"votre compte sera déverrouillé dans %s secondes",
+  "your account will be unlocked in minutes seconds"      :"votre compte sera déverrouillé dans %s secondes et %s minutes",
+  "your account will be unlocked in hours seconds minutes":"votre compte sera déverrouillé dans %s secondes %s minutes et %s heures",
+  "error with input" : "erreur avec entrée %s",
+  "you are not authorized to access this  ressourse":"vous n'êtes pas autorisé à accéder à cette ressource"              
 }
