@@ -9,7 +9,8 @@ const { Op } = require("sequelize");
 const ValidationError = require("../../utils/errors/validationErrors");
 const schemaValidation = require("../../utils/validations");
 const {UserShema, updateUserSchema} = require("../../utils/validations/UserSchema");
-const { ErrorHandlor } = require("../../utils/translateResponseMessage");
+const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+const SqlError = require("../../utils/errors/sqlErrors");
 
 
 module.exports = {
@@ -23,7 +24,7 @@ module.exports = {
              ErrorHandlor(req,err,res)      
           }
           else{
-            res.status(200).send(user)
+            DataHandlor(req,user,res)
           }
 
 
@@ -80,16 +81,16 @@ module.exports = {
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
 
-      return res.json({
+      return DataHandlor(req,{
         success: true,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      });
+      },res)
     } catch (error) {
-      return res.serverError(error);
+      return ErrorHandlor(req,new SqlError(error),res);
     }
   },
 
@@ -107,12 +108,12 @@ module.exports = {
 
       });
       if (!data) {
-        return res.status(404).json({ error: 'User not found' });
+        return ErrorHandlor(req,{message:'user not found'},res);
       }
       
-      return res.json(data);
+      return DataHandlor(req,data,res)
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 
@@ -126,7 +127,7 @@ module.exports = {
             ErrorHandlor(req,err,res)
           }
           else{
-            res.status(200).send(user)
+            DataHandlor(req,user,res)
           }
 
 

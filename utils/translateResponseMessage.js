@@ -1,5 +1,7 @@
 const UnauthorizedError = require("./errors/UnauthorizedError")
+const UnkownError = require("./errors/UnknownError")
 const { SAPassportLockedError, BadCredentialsError } = require("./errors/lockedError")
+const RecordNotFoundErr = require("./errors/recordNotFound")
 const SqlError = require("./errors/sqlErrors")
 const ValidationError = require("./errors/validationErrors")
 
@@ -15,32 +17,70 @@ const translateReponseMessage = (translate,message,parameters)=>{
 
 }
 const ErrorHandlor = (req,err,res)=>{
+    console.log(err)
     if(err instanceof SAPassportLockedError){
-        return res.status(err.status).send(translateReponseMessage(req.__,err.message,err.extrafields))
+        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
+    
+        return res.status(err.status).send(err)
 
     }
     if(err instanceof UnauthorizedError){
-
-        return res.status(err.status).send(translateReponseMessage(req.__,err.message))
+    
+        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
+        
+        return res.status(err.status).send(err)
     }
     if(err instanceof SqlError){
+        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
         
-        return res.status(err.status).send(translateReponseMessage(req.__,err.message,err.extrafields))
+        return res.status(err.status).send(err)
         
     }
     if(err instanceof ValidationError){
 
-        return res.status(err.status).send(translateReponseMessage(req.__,err.message,err.extrafields))
+        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
+    
+        return res.status(err.status).send(err)
     }
     if(err instanceof BadCredentialsError){
 
-        return res.status(err.status).send(translateReponseMessage(req.__,err.message))
+        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
+    
+        return res.status(err.status).send(err)
+    }
+    if(err instanceof RecordNotFoundErr){
+        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
+    
+        return res.status(err.status).send(err)
     }
     else{
-        return res.status(500).send(translateReponseMessage(req.__,'some error accured come back later'))
+        const error = new UnkownError()
+        error.message = translateReponseMessage(req.__,'some error accured come back later')
+        return res.status(500).send(error)
     }
 
 
 
 }
-module.exports = {translateReponseMessage,ErrorHandlor}
+const DataHandlor=(req,dat,res,message,extrafields)=>{
+       let data = {} 
+    if(!message){
+        data.message = translateReponseMessage(req.__,'operation succeeded')
+    }
+    else{
+        if(extrafields && Array.isArray(extrafields)){
+            data.message = translateReponseMessage(req.__,message,extrafields)
+
+
+        }else{
+            data.message = translateReponseMessage(req.__,message)
+
+        }
+    }
+    res.status(200).send({data:dat,message})
+    
+
+
+}
+
+module.exports = {translateReponseMessage,ErrorHandlor,DataHandlor}

@@ -150,6 +150,7 @@ module.exports = {
                     else{
                         return reject(new UnauthorizedError({specific:'cannot assign permissions you do not have'}))
                     }
+                    delete role.permissions
                 }
                 if(role.features){
                     const testFeatures = sails.services.permissionservice.canAssignFeatures(req.user,role.features)
@@ -159,6 +160,7 @@ module.exports = {
                     else{
                         return reject(new UnauthorizedError({specific:'cannot assign features you do not have'}))
                     }
+                    delete role.features
     
                 }
                 
@@ -171,15 +173,17 @@ module.exports = {
     
             }).then(async ({data,permissions,features})=>{
                   try{
-                    await Role.update(role,{where:{id:data.id}})
+                    let r = data
+                    Object.keys(role).forEach(k=>r[k]=role[k])
+                    r  = await r.save()
                     if(permissions.length>0){
-                            await data.setPermissions([])
-                            await data.addPermissions(permissions)
-                            if(data.Users.length>0){
-                                const userIds = data.Users.map(u=>u.id)
+                            await r.setPermissions([])
+                            await r.addPermissions(permissions)
+                            if(r.Users.length>0){
+                                const userIds = r.Users.map(u=>u.id)
                                 await User.sequelize.query(`DELETE FROM users_permissions WHERE UserId IN (${userIds.join(',')})`)
                              
-                                for(let u of data.Users){
+                                for(let u of r.Users){
                                     await u.addPermissions(permissions)
         
         
@@ -188,13 +192,13 @@ module.exports = {
     
                     }
                     if(features.length>0){
-                        await data.setFeatures([])
-                        await data.addFeatures(features)
-                        if(data.Users.length>0){
-                            const userIds = data.Users.map(u=>u.id)
+                        await r.setFeatures([])
+                        await r.addFeatures(features)
+                        if(r.Users.length>0){
+                            const userIds = r.Users.map(u=>u.id)
                             await User.sequelize.query(`DELETE FROM users_features WHERE UserId IN (${userIds.join(',')})`)
                          
-                            for(let u of data.Users){
+                            for(let u of r.Users){
                                 await u.addFeatures(features)
     
     
@@ -203,7 +207,7 @@ module.exports = {
     
                     }
                    
-                    callback(null,data)
+                    callback(null,r)
                 
                 }                
                 catch(e){

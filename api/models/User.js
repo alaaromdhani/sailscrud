@@ -18,13 +18,19 @@ module.exports = {
     tableName: 'users',
     hooks:{
       beforeSave:async (user,options)=>{
+        
+        console.log(user.password)
         user.password = await bcrypt.hash(user.password,10)
 
       },
-      beforeDestroy:(user,options)=>{
-        console.log('deleted user with id ='+user.id)
+      beforeDestroy:async (user,options)=>{
+        await User.sequelize.query(`DELETE FROM users_features WHERE UserId =`+user.id)
+        await User.sequelize.query(`DELETE FROM users_permissions WHERE UserId =`+user.id)
+        
+      
 
-      }
+      },
+      
 
     }
   },

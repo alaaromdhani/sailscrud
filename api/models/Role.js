@@ -4,7 +4,19 @@ const { DataTypes } = require("sequelize");
 
 module.exports = {  
   options: {
-    tableName: 'roles'
+    tableName: 'roles',
+    hooks:{
+      beforeDestroy:async (role,options)=>{
+        
+        await Role.sequelize.query(`DELETE FROM roles_features WHERE RoleId =`+role.id)
+        await Role.sequelize.query(`DELETE FROM roles_permissions WHERE RoleId =`+role.id)
+        
+      
+
+      },
+
+
+    }
   },
   datastore: 'default',
   tableName: 'roles',

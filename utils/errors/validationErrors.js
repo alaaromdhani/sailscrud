@@ -12,7 +12,7 @@ function ValidationError (error) {
                     
         }
         this.code = 'validation Error';
-        this.status = 401;
+        this.status = 400;
         this.message = message;
         this.lockout = error;
         this.extrafields = extrafields

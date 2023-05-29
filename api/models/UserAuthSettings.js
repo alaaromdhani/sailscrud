@@ -26,7 +26,7 @@ module.exports = {
           UserAuthSettings.isLocked(auth).then(()=>{
               return bcrypt.compare(password,userPassword)
           }).then((result)=>{
-           
+            
             let data = {
               loginRetryLimit: 0,
               loginReactiveTime: null
@@ -114,6 +114,7 @@ module.exports = {
       type:DataTypes.INTEGER,
       defaultValue:0
     },
+    resetPasswordCode:{ type:DataTypes.STRING },
     isActive:{ type:DataTypes.BOOLEAN },
     loginReactiveTime:{ type:DataTypes.DATE },
     isDeleted:{ type:DataTypes.BOOLEAN },

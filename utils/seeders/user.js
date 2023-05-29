@@ -7,7 +7,7 @@ var superUser = {
     role:{
         name:"superadmin"
     },
-    phonenumber:'29208660'
+    phonenumber:'+21629208660'
 }
 module.exports = async ()=>{
     try{

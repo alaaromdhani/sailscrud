@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { ErrorHandlor} = require('../../utils/translateResponseMessage');
+const { ErrorHandlor, DataHandlor} = require('../../utils/translateResponseMessage');
 const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const UnkownError = require('../../utils/errors/UnknownError');
 module.exports = {
@@ -48,14 +48,14 @@ callback: function (req, res) {
             }
             else{
               req.session.authenticated = true
-              res.status(200).send(data.user);
+              DataHandlor(req,data.user,res,'login successful')
             }
             
     
         });
         }
         else{
-          res.status(200).send(data.user)
+          DataHandlor(req,data.user,res,'registred successfully')
         }
           
           
@@ -70,19 +70,103 @@ callback: function (req, res) {
   logout:(req,res)=>{
     
       req.logout(async function(err) {
-          if (err) {  return res.status(500).send(req.__('some error accured come back later')) }
+          if (err) {  return ErrorHandlor(req,new UnkownError(),res) }
           else{
               req.session.authenticated = false
               delete req.user
               await UserToken.update({isTokenExpired:true},{where:{token:req.cookies.token}})
-              res.status(200).send('logged out')
+              return DataHandlor(req,{},res,'logged out successfully')
           }
       });
 
     
 
 
+  },
+  forgetPassword:(req,res)=>{
+   
+    if(req.user){
+      
+        
+        ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res)
+
+
+      }
+      else{
+        sails.services.userservice.sendResetPasswordNotification(req,(err,data)=>{
+          if(err){
+            console.log(err)
+              ErrorHandlor(req,err,res)  
+
+          }
+          else{
+              DataHandlor(req,{},res,"notification sent successfully")
+
+          }
+
+
+
+
+        })
+        
+       
+
+          
+
+
+      }
+
+
+
+  },
+  validateResetPasswordLink:(req,res)=>{
+    if(req.user){
+      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res))
+    }
+    else{
+      sails.services.userservice.validatePasswordToken(req,(err,data)=>{
+        if(err){
+          ErrorHandlor(req,err,res)
+        }
+        else{
+          DataHandlor(req,{},res,'link validated')
+
+        }
+
+
+
+      })
+
+
+    }
+
+  },
+  resetPassword:(req,res)=>{
+    if(req.user){
+      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res))
+    }
+    else{
+      sails.services.userservice.resetPassword(req,(err,data)=>{
+        if(err){
+          ErrorHandlor(req,err,res)
+        }
+        else{
+          DataHandlor(req,{},res,'password updated successfully')
+
+        }
+
+
+
+      })
+
+
+    }
+
+
   }
+
+  
+
 
 
 

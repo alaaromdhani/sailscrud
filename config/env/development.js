@@ -20,6 +20,18 @@
  */
 
 module.exports = {
+  //cron : {
+  //  login: {
+     // schedule: '* */30 * * * *',      // [REQUIRED]
+    //  onTick: () => {               // [REQUIRED]
+       // sails.services.otpservice.login();
+      //},
+     // timezone: 'America/New_York', // [OPTIONAL] set timezone
+    //  runOnInit: true,              // [OPTIONAL] fire onTick function as soon as the cron is initialized
+     // start: true                   // [OPTIONAL] manually start the cron task (DEFAULT = true) See below for the example
+  //  },
+   
+  //},
 
 
     /**************************************************************************
@@ -76,7 +88,7 @@ module.exports = {
   
     },
   
-  
+    
   
     models: {
   
@@ -390,9 +402,19 @@ module.exports = {
     custom: {
       baseUrl: 'https://example.com',
       internalEmailAddress: 'support@example.com',
+      
       jwt:{
         jwt_secret:'super-secret-key',
         expires:3*24*3600    
+
+      },
+      resetPassword:{
+        expires:3//in minutes,
+
+      },
+      otpconf:{
+        authorization_header:"Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==",
+        sender:'2160000'
 
       }
   

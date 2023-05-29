@@ -5,8 +5,10 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
-const { ErrorHandlor } = require("../../utils/translateResponseMessage");
+const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 const schemaValidation = require("../../utils/validations");
 const {RoleShema, updateRoleShema} = require("../../utils/validations/RoleSchema");
 
@@ -23,7 +25,7 @@ module.exports = {
             ErrorHandlor(req,err,res)
           }
           else{
-            res.status(200).send(role)
+            DataHandlor(req,role,res,"role created succussfully")
           }
 
 
@@ -68,16 +70,17 @@ module.exports = {
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
 
-      return res.json({
+      DataHandlor(req,{
         success: true,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      });
+      }
+      ,res)
     } catch (error) {
-      return res.serverError(error);
+      ErrorHandlor(req,new SqlError(error),res)
     }
   },
 
@@ -95,11 +98,11 @@ module.exports = {
 
     });
       if (!data) {
-        return res.status(404).json({ error: 'Role not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr({message:'role not found'}))
       }
-      return res.json(data);
+      return DataHandlor(req,data,res);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 
@@ -114,7 +117,7 @@ module.exports = {
           
         }
         else{
-          res.status(200).send(user)
+          DataHandlor(req,user,res)
         }
 
 
