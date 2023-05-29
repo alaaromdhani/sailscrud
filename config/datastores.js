@@ -33,16 +33,16 @@ module.exports.datastores = {
   ***************************************************************************/
 
   default: {
-    user:'root',
-    password:'',
+    user:'uyjbcm8ddyx2txf8',
+    password:'uyjbcm8ddyx2txf8',
     options:{
       port:'3306',
       dialect:'mysql',
-      host:'localhost',
+      host:'bssxral1uw8cnncfwhkg-mysql.services.clever-cloud.com',
      
 
     },
-    database:'sails-perm'
+    database:'bssxral1uw8cnncfwhkg'
 
     /***************************************************************************
     *                                                                          *
