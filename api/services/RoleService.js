@@ -5,20 +5,14 @@ const SqlError = require("../../utils/errors/sqlErrors")
 module.exports = {
     create:(req,role,callback)=>{
         new Promise((resolve,reject)=>{
-            if(!role.weight){
+            if(req.role.weight<=role.weight){
                 return resolve()
+
             }
             else{
-                if((req.role.weight<=role.weight)){
-                    return resolve()
-    
-                }
-                else{
-                    return reject(new UnauthorizedError({specific:'you can add roles higher than you '}))
-    
-                }
-            }
+                return reject(new UnauthorizedError({specific:'you can add roles higher than you '}))
 
+            }
 
 
 
@@ -100,12 +94,18 @@ module.exports = {
         
              new Promise((resolve,reject)=>{
                 //verfiying the parameters of the ew role
-                if(role.weight>=req.role.weight){
+                if(!role.weight){
                     return resolve()
-
                 }
                 else{
-                    return reject(new UnauthorizedError({specific:'you cannot a higher weigh to a role'}))
+                    if((req.role.weight<=role.weight)){
+                        return resolve()
+        
+                    }
+                    else{
+                        return reject(new UnauthorizedError({specific:'you can add roles higher than you '}))
+        
+                    }
                 }
 
             }).then(async ()=>{
