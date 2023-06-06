@@ -5,7 +5,7 @@ const SqlError = require("../../utils/errors/sqlErrors")
 module.exports = {
     create:(req,role,callback)=>{
         new Promise((resolve,reject)=>{
-            if(req.role.weight<=role.weight){
+            if(role.weight&&(req.role.weight<=role.weight)){
                 return resolve()
 
             }
