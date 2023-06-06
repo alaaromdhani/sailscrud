@@ -77,7 +77,7 @@ const DataHandlor=(req,dat,res,message,extrafields)=>{
 
         }
     }
-    res.status(200).send({data:dat,message})
+    res.status(200).send({data:dat,message:data.message})
     
 
 
