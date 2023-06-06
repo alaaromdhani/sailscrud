@@ -163,6 +163,9 @@ callback: function (req, res) {
     }
 
 
+  },
+  profileCallback:(req,res)=>{
+    DataHandlor(req,req.user,res)
   }
 
   

@@ -65,6 +65,17 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Role.findAndCountAll({
         where,
+        include:[{
+          model:Permission,
+          through:'roles_permissions',
+          include:{
+            model:Model,
+            attributes: ['name']
+          }
+        },{
+          model:Feature,
+          through:'roles_features',
+        }],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
