@@ -75,6 +75,11 @@ module.exports = {
         },{
           model:Feature,
           through:'roles_features',
+        },{
+            model:User,
+            foreignKey:'role_id',
+            
+
         }],
         order,
         limit: parseInt(limit, 10),
