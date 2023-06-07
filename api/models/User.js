@@ -49,6 +49,35 @@ module.exports = {
 
 
     },
+    profilePicture:{
+      type:DataTypes.STRING,
+      defaultValue:"images/default.jpg"
+
+    },
+    firstName:{
+      type:DataTypes.STRING,
+      allowNull:false
+
+
+    },
+    lastName:{
+      type:DataTypes.STRING,
+      allowNull:false
+
+
+    },
+    birthDate:{
+      type:DataTypes.DATE,
+      allowNull:false
+
+    }
+    ,
+    preferredLanguage:{
+      type:DataTypes.ENUM({values:['ar','fr','en']}),
+      defaultValue:'ar'
+
+
+    },
 
     username:{ type:DataTypes.STRING,allowNull:false,
       unique:true },
@@ -123,6 +152,12 @@ module.exports = {
     })
     User.hasMany(RequestLog,{
       foreignKey:'user_id'
+    })
+    User.belongsTo(State,{
+      foreignKey:'state_id'
+    })
+    User.belongsTo(Country,{
+      foreignKey:'country_id'
     })
     User.belongsToMany(Permission, { through: 'users_permissions'});
      

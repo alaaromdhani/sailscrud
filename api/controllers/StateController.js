@@ -1,7 +1,7 @@
 /**
- * Api/<%= filename %>
+ * Api/StateController.js
  *
- * @description :: Server-side logic for managing <%= entity %> endpoints
+ * @description :: Server-side logic for managing state endpoints
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
@@ -9,7 +9,7 @@
 module.exports = {
   async create(req, res) {
     try {
-      const data = await <%= entityName %>.create(req.body);
+      const data = await State.create(req.body);
       return res.status(201).json(data);
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -23,11 +23,11 @@ module.exports = {
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
-      const attributes = Object.keys(<%= entityName %>.sequelize.models.<%= entityName %>.rawAttributes);
+      const attributes = Object.keys(State.sequelize.models.User.rawAttributes);
 
 
       // Create the filter conditions based on the search query
-      const where = search
+      let where = search
         ? {
           [Sequelize.Op.or]: attributes.map((attribute) => ({
             [attribute]: {
@@ -36,12 +36,13 @@ module.exports = {
           })),
         }
         : {};
+        where.active=true
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
-      const { count, rows } = await <%= entityName %>.findAndCountAll({
+      const { count, rows } = await State.findAndCountAll({
         where,
         order,
         limit: parseInt(limit, 10),
@@ -63,9 +64,13 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await <%= entityName %>.findByPk(req.params.id);
+      const data = await State.findByPk(req.params.id,{
+
+        where:{active:true}
+
+      });
       if (!data) {
-        return res.status(404).json({ error: '<%= entityName %> not found' });
+        return res.status(404).json({ error: 'State not found' });
       }
       return res.json(data);
     } catch (err) {
@@ -75,12 +80,12 @@ module.exports = {
 
   async update(req, res) {
     try {
-      const data = await <%= entityName %>.findByPk(req.params.id);
+      const data = await State.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: '<%= entityName %> not found' });
+        return res.status(404).json({ error: 'State not found' });
       }
-      const updated<%= entityName %> = await data.update(req.body);
-      return res.json(updated<%= entityName %>);
+      const updatedState = await data.update(req.body);
+      return res.json(updatedState);
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -88,9 +93,9 @@ module.exports = {
 
   async destroy(req, res) {
     try {
-      const data = await <%= entityName %>.findByPk(req.params.id);
+      const data = await State.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: '<%= entityName %> not found' });
+        return res.status(404).json({ error: 'State not found' });
       }
       await data.destroy();
       return res.status(204).send();

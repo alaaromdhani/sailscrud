@@ -15,7 +15,9 @@ module.exports.routes = {
   'post /forgetpass':'AuthController.forgetPassword',
   'get /validate/:user_id/:code':'AuthController.validateResetPasswordLink',
   'post /resetpass/:user_id/:code':'AuthController.resetPassword',
-  'get /profile/me':'AuthController.profileCallback'
+  'get /profile/me':'AuthController.profileCallback',
+  'get /register/countries':'AuthController.getCounteries',
+  'get /register/states/:countryId':'AuthController.getStatesByCountry'
 
 
 

@@ -12,8 +12,12 @@ const _ = require('@sailshq/lodash')
 const permissionSeeders = require('../utils/seeders/permission');
 const featureSeeders = require('../utils/seeders/features')
 const modelSeasers = require('../utils/seeders/model');
-const userSeesers = require('../utils/seeders/user');
+
 const roleSeeders = require('../utils/seeders/roles')
+const userSeesers = require('../utils/seeders/user');
+const countrySeeders = require('../utils/seeders/country');
+const stateSeeders = require('../utils/seeders/state');
+
 module.exports.bootstrap = async function() {
   /*function getAllKeys(object){
     Object.keys(object).forEach(k=>{
@@ -32,10 +36,20 @@ module.exports.bootstrap = async function() {
 
   await modelSeasers()
    await featureSeeders()
+   await countrySeeders()
+   await stateSeeders()
    await roleSeeders()
+
     await permissionSeeders()
+    console.log('now user seaders')
    await userSeesers()
-   
+   sails.io.on('connection', socket => {
+
+    sails.io.emit('documents','ala');
+
+    console.log(`Socket ${socket.id} has connected`);
+
+   })
     
 
 

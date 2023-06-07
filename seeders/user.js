@@ -11,13 +11,14 @@ var superUser = {
     },
     sex:'male',
     phonenumber:'+21655733554',
-    secondPhoneNumber:'+21629208660',
+  
     birthDate:new Date('1998-03-11')
 
     
 }
 module.exports = async ()=>{
-    console.log('user seeder')
+
+    console.log('user seeder',superUser)
     try{
         let role = await Role.findOne({where:{
             name:superUser.role.name

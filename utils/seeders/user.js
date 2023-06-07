@@ -1,16 +1,23 @@
 
 
 var superUser = {
+    firstName:'ala',
+    lastName:'romdhani',
     username:'ala.romdhani',
     password:'123456',
     email:'ala.romdhani@mada.tn',
     role:{
         name:"superadmin"
     },
-    phonenumber:'+21629208660'
+    sex:'male',
+    phonenumber:'+21655733554',
+    birthDate:new Date('1998-03-11')
+
+    
 }
 module.exports = async ()=>{
     try{
+
         let role = await Role.findOne({where:{
             name:superUser.role.name
         },include:[{
