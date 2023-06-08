@@ -175,11 +175,16 @@ callback: function (req, res) {
   },
   getStatesByCountry:async (req,res)=>{
       const {countryId} = req.params
+
       if(!countryId){
         ErrorHandlor(req,new ValidationError({message:'countryId is required'}),res)
       }
       else{
-       const country =  await Country.findOne({where:{country_id:countryId}})
+       const country =  await Country.findOne({where:{id:countryId},include:{
+        model:State,
+        foreignKey:'country_id'
+
+       }})
          if(!country){
           ErrorHandlor(req,new RecordNotFoundErr(),res)
           

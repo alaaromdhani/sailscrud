@@ -43,13 +43,7 @@ module.exports.bootstrap = async function() {
     await permissionSeeders()
     console.log('now user seaders')
    await userSeesers()
-   sails.io.on('connection', socket => {
-
-    sails.io.emit('documents','ala');
-
-    console.log(`Socket ${socket.id} has connected`);
-
-   })
+   
     
 
 

@@ -18,7 +18,6 @@ var superUser = {
 }
 module.exports = async ()=>{
 
-    console.log('user seeder',superUser)
     try{
         let role = await Role.findOne({where:{
             name:superUser.role.name

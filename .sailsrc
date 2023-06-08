@@ -17,8 +17,8 @@
     "hooks": {
     "grunt": false,
     "views": false,
-    "orm": false,
-    "pubsub": false
+    "orm": false
+    
     
     }
   

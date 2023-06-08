@@ -102,7 +102,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-      migrate: 'alter',
+      migrate: 'safe',
   
       /***************************************************************************
       *                                                                          *
@@ -162,7 +162,7 @@ module.exports = {
       cors: {
         allRoutes: true,
         allowCredentials: true, // Allows cookies and session through CORS from here
-        allowOrigins: ['http://localhost:3000','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
+        allowOrigins: ['http://localhost:8100','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
         allowResponseHeaders: 'set-cookie',
         allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
       },
@@ -279,9 +279,26 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
        onlyAllowOrigins: [
-         'http://localhost:4200',
+         'http://localhost:8100',
      
        ],
+       beforeConnect: function(handshake, proceed) {
+          console.log('poceeed')
+        // Send back `true` to allow the socket to connect.
+        // (Or send back `false` to reject the attempt.)
+        return proceed(undefined, true);
+      
+      },
+       onConnect: function(session, socket) {
+        console.log('new socket is coming')
+        socket.emit('documents', 'ala');
+        socket.on('my other event', function (data) {
+          console.log(data);
+        });
+       // By default: do nothing
+       // This is a good place to subscribe a new socket to a room, inform other users 
+       // that someone new has come online, or any other custom socket.io logic
+      }
   
   
       /***************************************************************************

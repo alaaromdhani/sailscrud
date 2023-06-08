@@ -87,7 +87,7 @@ module.exports = {
     // const collection = sails.models[endpoint].em; // if you have a schema defined for this item
     let query = {};
     const listOfValues = req.query.listOfValues ? req.query.listOfValues : false;
-    const startPage = parseInt(req.query.page ? req.query.page : 0);
+    const startPage = parseInt(parseInt(req.query.page)+1+1 ? parseInt(req.query.page)+1+1 : 0);
     const limit = Tools.getPagination(req);
     const skip = startPage * limit;
 
