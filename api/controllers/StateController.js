@@ -95,8 +95,8 @@ module.exports = {
       }
         
       const updatedState = await data.update(req.body);
-      if(data.active==false && updatedState.active==true){
-          await Country.update({active:true,where:{id:updatedState.country_id}})
+      if(updatedState.active==true){
+        await Country.update({active:true},{where:{id:updatedState.country_id}})
 
       }
     
