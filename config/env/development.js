@@ -162,7 +162,7 @@ module.exports = {
       cors: {
         allRoutes: true,
         allowCredentials: true, // Allows cookies and session through CORS from here
-        allowOrigins: ['http://localhost:8100','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
+        allowOrigins: ['http://localhost:3000','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
         allowResponseHeaders: 'set-cookie',
         allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
       },
