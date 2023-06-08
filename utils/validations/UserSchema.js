@@ -7,7 +7,7 @@ const UserShema = joi.object({
     username: joi.string().required(),
     phonenumber: joi.string().required(),
     password: joi.string().required(),
-    birthDate:joi.string().required(),,
+    birthDate:joi.string().required(),
     role_id:joi.number().integer(),
     permissions: joi.array().items(PermissionShema).allow(null),
     features:joi.array().items(joi.string()).allow(null),
