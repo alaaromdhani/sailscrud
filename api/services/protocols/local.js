@@ -2,7 +2,7 @@ const { UniqueConstraintError } = require("sequelize");
 const { BadCredentialsError } = require("../../../utils/errors/lockedError");
 const generateToken = require("../../../utils/generateToken");
 const schemaValidation = require("../../../utils/validations");
-const {UserShema} = require("../../../utils/validations/UserSchema");
+const {UserShema, registerSchema} = require("../../../utils/validations/UserSchema");
 const SqlError = require("../../../utils/errors/sqlErrors");
 const ValidationError = require("../../../utils/errors/validationErrors");
 
@@ -34,7 +34,7 @@ function validateEmail (str) {
 }
 
 exports.register = function (user,callback){
-    const  createUserValidation = schemaValidation(UserShema)
+    const  createUserValidation = schemaValidation(registerSchema)
     const validationRequest = createUserValidation(user)
     if(validationRequest.isValid){
         Role.findOne({where:{name:'registred'},include:{
