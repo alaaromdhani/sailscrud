@@ -23,7 +23,7 @@ module.exports = {
 
   async find(req, res) {
     try {
-      const page = parseInt(req.query.page)+1+1 +1|| 1;
+      const page = parseInt(req.query.page)+1|| 1;
       const limit = req.query.limit || 10;
       const isActive = (req.query.active!=undefined && req.query.active=='true' )?true:undefined 
       const search = req.query.search;

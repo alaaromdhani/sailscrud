@@ -93,7 +93,12 @@ module.exports = {
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
+        
       const updatedState = await data.update(req.body);
+      if(data.active==false && updatedState.active==true){
+          await Country.update({active:true,where:{id:updatedState.country_id}})
+
+      }
     
       return DataHandlor(req,updatedState,res)
       } catch (err) {
