@@ -94,7 +94,8 @@ exports.login = function (req, identifier, password, next) {
                   next(err=err,user=null)
                 }
                 else{
-                  if(authenticated){
+                  if(!user.isDeleted){
+                    if(authenticated){
                   
                       const token = await generateToken(user)
                       
@@ -113,6 +114,14 @@ exports.login = function (req, identifier, password, next) {
                     
                     next(err=new BadCredentialsError());
                   }
+
+                  }
+                  else{
+                    next(err=new BadCredentialsError());
+
+
+                  }
+                  
                 }
                 
 

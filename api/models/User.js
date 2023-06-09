@@ -18,7 +18,7 @@ module.exports = {
     tableName: 'users',
     hooks:{
       beforeSave:async (user,options)=>{
-        user.isDeleted=true  
+        user.isDeleted=false  
         console.log(user.password)
         user.password = await bcrypt.hash(user.password,10)
 

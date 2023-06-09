@@ -28,6 +28,7 @@ const updateUserSchema= joi.object({
     firstName:joi.string().required(),
     lastName:joi.string().required(),
     email: joi.string(),
+    isDeleted: joi.boolean(),
     username: joi.string(),
     phonenumber: joi.string(),
     birthDate:joi.string().required(),
