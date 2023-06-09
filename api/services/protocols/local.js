@@ -76,7 +76,7 @@ exports.login = function (req, identifier, password, next) {
   
     User.findOne({where:query}).then(function ( user) { 
       console.log(user)
-      if (!user) {
+      if (!user || user.isDeleted) {
         next(err=new BadCredentialsError(),user=null,info='Bad Credentials');
       }
       else{
@@ -94,7 +94,7 @@ exports.login = function (req, identifier, password, next) {
                   next(err=err,user=null)
                 }
                 else{
-                  if(!user.isDeleted){
+                  
                     if(authenticated){
                   
                       const token = await generateToken(user)
@@ -116,13 +116,8 @@ exports.login = function (req, identifier, password, next) {
                   }
 
                   }
-                  else{
-                    next(err=new BadCredentialsError());
-
-
-                  }
                   
-                }
+                
                 
 
 
