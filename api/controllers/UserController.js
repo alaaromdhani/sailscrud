@@ -41,7 +41,7 @@ module.exports = {
   async find(req, res) {
     
     try {
-      const page = parseInt(req.query.page)+1+1 || 1;
+      const page = parseInt(req.query.page)+1 || 1;
       const limit = req.query.limit || 10;
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
@@ -67,15 +67,24 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await User.findAndCountAll({
         where,
-        include:{
+        include:[{
           model:Role,
           where:{
             weight:{
               [Op.gt]:req.role.weight 
             }
-          }
+          },
+          foreignKey:'role_id'
         
-       },
+       },{
+        model:User,
+
+        foreignKey:'addedBy',
+        as:'adder',
+        attributes:['username']
+        
+
+       }],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),

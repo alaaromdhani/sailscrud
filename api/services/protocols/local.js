@@ -89,7 +89,7 @@ exports.login = function (req, identifier, password, next) {
             
             UserAuthSettings.validatePassword(settings,password,user.password,async (err,authenticated)=>{
                 if(err){
-                  console.log(err)
+                  
                   //this error meaning eather there is an errror in the code or login reactive time is not over yet
                   next(err=err,user=null)
                 }
