@@ -9,15 +9,16 @@ var superUser = {
     role:{
         name:"superadmin"
     },
-    sex:'male',
+    
     phonenumber:'+21655733554',
+   
     birthDate:new Date('1998-03-11')
 
     
 }
 module.exports = async ()=>{
+    console.log('user seeder')
     try{
-
         let role = await Role.findOne({where:{
             name:superUser.role.name
         },include:[{
@@ -30,37 +31,27 @@ module.exports = async ()=>{
         if(role){
             delete superUser.role
             superUser.role_id = role.id
+            User.findOrCreate({where:{
+                username:superUser.username
+        
+            },include:[{
+                model:Permission
+        
+            },{
+                model:Feature
+        
+            }],defaults:superUser}).then(([user,created])=>{
+                
+                user.setPermissions(role.Permissions)
+                user.setFeatures(role.Features)
+            })
+           
         }
         else{
             throw Error({message:'role does not exist'})
         }
         
-        let [user,created] = await User.findOrCreate({where:{
-            username:superUser.username
-    
-        },include:[{
-            model:Permission
-    
-        },{
-            model:Feature
-    
-        }],defaults:superUser})
-        if(created){
-            user.addPermissions(role.Permissions)
-        }
-        else{
-            let permissionsToAdd = role.Permissions.filter(p=>user.Permissions.filter(permission=>permission.model_id==p.model_id && permission.action==p.action).length==0)
-            let permissionToDelete = user.Permissions.filter(p=>role.Permissions.filter(permission=>permission.model_id==p.model_id && permission.action==p.action).length==0)
-            if(permissionsToAdd.length>0){
-                await user.addPermissions(permissionsToAdd)
-
-            }
-            if(permissionToDelete.length>0){
-                await user.removePermissions(permissionToDelete)
-
-
-            }
-        }
+        
         
         
     }

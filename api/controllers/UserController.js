@@ -78,7 +78,7 @@ module.exports = {
         
        },{
         model:User,
-
+        
         foreignKey:'addedBy',
         as:'adder',
         attributes:['username']

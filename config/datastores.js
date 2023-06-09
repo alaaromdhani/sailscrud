@@ -34,7 +34,7 @@ module.exports.datastores = {
 
   default: {
     user:'root',
-    password:'',
+    password:'farouk',
     options:{
       port:'3306',
       dialect:'mysql',

@@ -1,5 +1,5 @@
 const _ = require('@sailshq/lodash')
-const {Op} = require('sequelize')
+const {Op, fn} = require('sequelize')
 
 let grants = { //defining the grants for permissions
     superadmin:{
@@ -27,33 +27,33 @@ let grants = { //defining the grants for permissions
 module.exports = async ()=>{
     
     let allActions = ['read','create','delete','update']
-    
-let allModels = await Model.findAll()
-let allPermissions = await Permission.findAll()
-let appModels = _.map(allModels,(model)=>model.name)
-let allFeatures = await Feature.findAll()
-let appFeatures = _.map(allFeatures,(f)=>f.name)
-let allRoles = await Role.findAll({include:[{
-    model:Permission,
-    through:'roles_permissions'
-},{
-    model:Feature,
-    through:'roles_features'
-}]})
-const createPermissions = async ()=>{
- 
-    return await Permission.bulkCreate(   allModels.filter(model=>allPermissions.filter(permission=>permission.model_id==model.id).length==0).reduce((prec,model)=>{
-        allActions.forEach(a=>{
-            prec.push({
-                model_id:model.id,
-                action:a
-            })
-
-        }) 
-        return prec
-    },[]))
         
-}
+    let allModels = await Model.findAll()
+    let allPermissions = await Permission.findAll()
+    let appModels = _.map(allModels,(model)=>model.name)
+    let allFeatures = await Feature.findAll()
+    let appFeatures = _.map(allFeatures,(f)=>f.name)
+    let allRoles = await Role.findAll({include:[{
+        model:Permission,
+        through:'roles_permissions'
+    },{
+        model:Feature,
+        through:'roles_features'
+    }]})
+    const createPermissions = async ()=>{
+    
+        return await Permission.bulkCreate(   allModels.filter(model=>allPermissions.filter(permission=>permission.model_id==model.id).length==0).reduce((prec,model)=>{
+            allActions.forEach(a=>{
+                prec.push({
+                    model_id:model.id,
+                    action:a
+                })
+
+            }) 
+            return prec
+        },[]))
+            
+    }
 
 const getGranted = (granted)=>{
     let requiredKeys = ['models','actions','features']
@@ -142,7 +142,7 @@ disallow:(disallow)=>isValidDisallow(disallow),
 restrictions:(restrictions)=>Array.isArray(restrictions) &&isValidRestriction(restrictions)
 }
 
-let grantsToPermissionsConverter = async (granted)=>{
+let grantsToPermissionsConverter =  (granted)=>{
     
     
     let permissions = []
@@ -179,40 +179,44 @@ let grantsToPermissionsConverter = async (granted)=>{
 
                 }
 
+
             })
+            
+
+
+
+ 
         
         }catch(e){
             throw e
         }
     }
-    return permissions
+    return {permissions,features:granted.features.filter(fName=>allFeatures.filter(f=>f.name==fName).length>0).map(fName=>allFeatures.filter(f=>f.name==fName).at(0))}
 }
+
+
 let appPermissions = await createPermissions()
+allPermissions = allPermissions.concat(appPermissions)
 grants = repairKeys(grants)
-Object.keys(grants).forEach(async roleName=>{
+console.log(Object.keys(grants))
+for(let i=0;i<Object.keys(grants).length;i++){
+    let roleName = Object.keys(grants)[i]
+
     let role = allRoles.filter(r=>r.name==roleName).at(0)
     if(role){
-    
-        let permissions = (await grantsToPermissionsConverter(grants[roleName])).filter(p=>appPermissions.filter(permission=>permission.model_id==p.model_id&&p.action==permission.action).length>0).map(p=>{
-            return appPermissions.filter(permission=>permission.model_id==p.model_id&&p.action==permission.action).at(0)
-        })
-        let permissionsToAdd = permissions.filter(p=>role.Permissions.filter(permission=>p.model_id==permission.model_id&&p.action==permission.action).length==0)
         
-        let permissionsToRemove =role.Permissions.filter(p=>permissions.filter(permission=>permission.model_id==p.model_id && permission.action==p.action).length>0)
-        if(permissionsToAdd.length>0){
-            await role.addPermissions(permissionsToAdd)
-        }
-        if(permissionsToRemove.length){
-            await role.removePermissions(permissionsToRemove)
-
-        }     
+        let permissions = (grantsToPermissionsConverter(grants[roleName])).permissions.filter(p=>allPermissions.filter(permission=>permission.model_id==p.model_id&&p.action==permission.action).length>0).map(p=>{
+            return allPermissions.filter(permission=>permission.model_id==p.model_id&&p.action==permission.action).at(0)
+        })
+        
+        let result = await role.setPermissions(permissions)
+        role.setFeatures((grantsToPermissionsConverter(grants[roleName])).features)
         
     }
     else{
         console.log("can't find the role "+roleName+" statement will be ignored ")
     }
-    
-    
-})
+
+}
 
 }

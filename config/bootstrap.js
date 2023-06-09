@@ -35,9 +35,10 @@ module.exports.bootstrap = async function() {
   
 
   await modelSeasers()
-   await featureSeeders()
+  
    await countrySeeders()
    await stateSeeders()
+   await featureSeeders()
    await roleSeeders()
 
     await permissionSeeders()
