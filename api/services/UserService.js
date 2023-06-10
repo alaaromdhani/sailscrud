@@ -495,7 +495,7 @@ module.exports = {
         }).then(user=>{
              
             if(req.body.oldPassword && req.body.newPassword){
-                return {result:bcrypt.compare(user.password,req.body.oldPassword),user}
+                return {result:bcrypt.compare(req.body.oldPassword,user.password),user}
             }
             else{
                 return new Promise((resolve,reject)=>{
@@ -511,6 +511,7 @@ module.exports = {
 
         }).then(async ({result,user})=>{
             const valid = await result
+            console.log(valid)
             return new Promise((resolve,reject)=>{
                 if(valid){
 
