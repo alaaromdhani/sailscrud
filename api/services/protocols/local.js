@@ -74,7 +74,13 @@ exports.login = function (req, identifier, password, next) {
       query.username = identifier;
     }
   
-    User.findOne({where:query}).then(function ( user) { 
+    User.findOne({where:query,include:{
+      model:Role,
+      foreignKey:'role_id',
+      attributes:['name']
+
+
+    }}).then(function ( user) { 
       console.log(user)
       if (!user || user.isDeleted) {
         next(err=new BadCredentialsError(),user=null,info='Bad Credentials');
