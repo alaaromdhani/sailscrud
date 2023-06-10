@@ -166,8 +166,23 @@ callback: function (req, res) {
 
 
   },
+
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res)
+  },
+  profileUpdater:(req,res)=>{
+            sails.services.userservice.profileUpdater(req,(err,data)=>{
+              if(err){
+                  ErrorHandlor(req,err,res) 
+                
+              }
+              else{
+                DataHandlor(req,data,res,'profile updated successfully')
+
+              }
+    })
+
+
   },
   getCounteries:async (req,res)=>{
       const countries = await Country.findAll()

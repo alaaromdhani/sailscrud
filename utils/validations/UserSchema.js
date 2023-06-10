@@ -25,16 +25,29 @@ const registerSchema = joi.object({
     state_id:joi.number().integer().required(),
 })
 const updateUserSchema= joi.object({
-    firstName:joi.string().required(),
-    lastName:joi.string().required(),
+    firstName:joi.string(),
+    lastName:joi.string(),
     email: joi.string(),
     isDeleted: joi.boolean(),
     username: joi.string(),
     phonenumber: joi.string(),
-    birthDate:joi.string().required(),
+    birthDate:joi.string(),
    permissions: joi.array().items(PermissionShema).allow(null),
     features:joi.array().items(joi.string()).allow(null),
-    country_id:joi.number().integer().required(),
-    state_id:joi.number().integer().required(),
+    country_id:joi.number().integer(),
+    state_id:joi.number().integer(),
 })
-module.exports = {UserShema,updateUserSchema,registerSchema}
+const profileUpdate= joi.object({
+    firstName:joi.string(),
+    lastName:joi.string(),
+    email: joi.string(),
+    newPassword: joi.string(),
+    oldPassword: joi.string(),
+    
+    username: joi.string(),
+    phonenumber: joi.string(),
+    birthDate:joi.string(),
+    country_id:joi.number(),
+    state_id:joi.number(),
+})
+module.exports = {UserShema,updateUserSchema,registerSchema,profileUpdate}

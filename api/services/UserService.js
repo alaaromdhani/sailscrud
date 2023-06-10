@@ -9,6 +9,10 @@ const dayjs = require("dayjs")
 const {Op} = require('sequelize')
 const { SAPassportLockedError } = require("../../utils/errors/lockedError")
 const { getDifferenceOfTwoDatesInTime } = require("../../utils/getTimeDiff")
+const bcrypt = require("bcrypt")
+const schemaValidation = require("../../utils/validations")
+const { profileUpdate } = require("../../utils/validations/UserSchema")
+
 
 
 
@@ -457,6 +461,112 @@ module.exports = {
 
             })
         }
+
+
+
+    },
+    profileUpdater:(req,callback)=>{
+       const updateProfileSchema = schemaValidation(profileUpdate)(req.body)
+      
+    
+       if(updateProfileSchema.isValid){
+
+
+             
+        User.findOne({where:{
+         //finding the user
+            id:req.user.id
+
+        }}).then(user=>{
+                return new Promise((resolve,reject)=>{
+                    //in this step verify if the user wants or not to update his password
+                    //if he wants to update his password  he has to mention the old one    
+                    if(!req.body.oldPassword && !req.body.newPassword){
+                             
+                            return  resolve(user)
+
+                        }
+                        if(req.body.oldPassword && req.body.newPassword){
+                            return resolve(user)
+                        }
+                        return reject(new UnauthorizedError({specific:'you have to specify both the old and the new password'}))
+
+                })
+        }).then(user=>{
+             
+            if(req.body.oldPassword && req.body.newPassword){
+                return {result:bcrypt.compare(user.password,req.body.oldPassword),user}
+            }
+            else{
+                return new Promise((resolve,reject)=>{
+                    return resolve({result:true,user})
+
+                })
+
+
+            }
+
+
+
+
+        }).then(async ({result,user})=>{
+            const valid = await result
+            return new Promise((resolve,reject)=>{
+                if(valid){
+
+                    resolve(user)    
+                }
+                else{
+                    return reject(new UnauthorizedError({specific:'passwords do not match'}))
+                }
+
+
+            })
+
+
+
+
+        }).then(user=>{
+            if(req.body.oldPassword && req.body.newPassword){
+                user.password = req.body.newPassword
+            }
+                let attributes = req.body
+                delete attributes.oldPassword
+                delete attributes.newPassword
+                
+                Object.keys(attributes).forEach(key=>{
+                    if(user[key]){
+                        user[key]=attributes[key]
+                    }
+
+
+                })
+                return user.save()
+            }).then(user=>{
+                callback(null,user)
+
+
+
+            }).catch(err=>{
+                callback(err,null)
+
+
+
+            })
+        }
+        else{
+            callback(new ValidationError({message:updateProfileSchema.message}),null)
+
+        }
+
+
+
+
+
+
+       
+        
+
 
 
 
