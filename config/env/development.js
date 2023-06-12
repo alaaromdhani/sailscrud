@@ -102,7 +102,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-      migrate: 'safe',
+      migrate: 'alter',
   
       /***************************************************************************
       *                                                                          *
@@ -419,7 +419,7 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
     custom: {
-      baseUrl: 'https://example.com',
+      baseUrl: 'http://localhost:1337/',
       internalEmailAddress: 'support@example.com',
       
       jwt:{

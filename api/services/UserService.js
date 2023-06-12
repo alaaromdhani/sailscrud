@@ -468,8 +468,15 @@ module.exports = {
 
     },
     profileUpdater:(req,callback)=>{
-        console.log(req.body)
-        const updateProfileSchema = schemaValidation(profileUpdate)(req.body)
+        
+        let dat = {}
+        Object.keys(req.body).filter(key=>key!='pp').forEach(key=>{
+            dat[key] = req.body[key]
+
+        })   
+         
+         
+        const updateProfileSchema = schemaValidation(profileUpdate)(dat)
       
     
         if(updateProfileSchema.isValid){
@@ -484,21 +491,21 @@ module.exports = {
                  return new Promise((resolve,reject)=>{
                      //in this step verify if the user wants or not to update his password
                      //if he wants to update his password  he has to mention the old one    
-                     if(!req.body.oldPassword && !req.body.newPassword){
+                     if(!dat.oldPassword && !dat.newPassword){
                               
                              return  resolve(user)
  
                          }
-                         if(req.body.oldPassword && req.body.newPassword){
+                         if(dat.oldPassword && dat.newPassword){
                              return resolve(user)
                          }
                          return reject(new UnauthorizedError({specific:'you have to specify both the old and the new password'}))
  
                  })
          }).then(user=>{
-                console.log(req.body)
-             if(req.body.oldPassword && req.body.newPassword){
-                 return {result:bcrypt.compare(req.body.oldPassword,user.password),user}
+                
+             if(dat.oldPassword && dat.newPassword){
+                 return {result:bcrypt.compare(dat.oldPassword,user.password),user}
              }
              else{
                  return new Promise((resolve,reject)=>{
@@ -530,28 +537,34 @@ module.exports = {
  
  
  
-         }).then(user=>{
-                console.log() 
-                if(req.body.oldPassword && req.body.newPassword){
-                 user.password = req.body.newPassword
+         }).then(async user=>{
+                
+                if(dat.oldPassword && dat.newPassword){
+                 user.password = dat.newPassword
                 }
-                 let attributes = req.body
+                 let attributes = dat
                  delete attributes.oldPassword
                  delete attributes.newPassword
-                 console.log(user.password)
+                 
                  Object.keys(attributes).forEach(key=>{
                      if(user[key]){
                          user[key]=attributes[key]
                      }
                 })
-                 console.log(user.password)
+                    if(req._fileparser.upstreams.length){
+                        sails.services.userservice.updateProfilePicture(req,user,callback)
+                    }
+                    else{
+                        try{
+                            await user.save()
+                            callback(null,user)
+                        }catch(e){
+                            callback(new SqlError(e))
+                        }
+                    }
 
-                 return user.save()
-             }).then(user=>{
-                 callback(null,user)
- 
- 
- 
+
+                 
              }).catch(err=>{
                  callback(err,null)
  
@@ -577,44 +590,48 @@ module.exports = {
 
 
     },
-    updateProfilePicture:(req,callback)=>{
-        User.findByPk(req.user.id).then(user=>{
+    updateProfilePicture:(req,user,callback)=>{
             const dirname ='../../assets/images/profile-pictures/'
-       
-            const fileName = req.file('pp')._files[0].stream.filename
+            if(req.file('pp')._files.length>0){
+                const fileName = req.file('pp')._files[0].stream.filename
             
-            const getExtention =fileName.split('.').pop()
-            const saveAs = user.firstName+''+user.lastName+''+user.id+'.'+getExtention
-    
-            req.file('pp').upload({
-    
-                dirname,
-                saveAs
-    
-            },async (err,uploadedFiles)=>{
-               
-                if(err){
+                const getExtention =fileName.split('.').pop()
+                const saveAs = user.id+'.'+getExtention
+        
+                req.file('pp').upload({
+        
+                    dirname,
+                    saveAs
+        
+                },async (err,uploadedFiles)=>{
                    
-                    callback(new UnkownError(),null)
+                    if(err){
+                       
+                        callback(new UnkownError(),null)
+        
+                    }
+                    else{
+                        var filename = uploadedFiles[0].fd.substring(uploadedFiles[0].fd.lastIndexOf('/')+1);
+                        var uploadLocation = process.cwd() +'/assets/images/profile-pictures/' + saveAs;
+                        var tempLocation = process.cwd() + '/.tmp/public/images/profile-pictures/' + saveAs;
+                            
+                        //Copy the file to the temp folder so that it becomes available immediately
+                        fs.createReadStream(uploadLocation).pipe(fs.createWriteStream(tempLocation));
+                         user.profilePicture = sails.config.custom.baseUrl+'images/profile-pictures/'+saveAs
+                         await user.save();
+                        callback(null,user)
+                    }
+                })
+
+            }
+            else{
+                callback(new ValidationError({message:'profile picture is required'}),null)
+            }
+            
     
-                }
-                else{
-                    var filename = uploadedFiles[0].fd.substring(uploadedFiles[0].fd.lastIndexOf('/')+1);
-                    var uploadLocation = process.cwd() +'/assets/images/profile-pictures/' + saveAs;
-                    var tempLocation = process.cwd() + '/.tmp/public/images/profile-pictures/' + saveAs;
-                        
-                    //Copy the file to the temp folder so that it becomes available immediately
-                    fs.createReadStream(uploadLocation).pipe(fs.createWriteStream(tempLocation));
-                     user.profilePicture = 'images/profile-pictures/'+saveAs
-                     await user.save();
-                    callback(null,user)
-                }
-            })
-    
 
 
-        })
-
+       
      
         
 
