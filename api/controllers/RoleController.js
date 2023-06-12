@@ -6,6 +6,7 @@
  */
 
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
+const UnkownError = require("../../utils/errors/UnknownError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
@@ -166,14 +167,14 @@ module.exports = {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
       if(data.Users.length){
-        return ErrorHandlor(req,new UnauthorizedError({specific:'this role is attributed to '+data.Users.length}),res);
+        return ErrorHandlor(req,new UnauthorizedError({specific:'this role is attributed to '+data.Users.length+' user(s)'}),res);
       }
       await data.removePermissions(data.Permissions)
       await data.removeFeatures(data.Features)
       await data.destroy();
-      return res.status(204).send();
+      DataHandlor(req,{},res)
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new UnkownError(),res);
     }
   },
 };
