@@ -23,6 +23,9 @@ module.exports = {
           user.password = await bcrypt.hash(user.password, 10);
         }
       },
+      beforeCreate:async (user, options)=>{
+        user.isDeleted = false
+      },
       beforeDestroy:async (user,options)=>{
         await User.sequelize.query(`DELETE FROM users_features WHERE UserId =`+user.id)
         await User.sequelize.query(`DELETE FROM users_permissions WHERE UserId =`+user.id)
