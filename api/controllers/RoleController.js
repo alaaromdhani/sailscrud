@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
@@ -146,10 +147,29 @@ module.exports = {
 
   async destroy(req, res) {
     try {
-      const data = await Role.findByPk(req.params.id);
+      const data = await Role.findByPk(req.params.id,{
+          include:[{
+            model:User,
+            foreignKey:'role_id'
+          },{
+            model:Permission,
+            through:'roles_permissions'
+          },{
+            model:Feature,
+            foreignKey:'roles_features'
+          }]
+
+
+      });
+
       if (!data) {
-        return res.status(404).json({ error: 'Role not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
+      if(data.Users.length){
+        return ErrorHandlor(req,new UnauthorizedError({specific:'this role is attributed to '+data.Users.length}),res);
+      }
+      await data.removePermissions(data.Permissions)
+      await data.removeFeatures(data.Features)
       await data.destroy();
       return res.status(204).send();
     } catch (err) {

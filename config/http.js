@@ -21,7 +21,11 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
-    
+    skipper: require('skipper')({
+      maxWaitTimeBeforePassingControlToApp: 1000,
+      maxTimeToBuffer: 100000,
+      
+    }),
     /***************************************************************************
     *                                                                          *
     * The order in which middleware should be run for HTTP requests.           *
@@ -29,16 +33,17 @@ module.exports.http = {
     *                                                                          *
     ***************************************************************************/
 
-    // order: [
-    //   'cookieParser',
-    //   'session',
+     order: [
+       'cookieParser',
+       'session',
+       'skipper',
     //   'bodyParser',
     //   'compress',
     //   'poweredBy',
     //   'router',
-    //   'www',
+       'www',
     //   'favicon',
-    // ],
+     ],
 
 
     /***************************************************************************

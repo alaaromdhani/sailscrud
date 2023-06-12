@@ -171,16 +171,33 @@ callback: function (req, res) {
     DataHandlor(req,req.user,res)
   },
   profileUpdater:(req,res)=>{
-            sails.services.userservice.profileUpdater(req,(err,data)=>{
-              if(err){
-                  ErrorHandlor(req,err,res) 
-                
-              }
-              else{
-                DataHandlor(req,data,res,'profile updated successfully')
+    if(req.file('pp')._files.length>0){
+            
+        sails.services.userservice.updateProfilePicture(req,(err,data)=>{
+            if(err){
+                ErrorHandlor(req,err,res) 
+            }
+            else{
+              DataHandlor(req,data,res,'profile updated successfully')
 
-              }
-    })
+            }
+        })
+     }
+     else{
+      sails.services.userservice.profileUpdater(req,(err,data)=>{
+        if(err){
+            ErrorHandlor(req,err,res) 
+          
+        }
+        else{
+          DataHandlor(req,data,res,'profile updated successfully')
+
+        }
+      })
+
+
+     }
+           
 
 
   },
@@ -211,6 +228,7 @@ callback: function (req, res) {
 
 
   },
+
 
 
   
