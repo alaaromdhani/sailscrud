@@ -5,15 +5,20 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+
 
 module.exports = {
   async create(req, res) {
-    try {
-      const data = await Upload.create(req.body);
-      return res.status(201).json(data);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    sails.services.uploadservice.fileUploader(req,(err,data)=>{
+      if(err){
+        ErrorHandlor(req,err,res)
+      }
+      else{
+        DataHandlor(req,data,res)
+      }
+
+    })
   },
 
   async find(req, res) {
