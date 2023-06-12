@@ -468,6 +468,7 @@ module.exports = {
 
     },
     profileUpdater:(req,callback)=>{
+        console.log(req.body)
         const updateProfileSchema = schemaValidation(profileUpdate)(req.body)
       
     
@@ -495,7 +496,7 @@ module.exports = {
  
                  })
          }).then(user=>{
-              
+                console.log(req.body)
              if(req.body.oldPassword && req.body.newPassword){
                  return {result:bcrypt.compare(req.body.oldPassword,user.password),user}
              }
@@ -530,20 +531,21 @@ module.exports = {
  
  
          }).then(user=>{
-             if(req.body.oldPassword && req.body.newPassword){
+                console.log() 
+                if(req.body.oldPassword && req.body.newPassword){
                  user.password = req.body.newPassword
-             }
+                }
                  let attributes = req.body
                  delete attributes.oldPassword
                  delete attributes.newPassword
-                 
+                 console.log(user.password)
                  Object.keys(attributes).forEach(key=>{
                      if(user[key]){
                          user[key]=attributes[key]
                      }
- 
- 
-                 })
+                })
+                 console.log(user.password)
+
                  return user.save()
              }).then(user=>{
                  callback(null,user)

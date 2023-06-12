@@ -435,6 +435,14 @@ module.exports = {
         authorization_header:"Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==",
         sender:'2160000'
 
+      },
+      files:{
+         images:['gif','png','jpg','jpeg','webp','svg','ico'],
+         videos:['mp4','avi','mov','webm'],
+         doc:['doc','docs','pdf'] 
+
+
+
       }
   
       // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',

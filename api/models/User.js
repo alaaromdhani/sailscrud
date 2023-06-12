@@ -17,11 +17,11 @@ module.exports = {
     scopes: {},
     tableName: 'users',
     hooks:{
-      beforeSave:async (user,options)=>{
-        user.isDeleted=false  
-        console.log(user.password)
-        user.password = await bcrypt.hash(user.password,10)
-
+      beforeSave: async (user, options) => {
+        if (user.changed('password') || user.isNewRecord) {
+          console.log(user.password);
+          user.password = await bcrypt.hash(user.password, 10);
+        }
       },
       beforeDestroy:async (user,options)=>{
         await User.sequelize.query(`DELETE FROM users_features WHERE UserId =`+user.id)
@@ -160,6 +160,10 @@ module.exports = {
       foreignKey:'country_id'
     })
     User.belongsToMany(Permission, { through: 'users_permissions'});
+    User.hasMany(Upload,{
+      foreignKey:'addedBy'
+
+    })
      
 
   }

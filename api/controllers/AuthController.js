@@ -172,34 +172,35 @@ callback: function (req, res) {
   },
   profileUpdater:(req,res)=>{
     if(req.file('pp')._files.length>0){
-            
         sails.services.userservice.updateProfilePicture(req,(err,data)=>{
             if(err){
                 ErrorHandlor(req,err,res) 
             }
             else{
-              DataHandlor(req,data,res,'profile updated successfully')
-
+              delete req.body.pp
+              sails.services.userservice.profileUpdater(req,(err,data)=>{
+                console.log(req.body)
+                if(err){
+                      ErrorHandlor(req,err,res) 
+                  }
+                  else{
+                    DataHandlor(req,data,res,'profile updated successfully')
+                  }
+                })
             }
         })
-     }
-     else{
+    }
+    else{
       sails.services.userservice.profileUpdater(req,(err,data)=>{
+        console.log(req.body)
         if(err){
-            ErrorHandlor(req,err,res) 
-          
-        }
-        else{
-          DataHandlor(req,data,res,'profile updated successfully')
-
-        }
-      })
-
-
-     }
-           
-
-
+              ErrorHandlor(req,err,res) 
+          }
+          else{
+            DataHandlor(req,data,res,'profile updated successfully')
+          }
+        })
+    }
   },
   getCounteries:async (req,res)=>{
       const countries = await Country.findAll()
