@@ -22,7 +22,7 @@ module.exports = {
             
               return new Promise((resolve,reject)=>{
                 const extension = filename.split('.').pop()
-                const allowedExtentions = sails.config.custom.files
+                const allowedExtentions = sails.config.custom.files.extensions
                 const type = Object.keys(allowedExtentions).filter(key=>allowedExtentions[key].includes(extension)).at(0)
                 if(type){
                     options.file_original_name= filename
@@ -111,10 +111,11 @@ module.exports = {
                     
                     
                     const extension = filename.split('.').pop()
-                    const allowedExtentions = sails.config.custom.files
+                    const allowedExtentions = sails.config.custom.files.extensions
                     const type = Object.keys(allowedExtentions).filter(key=>allowedExtentions[key].includes(extension)).at(0)
                     if(type){
                         options.file_original_name= filename
+                        console.log(filename)
                         options.file_name =  uuidv4()
                         options.type = type
                         options.extension =extension
@@ -134,10 +135,12 @@ module.exports = {
 
                     }    
             }catch(e){
-                return reject(new ValidationError({message:'extention is required'}))
+                return reject(new ValidationError({message:'file is required'}))
             }
         })
-    }
+    },
+    
+
 
 
 

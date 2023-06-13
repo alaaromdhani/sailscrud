@@ -96,6 +96,9 @@ module.exports = {
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
           }
           const updatedUpload = await data.update(req.body);
+          if(req.body.isDeleted){
+            await User.update({profilePicture:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name},{where:{profilePicture:updatedUpload.link}})
+          }
           return DataHandlor(req,updatedUpload,res);
         } catch (err) {
           return ErrorHandlor(req,new SqlError(err),res)

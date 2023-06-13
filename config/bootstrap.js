@@ -17,6 +17,7 @@ const roleSeeders = require('../utils/seeders/roles')
 const userSeesers = require('../utils/seeders/user');
 const countrySeeders = require('../utils/seeders/country');
 const stateSeeders = require('../utils/seeders/state');
+const default_user_image = require('../seeders/defaultProfilePict');
 
 module.exports.bootstrap = async function() {
   /*function getAllKeys(object){
@@ -33,7 +34,7 @@ module.exports.bootstrap = async function() {
   }*/
   
   
-
+  await default_user_image()
   await modelSeasers()
   
    await countrySeeders()

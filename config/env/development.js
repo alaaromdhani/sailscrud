@@ -419,6 +419,12 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
     custom: {
+      dafault_user_image:{
+        file_name:'default_user',
+        extension:'jpg',
+        path: 'default',
+       
+      },
       baseUrl: 'http://localhost:1337/',
       internalEmailAddress: 'support@example.com',
       
@@ -437,13 +443,17 @@ module.exports = {
 
       },
       files:{
-         images:['gif','png','PNG','jpg','JPG','jpeg','JPEG','webp','svg','ico'],
-         videos:['mp4','avi','mov','webm'],
-         doc:['doc','docs','pdf'],
-         /*paths:{ //after assets
-             uploads:'/uploads/',
-             pp:'/profile_pictures/' //profile-pictures 
-        }*/ 
+        extensions:{
+          images:['gif','png','PNG','jpg','JPG','jpeg','JPEG','webp','svg','ico'],
+          videos:['mp4','avi','mov','webm'],
+          doc:['doc','docs','pdf'],
+        },
+         
+         
+        routes:{ //after assets
+             public:'v/public/',
+             private:'v/uploads/'  
+        } 
 
 
 

@@ -55,7 +55,7 @@ module.exports = {
     },
     profilePicture:{
       type:DataTypes.STRING,
-      defaultValue:sails.config.custom.baseUrl+"images/default.jpg"
+      defaultValue:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name
 
     },
     firstName:{

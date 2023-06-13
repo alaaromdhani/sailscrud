@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
-
+const fs = require('fs');
+const path = require("path");
 /**
  * @module Upload
  *
@@ -7,10 +8,27 @@ const { DataTypes } = require("sequelize");
  *   uploads for media library 
  *   this feature enable users to manage documents in the media library  
  */
+
 module.exports = {
   options: {
     tableName: 'uploads',
     hooks:{
+      beforeDestroy: async(upload,options)=>{
+          if(upload.isPublic){
+            await User.update({profilePicture:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name},{where:{profilePicture:upload.link}})
+          }
+        fs.unlink(path.join(__dirname,'../../assets/'+upload.path+'/'+upload.file_name+"."+upload.extension),err=>{
+          if(!err){
+            console.log('file is deleted successuflly')
+          }
+          else{
+            console.log('file could not be deleted ',err)
+          }
+
+        })
+
+
+      },
       beforeSave: async (upload, options) => {
         if(upload.isPublic){
           upload.link = sails.config.custom.baseUrl+'v/public/'+upload.file_name

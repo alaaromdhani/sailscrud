@@ -579,6 +579,7 @@ module.exports = {
     },
     updateProfilePicture: (req, user, callback) => {
         sails.services.uploadservice.optionGenerator(req, true,'profile-pictures','pp').then(options => { //the options will be generated  
+            console.log(options)
             sails.services.uploadservice.updateFile(req, options, async (err, data) => {
                 if (err) {
                     callback(err, null)
@@ -588,6 +589,9 @@ module.exports = {
                     callback(null, await user.save())
                 }
             })
+        }).catch(err=>{
+            callback(err,null)
+
         })
 
     }
