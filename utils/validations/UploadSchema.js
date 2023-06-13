@@ -15,6 +15,10 @@ const UploadShema = joi.object({
 const updateUploadShema = joi.object({
     
     file_original_name: joi.string(),
+    type: joi.string(),
+    isPublic:joi.boolean(),
+    isDeleted:joi.boolean()
+
     
 })
 module.exports = {UploadShema,updateUploadShema}

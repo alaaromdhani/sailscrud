@@ -5,7 +5,13 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const path = require("path");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+const schemaValidation = require("../../utils/validations");
+const { updateUploadShema } = require("../../utils/validations/UploadSchema");
+const ValidationError = require("../../utils/errors/validationErrors");
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const SqlError = require("../../utils/errors/sqlErrors");
 
 
 module.exports = {
@@ -32,7 +38,7 @@ module.exports = {
 
 
       // Create the filter conditions based on the search query
-      const where = search
+      let where = search
         ? {
           [Sequelize.Op.or]: attributes.map((attribute) => ({
             [attribute]: {
@@ -44,7 +50,7 @@ module.exports = {
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
-
+        
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Upload.findAndCountAll({
         where,
@@ -65,10 +71,11 @@ module.exports = {
       return res.serverError(error);
     }
   },
+  
 
   async findOne(req, res) {
     try {
-      const data = await Upload.findByPk(req.params.id);
+      const data = await Upload.findOne({where:{id:req.params.id}});
       if (!data) {
         return res.status(404).json({ error: 'Upload not found' });
       }
@@ -77,9 +84,30 @@ module.exports = {
       return res.status(500).json({ error: err.message });
     }
   },
+ 
+ 
 
   async update(req, res) {
-    try {
+      const schema = schemaValidation(updateUploadShema)(req.body)
+      if(schema.isValid){
+        try {
+          const data = await Upload.findByPk(req.params.id);
+          if (!data) {
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+          }
+          const updatedUpload = await data.update(req.body);
+          return DataHandlor(req,updatedUpload,res);
+        } catch (err) {
+          return ErrorHandlor(req,new SqlError(err),res)
+        }
+
+      }
+      else{
+        return ErrorHandlor(req,new ValidationError({message:schema.message}),res)
+
+      }
+    
+    /*try {
       const data = await Upload.findByPk(req.params.id);
       if (!data) {
         return res.status(404).json({ error: 'Upload not found' });
@@ -88,7 +116,7 @@ module.exports = {
       return res.json(updatedUpload);
     } catch (err) {
       return res.status(500).json({ error: err.message });
-    }
+    }*/
   },
 
   async destroy(req, res) {

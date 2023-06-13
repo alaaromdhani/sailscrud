@@ -23,6 +23,7 @@ module.exports = {
           user.password = await bcrypt.hash(user.password, 10);
         }
       },
+     
       beforeCreate:async (user, options)=>{
         user.isDeleted = false
       },

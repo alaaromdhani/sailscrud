@@ -1,8 +1,6 @@
-what is missing in the login page 
-//put everything in the env file 
-// session cookies along side with verifiying the useerToken in the database
-//restrict some attributes in some models 
-//translate all messages 
-//put everything that is in the utils in the helpers
-//have to make sure that when a user is added all all role permissions are added with him
-//make global variables
+//file upload
+//i need the file original_name i need the filename stored here i need the link i need the uuid  
+//now since we can access 
+//some files are accessed with authorizations some are not 
+
+//we have to 

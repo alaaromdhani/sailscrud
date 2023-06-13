@@ -17,6 +17,10 @@ module.exports.policies = {
     profileUpdater:['lang','passport','role','tokenVerifier']
 
   },
+  AssetsController:{
+    'streamPublicFile':['lang','passport','role'],
+    'streamPrivateFile':['lang','passport','role','tokenVerifier']
+  }
   
 
   /***************************************************************************

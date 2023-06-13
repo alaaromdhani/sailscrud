@@ -9,8 +9,31 @@ const { DataTypes } = require("sequelize");
  */
 module.exports = {
   options: {
-    tableName: 'uploads'
+    tableName: 'uploads',
+    hooks:{
+      beforeSave: async (upload, options) => {
+        if(upload.isPublic){
+          upload.link = sails.config.custom.baseUrl+'v/public/'+upload.file_name
+        }
+        else{
+          upload.link = sails.config.custom.baseUrl+'v/uploads/'+upload.file_name
+        }
+        upload.file_original_name = upload.file_original_name.replace('.'+upload.extension,'')
+      },
+      beforeUpdate: async (upload, options) => {
+        if(upload.isPublic){
+          upload.link = sails.config.custom.baseUrl+'v/public/'+upload.file_name
+        }
+        else{
+          upload.link = sails.config.custom.baseUrl+'v/uploads/'+upload.file_name
+        }
+        upload.file_original_name = upload.file_original_name.replace('.'+upload.extension,'')
+      },
+
+
+    }
   },
+  
   datastore: 'default',
   tableName: 'uploads',
   attributes: {
@@ -22,10 +45,24 @@ module.exports = {
     file_original_name: {
       type: DataTypes.STRING,
       required: true,
+      minLength: 3
+    },
+    link: {
+      type: DataTypes.STRING,
+      required: true,
       unique: true,
       minLength: 3
     },
-    file_name: {
+    isPublic:{
+      type: DataTypes.BOOLEAN,
+      defaultValue:false,
+    },
+    path:{ //meaning from assets
+      type: DataTypes.STRING,
+      required: true,
+      minLength: 3
+    },
+    file_name: {//the uuid
         type: DataTypes.STRING,
         required: true,
         unique: true,
@@ -34,7 +71,6 @@ module.exports = {
     type: {
         type: DataTypes.STRING,
         required: true,
-       
         minLength: 3
     },
     file_size: {
@@ -44,22 +80,19 @@ module.exports = {
     extension: {
         type: DataTypes.STRING,
         required: true,
-        unique: true,
-        minLength: 1
+       minLength: 1
     },
-    
-    
+    isDeleted:{
+      type: DataTypes.BOOLEAN,
+      defaultValue:false,
+
+
+    }
   },
   associations:()=>{
         Upload.belongsTo(User,{
             foreignKey:'addedBy'
-
-
         })
-    
-
-   
-
   }
 
 };

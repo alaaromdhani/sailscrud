@@ -437,9 +437,13 @@ module.exports = {
 
       },
       files:{
-         images:['gif','png','jpg','jpeg','webp','svg','ico'],
+         images:['gif','png','PNG','jpg','JPG','jpeg','JPEG','webp','svg','ico'],
          videos:['mp4','avi','mov','webm'],
-         doc:['doc','docs','pdf'] 
+         doc:['doc','docs','pdf'],
+         /*paths:{ //after assets
+             uploads:'/uploads/',
+             pp:'/profile_pictures/' //profile-pictures 
+        }*/ 
 
 
 

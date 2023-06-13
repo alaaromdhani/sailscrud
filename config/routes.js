@@ -8,6 +8,7 @@
  * https://sailsjs.com/anatomy/config/routes-js
  */
 
+
 module.exports.routes = {
   'post /auth/local': 'AuthController.callback',
   'post /auth/local/:action': 'AuthController.callback',
@@ -18,7 +19,9 @@ module.exports.routes = {
   'get /profile/me':'AuthController.profileCallback',
   'patch /profile/me':'AuthController.profileUpdater',
   'get /register/countries':'AuthController.getCounteries',
-  'get /register/states/:countryId':'AuthController.getStatesByCountry'
+  'get /register/states/:countryId':'AuthController.getStatesByCountry',
+  'get /v/uploads/:filename':'AssetsController.streamPrivateFile',
+  'get /v/public/:filename':'AssetsController.streamPublicFile'
 
 
 
