@@ -10,6 +10,7 @@ const {
 
 const bcrypt = require('bcrypt');
 
+
 module.exports = {
   options: {
     charset: 'utf8',
@@ -167,6 +168,12 @@ module.exports = {
     User.hasMany(Upload,{
       foreignKey:'addedBy'
 
+    })
+    User.hasMany(Blog,{
+      foreignKey:'addedBy'
+    })
+    User.hasMany(BlogCategory,{
+      foreignKey:'addedBy'
     })
      
 

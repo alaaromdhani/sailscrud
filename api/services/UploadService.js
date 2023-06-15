@@ -79,8 +79,14 @@ module.exports = {
                                             const {file_original_name,file_name,type,extension,path} = options
                                             let link = sails.config.custom.baseUrl+''+file_name
                                              let addedBy = req.user.id   
-                                        
-                                            file_size=upoadedFiles[0].size
+                                            let file_size;
+                                            try{
+                                                file_size=upoadedFiles[0].size
+                                            }catch(e){
+                                                file_size=124
+                                            }
+
+                                            
                                             try{
 
                                             callback(null,await Upload.create({file_original_name,file_name,type,extension,file_size,path,link,isPublic,addedBy}))

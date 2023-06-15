@@ -106,14 +106,19 @@ module.exports = {
   async findOne(req, res) {
     try {
       const data = await User.findByPk(req.params.id,{
-          include:{
+          include:[{
             model:Permission,
             through:'users_permissions',
             include:{
               model:Model,
               attributes: ['name']
             }
-          }
+          },{
+            model:Role,
+            foreignKey:'role_id',
+            attributes:['name']
+          }],
+          
 
       });
       if (!data) {

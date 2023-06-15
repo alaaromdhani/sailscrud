@@ -447,6 +447,8 @@ module.exports = {
           images:['gif','png','PNG','jpg','JPG','jpeg','JPEG','webp','svg','ico'],
           videos:['mp4','avi','mov','webm'],
           doc:['doc','docs','pdf'],
+          audio:['mp3,MP3'],
+          presentation:['ppt', 'pptx'],
         },
          
          

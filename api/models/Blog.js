@@ -1,0 +1,99 @@
+const { DataTypes } = require("sequelize");
+
+/**
+ * @module Blog
+ *
+ * @description
+ *   Simple tag style permissions.
+ *   These are useful for situations when there is a need to create ad hoc policies unrelated to models.
+ */
+module.exports = {
+  options: {
+    tableName: 'blogs',
+    hooks:{
+        
+       
+        beforeCreate:async (blog, options)=>{
+          blog.status = true
+        },
+       
+        
+  
+      }
+  },
+  datastore: 'default',
+  tableName: 'blogs',
+  attributes: {
+    id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
+    },
+    title: {
+      type: DataTypes.STRING,
+      required: true,
+      unique: true,
+      minLength: 1
+    },
+    
+    slug: {
+      type: DataTypes.STRING,
+      required: true,
+      unique: true,
+      minLength: 1
+    },
+    short_description: {
+        type: DataTypes.STRING,
+        required: true,
+        minLength: 10
+    },
+    description: {
+        type: DataTypes.TEXT,
+        required: true,
+        minLength: 10
+    },
+    meta_title: {
+        type: DataTypes.STRING,
+        allowNull:false,
+        minLength: 10
+    },
+    meta_description: {
+        type: DataTypes.TEXT,
+        allowNull:false,
+        minLength: 10
+    },
+    meta_keywords: {
+        type: DataTypes.TEXT,
+        allowNull:false,
+        minLength: 10
+    },
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull:false,
+    },
+
+    
+
+    
+
+    
+  },
+  associations:()=>{
+    Blog.belongsTo(BlogCategory,{
+        foreignKey:'category_id'
+    })
+    Blog.belongsTo(User,{
+        foreignKey:'addedBy'
+    })
+    Blog.belongsTo(Upload,{
+        foreignKey:'banner'
+    })
+    Blog.belongsTo(Upload,{
+        foreignKey:'meta_img'
+    })
+
+   
+
+  }
+
+};
