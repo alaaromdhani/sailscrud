@@ -5,71 +5,71 @@
  *   Abstract representation of a Waterline Model.
  */
 
-const { DataTypes } = require("sequelize");
+const { DataTypes } = require('sequelize');
 
 
 //let _ = require('lodash');
 //after creating this model i have to pick the attributes that should be visible in find operations
 
 module.exports = {
-  
-    options: {
-      tableName: 'models'
+
+  options: {
+    tableName: 'models'
+  },
+  datastore: 'default',
+  tableName: 'models',
+  attributes: {
+    id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
     },
-    datastore: 'default',
-    tableName: 'models',
+    name: {
+      type:DataTypes.STRING,
+      required: true,
+      unique: true,
+      minLength: 1
+    },
+    identity: {
+      type:DataTypes.JSON,
+      minLength: 1
+    },
     attributes: {
-      id:{
-        type:DataTypes.INTEGER,
-        primaryKey:true,
-        autoIncrement:true
-      },
-      name: {
-        type:DataTypes.STRING,
-        required: true,
-        unique: true,
-        minLength: 1
-      },
-      identity: {
-        type:DataTypes.JSON,
-        minLength: 1
-      },
-      attributes: {
-        type:DataTypes.JSON
-      },
-      
-        
-        
-     
-      
-      
+      type:DataTypes.JSON
     },
-    
-        
-     
-    
-    
-    associations : function(){
-       
-       Model.hasMany(Permission,{
-        foreignKey:'model_id'
 
 
-       })
-       Model.hasMany(RequestLog,{
-        foreignKey:'model_id'
-       })
-       
-       
-       
-      
 
-        
-     
 
-  
-    }
-  
-  
- 
+
+
+  },
+
+
+
+
+
+  associations : function(){
+
+    Model.hasMany(Permission,{
+      foreignKey:'model_id'
+
+
+    });
+    Model.hasMany(RequestLog,{
+      foreignKey:'model_id'
+    });
+
+
+
+
+
+
+
+
+
+  }
+
+
+
 };

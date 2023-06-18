@@ -1,86 +1,86 @@
-const UnauthorizedError = require("./errors/UnauthorizedError")
-const UnkownError = require("./errors/UnknownError")
-const { SAPassportLockedError, BadCredentialsError } = require("./errors/lockedError")
-const RecordNotFoundErr = require("./errors/recordNotFound")
-const SqlError = require("./errors/sqlErrors")
-const ValidationError = require("./errors/validationErrors")
+const UnauthorizedError = require('./errors/UnauthorizedError');
+const UnkownError = require('./errors/UnknownError');
+const { SAPassportLockedError, BadCredentialsError } = require('./errors/lockedError');
+const RecordNotFoundErr = require('./errors/recordNotFound');
+const SqlError = require('./errors/sqlErrors');
+const ValidationError = require('./errors/validationErrors');
 
 const translateReponseMessage = (translate,message,parameters)=>{
-    if(parameters&& Array.isArray(parameters) && parameters.length>0)
-    {   
-        parameters.unshift(message)
-        return translate.apply(null,parameters)
-    }
-    else{
-        return translate(message)
-    }
+  if(parameters&& Array.isArray(parameters) && parameters.length>0)
+  {
+    parameters.unshift(message);
+    return translate.apply(null,parameters);
+  }
+  else{
+    return translate(message);
+  }
 
-}
+};
 const ErrorHandlor = (req,err,res)=>{
-    console.log(err)
-    if(err instanceof SAPassportLockedError){
-        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
-    
-        return res.status(err.status).send(err)
 
-    }
-    if(err instanceof UnauthorizedError){
-    
-        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
-        
-        return res.status(err.status).send(err)
-    }
-    if(err instanceof SqlError){
-        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
-        
-        return res.status(err.status).send(err)
-        
-    }
-    if(err instanceof ValidationError){
+  if(err instanceof SAPassportLockedError){
+    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
 
-        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
-    
-        return res.status(err.status).send(err)
-    }
-    if(err instanceof BadCredentialsError){
+    return res.status(err.status).send(err);
 
-        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
-    
-        return res.status(err.status).send(err)
-    }
-    if(err instanceof RecordNotFoundErr){
-        err.message =translateReponseMessage(req.__,err.message,err.extrafields) 
-    
-        return res.status(err.status).send(err)
-    }
-    else{
-        const error = new UnkownError()
-        error.message = translateReponseMessage(req.__,'some error accured come back later')
-        return res.status(500).send(error)
-    }
+  }
+  if(err instanceof UnauthorizedError){
+
+    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
+
+    return res.status(err.status).send(err);
+  }
+  if(err instanceof SqlError){
+    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
+
+    return res.status(err.status).send(err);
+
+  }
+  if(err instanceof ValidationError){
+
+    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
+
+    return res.status(err.status).send(err);
+  }
+  if(err instanceof BadCredentialsError){
+
+    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
+
+    return res.status(err.status).send(err);
+  }
+  if(err instanceof RecordNotFoundErr){
+    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
+
+    return res.status(err.status).send(err);
+  }
+  else{
+    const error = new UnkownError();
+    error.message = translateReponseMessage(req.__,'some error accured come back later');
+    return res.status(500).send(error);
+  }
 
 
 
-}
+};
 const DataHandlor=(req,dat,res,message,extrafields)=>{
-       let data = {} 
-    if(!message){
-        data.message = translateReponseMessage(req.__,'operation succeeded')
+  let data = {};
+  if(!message){
+    data.message = translateReponseMessage(req.__,'operation succeeded');
+  }
+  else{
+    if(extrafields && Array.isArray(extrafields)){
+      data.message = translateReponseMessage(req.__,message,extrafields);
+
+
+    }else{
+      data.message = translateReponseMessage(req.__,message);
+
     }
-    else{
-        if(extrafields && Array.isArray(extrafields)){
-            data.message = translateReponseMessage(req.__,message,extrafields)
+  }
+  res.status(200).send({data:dat,message:data.message});
 
 
-        }else{
-            data.message = translateReponseMessage(req.__,message)
 
-        }
-    }
-    res.status(200).send({data:dat,message:data.message})
-    
+};
 
-
-}
-
-module.exports = {translateReponseMessage,ErrorHandlor,DataHandlor}
+module.exports = {translateReponseMessage,ErrorHandlor,DataHandlor};

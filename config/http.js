@@ -8,7 +8,7 @@
  * For more information on configuration, check out:
  * https://sailsjs.com/config/http
  */
-
+const bodyParser = require('body-parser')
 module.exports.http = {
 
   /****************************************************************************
@@ -21,11 +21,8 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
-    skipper: require('skipper')({
-      maxWaitTimeBeforePassingControlToApp: 1000,
-      maxTimeToBuffer: 100000,
-      
-    }),
+    bodyParser:bodyParser(),
+
     /***************************************************************************
     *                                                                          *
     * The order in which middleware should be run for HTTP requests.           *
@@ -36,12 +33,12 @@ module.exports.http = {
      order: [
        'cookieParser',
        'session',
-       'skipper',
-    //   'bodyParser',
+
+       'bodyParser',
     //   'compress',
     //   'poweredBy',
     //   'router',
-      
+
     //   'favicon',
      ],
 

@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes } = require('sequelize');
 
 /**
  * @module Blog
@@ -11,15 +11,15 @@ module.exports = {
   options: {
     tableName: 'blogs',
     hooks:{
-        
-       
-        beforeCreate:async (blog, options)=>{
-          blog.status = true
-        },
-       
-        
-  
-      }
+
+
+      beforeCreate:async (blog, options)=>{
+        blog.status = true;
+      },
+
+
+
+    }
   },
   datastore: 'default',
   tableName: 'blogs',
@@ -35,7 +35,7 @@ module.exports = {
       unique: true,
       minLength: 1
     },
-    
+
     slug: {
       type: DataTypes.STRING,
       required: true,
@@ -43,56 +43,58 @@ module.exports = {
       minLength: 1
     },
     short_description: {
-        type: DataTypes.STRING,
-        required: true,
-        minLength: 10
+      type: DataTypes.STRING,
+      required: true,
+      minLength: 10
     },
     description: {
-        type: DataTypes.TEXT,
-        required: true,
-        minLength: 10
+      type: DataTypes.TEXT,
+      required: true,
+      minLength: 10
     },
     meta_title: {
-        type: DataTypes.STRING,
-        allowNull:false,
-        minLength: 10
+      type: DataTypes.STRING,
+      allowNull:false,
+      minLength: 10
     },
     meta_description: {
-        type: DataTypes.TEXT,
-        allowNull:false,
-        minLength: 10
+      type: DataTypes.TEXT,
+      allowNull:false,
+      minLength: 10
     },
     meta_keywords: {
-        type: DataTypes.TEXT,
-        allowNull:false,
-        minLength: 10
+      type: DataTypes.TEXT,
+      allowNull:false,
+      minLength: 10
     },
     status: {
-        type: DataTypes.BOOLEAN,
-        allowNull:false,
+      type: DataTypes.BOOLEAN,
+      allowNull:false,
     },
 
-    
 
-    
 
-    
+
+
+
   },
   associations:()=>{
     Blog.belongsTo(BlogCategory,{
-        foreignKey:'category_id'
-    })
+      foreignKey:'category_id'
+    });
     Blog.belongsTo(User,{
-        foreignKey:'addedBy'
-    })
+      foreignKey:'addedBy'
+    });
     Blog.belongsTo(Upload,{
-        foreignKey:'banner'
-    })
+      foreignKey:'banner',
+      as:'Banner'
+    });
     Blog.belongsTo(Upload,{
-        foreignKey:'meta_img'
-    })
+      foreignKey:'meta_img',
+      as:'MetaImage'
+    });
 
-   
+
 
   }
 

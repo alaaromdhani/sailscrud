@@ -5,30 +5,37 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const path = require("path");
-const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
-const schemaValidation = require("../../utils/validations");
-const { updateUploadShema } = require("../../utils/validations/UploadSchema");
-const ValidationError = require("../../utils/errors/validationErrors");
-const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
-const SqlError = require("../../utils/errors/sqlErrors");
+const path = require('path');
+const { ErrorHandlor, DataHandlor } = require('../../utils/translateResponseMessage');
+const schemaValidation = require('../../utils/validations');
+const { updateUploadShema } = require('../../utils/validations/UploadSchema');
+const ValidationError = require('../../utils/errors/validationErrors');
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
+const UnkownError = require('../../utils/errors/UnknownError');
+const SqlError = require('../../utils/errors/sqlErrors');
 
 
 module.exports = {
-  async create(req, res) {
-    sails.services.uploadservice.fileUploader(req,(err,data)=>{
-      if(err){
-        ErrorHandlor(req,err,res)
-      }
-      else{
-        DataHandlor(req,data,res)
-      }
+  create :async(req,res)=>{
+    console.log(req.files)
+    if(req.operation && req.operation.error){
+    return   ErrorHandlor(req,req.operation.error,res);
+    }
+    else if(req.upload){
+    return   DataHandlor(req,req.upload,res);
+    }
+    else{
+      if(req.files && req.files.length){
+        return ErrorHandlor(req,new UnkownError(),res)
 
-    })
+      }
+      return ErrorHandlor(req,new ValidationError({message:'the file is required'}),res);
+    }
   },
 
   async find(req, res) {
     try {
+      const type = req.query.type;
       const page = parseInt(req.query.page)+1 || 1;
       const limit = req.query.limit || 10;
       const search = req.query.search;
@@ -47,10 +54,13 @@ module.exports = {
           })),
         }
         : {};
+      if(type){
+        where.type =type;
 
+      }
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
-        
+
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Upload.findAndCountAll({
         include:{
@@ -76,7 +86,7 @@ module.exports = {
       return res.serverError(error);
     }
   },
-  
+
 
   async findOne(req, res) {
     try {
@@ -89,32 +99,32 @@ module.exports = {
       return res.status(500).json({ error: err.message });
     }
   },
- 
- 
+
+
 
   async update(req, res) {
-      const schema = schemaValidation(updateUploadShema)(req.body)
-      if(schema.isValid){
-        try {
-          const data = await Upload.findByPk(req.params.id);
-          if (!data) {
-            return ErrorHandlor(req,new RecordNotFoundErr(),res)
-          }
-          const updatedUpload = await data.update(req.body);
-          if(req.body.isDeleted){
-            await User.update({profilePicture:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name},{where:{profilePicture:updatedUpload.link}})
-          }
-          return DataHandlor(req,updatedUpload,res);
-        } catch (err) {
-          return ErrorHandlor(req,new SqlError(err),res)
+    const schema = schemaValidation(updateUploadShema)(req.body);
+    if(schema.isValid){
+      try {
+        const data = await Upload.findByPk(req.params.id);
+        if (!data) {
+          return ErrorHandlor(req,new RecordNotFoundErr(),res);
         }
-
+        const updatedUpload = await data.update(req.body);
+        if(req.body.isDeleted){
+          await User.update({profilePicture:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name},{where:{profilePicture:updatedUpload.link}});
+        }
+        return DataHandlor(req,updatedUpload,res);
+      } catch (err) {
+        return ErrorHandlor(req,new SqlError(err),res);
       }
-      else{
-        return ErrorHandlor(req,new ValidationError({message:schema.message}),res)
 
-      }
-    
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:schema.message}),res);
+
+    }
+
     /*try {
       const data = await Upload.findByPk(req.params.id);
       if (!data) {
@@ -134,7 +144,7 @@ module.exports = {
         return res.status(404).json({ error: 'Upload not found' });
       }
       await data.destroy();
-      return res.status(204).send();
+      return DataHandlor(req,{},res)
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }

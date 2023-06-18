@@ -21,7 +21,9 @@ module.exports.routes = {
   'get /register/countries':'AuthController.getCounteries',
   'get /register/states/:countryId':'AuthController.getStatesByCountry',
   'get /v/uploads/:filename':'AssetsController.streamPrivateFile',
-  'get /v/public/:filename':'AssetsController.streamPublicFile'
+  'get /v/public/:filename':'AssetsController.streamPublicFile',
+
+
 
 
 
@@ -34,7 +36,7 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
- 
+
 
 
   /***************************************************************************

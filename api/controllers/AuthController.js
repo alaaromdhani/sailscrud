@@ -4,9 +4,10 @@ const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const UnkownError = require('../../utils/errors/UnknownError');
 const ValidationError = require('../../utils/errors/validationErrors');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
+const SqlError = require('../../utils/errors/sqlErrors')
 module.exports = {
-  
-/**
+
+  /**
    * Create a authentication callback endpoint
    *
    * This endpoint handles everything related to creating and verifying Pass-
@@ -22,122 +23,122 @@ module.exports = {
    * @param {Object} req
    * @param {Object} res
    */
-callback: function (req, res) {
-    
-    sails.services.passport.callback(req, res, function (err, data, info, status) {
-     // sails.log.warn(data, err, info, status);
+  callback: function (req, res) {
+
+    sails.services.passport.callback(req, res, (err, data, info, status) => {
+      // sails.log.warn(data, err, info, status);
       if (err || !data) {
 
         if(err){
           if(err.message && !err.status){
-              console.log(err)  
+            console.log(err);
           }
-            ErrorHandlor(req,err,res)
+          ErrorHandlor(req,err,res);
         }
         else{
-          res.status(400).send(req.__(info.message))
+          res.status(400).send(req.__(info.message));
 
-        }    
+        }
       }
       else{
         if(data.token){ //be sure that login is successfull
-          console.log(data)
-          res.cookie('token',data.token)
-          req.logIn(data.user, function(err) {
-            
+          console.log(data);
+          res.cookie('token',data.token);
+          req.logIn(data.user, (err) => {
+
             if (err) {
-                ErrorHandlor(req,new UnkownError(),res)
+              ErrorHandlor(req,new UnkownError(),res);
             }
             else{
-              req.session.authenticated = true
-              DataHandlor(req,data.user,res,'login successful')
+              req.session.authenticated = true;
+              DataHandlor(req,data.user,res,'login successful');
             }
-            
-    
-        });
+
+
+          });
         }
         else{
-          DataHandlor(req,data.user,res,'registred successfully')
+          DataHandlor(req,data.user,res,'registred successfully');
         }
-          
-          
-          
-      }
-            
 
-      
+
+
+      }
+
+
+
     });
   },
-  
-  logout:(req,res)=>{
-    
-      req.logout(async function(err) {
-          if (err) {  return ErrorHandlor(req,new UnkownError(),res) }
-          else{
-              req.session.authenticated = false
-              delete req.user
-              await UserToken.update({isTokenExpired:true},{where:{token:req.cookies.token}})
-              return DataHandlor(req,{},res,'logged out successfully')
-          }
-      });
 
-    
+  logout:(req,res)=>{
+
+    req.logout(async (err) => {
+      if (err) {  return ErrorHandlor(req,new UnkownError(),res); }
+      else{
+        req.session.authenticated = false;
+        delete req.user;
+        await UserToken.update({isTokenExpired:true},{where:{token:req.cookies.token}});
+        return DataHandlor(req,{},res,'logged out successfully');
+      }
+    });
+
+
 
 
   },
   forgetPassword:(req,res)=>{
-   
+
     if(req.user){
-      
-        
-        ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res)
 
 
-      }
-      else{
-        sails.services.userservice.sendResetPasswordNotification(req,(err,data)=>{
-          if(err){
-            console.log(err)
-              ErrorHandlor(req,err,res)  
-
-          }
-          else{
-              DataHandlor(req,{},res,"notification sent successfully")
-
-          }
+      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res);
 
 
+    }
+    else{
+      sails.services.userservice.sendResetPasswordNotification(req,(err,data)=>{
+        if(err){
+          console.log(err);
+          ErrorHandlor(req,err,res);
+
+        }
+        else{
+          DataHandlor(req,{},res,'notification sent successfully');
+
+        }
 
 
-        })
-        
-       
-
-          
 
 
-      }
+      });
+
+
+
+
+
+
+    }
 
 
 
   },
   validateResetPasswordLink:(req,res)=>{
     if(req.user){
-      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res))
+      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res));
     }
     else{
       sails.services.userservice.validatePasswordToken(req,(err,data)=>{
         if(err){
-          ErrorHandlor(req,err,res)
+          ErrorHandlor(req,err,res);
         }
         else{
-          DataHandlor(req,{},res,'link validated')
+          DataHandlor(req,{},res,'link validated');
 
         }
 
 
 
-      })
+      });
 
 
     }
@@ -145,21 +146,21 @@ callback: function (req, res) {
   },
   resetPassword:(req,res)=>{
     if(req.user){
-      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res))
+      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res));
     }
     else{
       sails.services.userservice.resetPassword(req,(err,data)=>{
         if(err){
-          ErrorHandlor(req,err,res)
+          ErrorHandlor(req,err,res);
         }
         else{
-          DataHandlor(req,{},res,'password updated successfully')
+          DataHandlor(req,{},res,'password updated successfully');
 
         }
 
 
 
-      })
+      });
 
 
     }
@@ -168,57 +169,77 @@ callback: function (req, res) {
   },
 
   profileCallback:(req,res)=>{
-    DataHandlor(req,req.user,res)
+    DataHandlor(req,req.user,res);
   },
   profileUpdater:(req,res)=>{
-   
-    
-      sails.services.userservice.profileUpdater(req,(err,data)=>{
-        
-        if(err){
-              ErrorHandlor(req,err,res) 
-          }
-          else{
-            DataHandlor(req,data,res,'profile updated successfully')
-          }
-        })
-    
-  },
-  getCounteries:async (req,res)=>{
-      const countries = await Country.findAll()
-      DataHandlor(req,countries,res)
-  },
-  getStatesByCountry:async (req,res)=>{
-      const {countryId} = req.params
-
-      if(!countryId){
-        ErrorHandlor(req,new ValidationError({message:'countryId is required'}),res)
+    if(req.operation){
+      if(req.operation.data){
+            return DataHandlor(req,req.operation.data,res)
       }
       else{
-       const country =  await Country.findOne({where:{id:countryId},include:{
+        return ErrorHandlor(req,req.operation.error,res)
+      }
+    }
+    else{
+        if(req.files && req.files.length){
+          return ErrorHandlor(req,new UnkownError(),res)
+        }
+        else{
+          sails.services.userservice.profileUpdater(req,async (err,data)=>{
+              if(err){
+                return ErrorHandlor(req,err,res)
+              }
+              else{
+                  try{
+                    return DataHandlor(req,await data.save(),res)
+                  }
+                  catch(e){
+                    return ErrorHandlor(req,new SqlError(e),res)
+
+                  }
+              }
+          })
+        }
+    }
+
+
+
+  },
+  getCounteries:async (req,res)=>{
+    const countries = await Country.findAll();
+    DataHandlor(req,countries,res);
+  },
+  getStatesByCountry:async (req,res)=>{
+    const {countryId} = req.params;
+
+    if(!countryId){
+      ErrorHandlor(req,new ValidationError({message:'countryId is required'}),res);
+    }
+    else{
+      const country =  await Country.findOne({where:{id:countryId},include:{
         model:State,
         foreignKey:'country_id'
 
-       }})
-         if(!country){
-          ErrorHandlor(req,new RecordNotFoundErr(),res)
-          
-         } 
-         else{
-          DataHandlor(req,country,res)  
-         }
+      }});
+      if(!country){
+        ErrorHandlor(req,new RecordNotFoundErr(),res);
+
       }
+      else{
+        DataHandlor(req,country,res);
+      }
+    }
 
 
   },
 
 
 
-  
 
 
 
 
 
 
-}
+
+};

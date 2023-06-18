@@ -5,25 +5,88 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
-const SqlError = require("../../utils/errors/sqlErrors");
-const ValidationError = require("../../utils/errors/validationErrors");
-const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
-const schemaValidation = require("../../utils/validations");
-const { BlogShema } = require("../../utils/validations/BlogSchema");
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
+const SqlError = require('../../utils/errors/sqlErrors');
+const ValidationError = require('../../utils/errors/validationErrors');
+const { ErrorHandlor, DataHandlor } = require('../../utils/translateResponseMessage');
+const schemaValidation = require('../../utils/validations');
+const { BlogShema } = require('../../utils/validations/BlogSchema');
 
 
 module.exports = {
-  async create(req, res) {
-    sails.services.blogservice.createBlog(req,(err,data)=>{
+  async create (req, res) {
+    console.log('am here')
+
+    //  return DataHandlor(req,req.files,res)
+
+
+    let currentUploads=[];
+    if(req.operation){
+
+      if(req.operation.files){
+
+        try{
+          console.log('opeartion files',req.operation.files)
+          currentUploads = await Upload.bulkCreate(req.operation.files,{
+            individualHooks:true
+          });
+          let blog = req.blog
+          if(currentUploads.at(0)){
+            if(Object.keys(req.files)[0]==='mi'){
+              blog.meta_img = currentUploads.at(0).id
+            }
+            else{
+              blog.banner = currentUploads.at(0).id
+            }
+          }
+          if(currentUploads.at(1)){
+            if(Object.keys(req.files)[1]==='mi'){
+              blog.meta_img = currentUploads.at(1).id
+            }
+            else{
+              blog.banner = currentUploads.at(1).id
+            }
+          }
+          delete (req.operation)
+          delete (req.blog)
+          delete(req.upload)
+          return DataHandlor(req,await blog.save(),res)
+
+        }
+        catch(e){
+          console.log(e)
+          return ErrorHandlor(req,new SqlError(e),res);
+        }
+
+
+      }
+      else if(req.operation.error){
+        return ErrorHandlor(req,req.operation.error,res);
+      }
+      else{
+        return ErrorHandlor(req,new ValidationError({message: 'an input with type image is required'}),res);
+      }
+
+    }
+
+    else{
+      sails.services.blogservice.createBlog(req,async (err,data)=>{
+
         if(err){
-          ErrorHandlor(req,err,res)
+          return ErrorHandlor(req,err,res);
         }
         else{
-          DataHandlor(req,data,res)
+          try {
+            DataHandlor(req,await Blog.create(data),res);
+          }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res);
+          }
         }
-    })
-    
+      });
+    }
+
+
+
   },
 
   async find(req, res) {
@@ -52,11 +115,20 @@ module.exports = {
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Blog.findAndCountAll({
-        include:{
+        include:[{
           model:BlogCategory,
-          foreignKey:"category_id",
+          foreignKey:'category_id',
           attributes:['category_name']
-        },  
+        },{
+          model:Upload,
+          foreignKey:'banner',
+          as:'Banner'
+        },
+        {
+          model:Upload,
+          foreignKey:'meta_img',
+          as:'MetaImage'
+        }],
         where,
         order,
         limit: parseInt(limit, 10),
@@ -70,7 +142,7 @@ module.exports = {
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      },res)
+      },res);
     } catch (error) {
       return ErrorHandlor(req,new SqlError(error),res);
     }
@@ -80,8 +152,8 @@ module.exports = {
     try {
       const data = await Blog.findByPk(req.params.id,{include:{
         model:BlogCategory,
-        foreignKey:"category_id",
-       
+        foreignKey:'category_id',
+
       }});
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
@@ -93,26 +165,26 @@ module.exports = {
   },
 
   async update(req, res) {
-   sails.blogservice.update(req,(err,data)=>{
-    if(err){
-      ErrorHandlor(req,err,res)
-    }else{
-      DataHandlor(req,data,res)
-    }
+    sails.blogservice.update(req,(err,data)=>{
+      if(err){
+        ErrorHandlor(req,err,res);
+      }else{
+        DataHandlor(req,data,res);
+      }
 
 
-   })
+    });
   },
 
   async destroy(req, res) {
     sails.blogservice.delete(req,(err,data)=>{
       if(err){
-        ErrorHandlor(req,err,res)
+        ErrorHandlor(req,err,res);
       }else{
-        DataHandlor(req,data,res)
+        DataHandlor(req,data,res);
       }
-  
-  
-    })
+
+
+    });
   },
 };

@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes } = require('sequelize');
 
 /**
  * @module Feature
@@ -25,31 +25,31 @@ module.exports = {
       unique: true,
       minLength: 2
     },
-    
+
 
     name: {
       type: DataTypes.STRING,
       minLength: 2,
       allowNull: false
     },
-    
-    
+
+
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
-    
+
   },
   associations:()=>{
     Country.hasMany(User,{
-        foreignKey:'country_id'
+      foreignKey:'country_id'
 
-    })
+    });
     Country.hasMany(State,{
-        foreignKey:'country_id'
-    })
-    
-   
+      foreignKey:'country_id'
+    });
+
+
 
   }
 

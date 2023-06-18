@@ -1,24 +1,24 @@
 const schemaValidation = (schema)=>(data)=>{
 
 
-    const {error} = schema.validate(data,{
-        abortEarly:true,
-        convert:false
+  const {error} = schema.validate(data,{
+    abortEarly:true,
+    convert:false
 
 
 
-    })
-    if (error) {
-        
-        const message = error.details.map((el) => el.message).join('\n');
-        return {
-            isValid: false,
-            message,
-        };
-    }
-    return { isValid: true };
+  });
+  if (error) {
+
+    const message = error.details.map((el) => el.message).join('\n');
+    return {
+      isValid: false,
+      message,
+    };
+  }
+  return { isValid: true };
 
 
 
-} 
-module.exports = schemaValidation
+};
+module.exports = schemaValidation;

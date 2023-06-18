@@ -22,6 +22,7 @@ module.exports={
                     let options={
                         root:path.join(__dirname,'../../assets/'+upload.path)
                     }
+                    
                     const filename = upload.file_name+'.'+upload.extension
                     res.sendFile(filename, options,err=>{
                         if(err){

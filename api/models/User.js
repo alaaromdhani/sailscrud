@@ -5,8 +5,8 @@
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 const {
-  DataTypes, Op 
-} = require('sequelize'); 
+  DataTypes, Op
+} = require('sequelize');
 
 const bcrypt = require('bcrypt');
 
@@ -24,18 +24,18 @@ module.exports = {
           user.password = await bcrypt.hash(user.password, 10);
         }
       },
-     
+
       beforeCreate:async (user, options)=>{
-        user.isDeleted = false
+        user.isDeleted = false;
       },
       beforeDestroy:async (user,options)=>{
-        await User.sequelize.query(`DELETE FROM users_features WHERE UserId =`+user.id)
-        await User.sequelize.query(`DELETE FROM users_permissions WHERE UserId =`+user.id)
-        
-      
+        await User.sequelize.query(`DELETE FROM users_features WHERE UserId =`+user.id);
+        await User.sequelize.query(`DELETE FROM users_permissions WHERE UserId =`+user.id);
+
+
 
       },
-      
+
 
     }
   },
@@ -75,8 +75,7 @@ module.exports = {
       type:DataTypes.DATE,
       allowNull:false
 
-    }
-    ,
+    },
     preferredLanguage:{
       type:DataTypes.ENUM({values:['ar','fr','en']}),
       defaultValue:'ar'
@@ -86,98 +85,98 @@ module.exports = {
 
     username:{ type:DataTypes.STRING,allowNull:false,
       unique:true },
-      phonenumber:{ type:DataTypes.STRING,allowNull:false,
-        unique:true },
+    phonenumber:{ type:DataTypes.STRING,allowNull:false,
+      unique:true },
     password:{ type:DataTypes.STRING },
     isDeleted:{ type:DataTypes.BOOLEAN }
 
-   
-    
-    
+
+
+
   },
 
-  
-    
-  
-  
+
+
+
+
   associations : function(){
     User.belongsToMany(Feature, { through: 'users_features'});
     User.belongsTo(Role,{
       foreignKey:'role_id'
-    
-    })
-    
+
+    });
+
     User.hasMany(User,{
       as:'updatedUsers',
       foreignKey:'updatedBy',
       sourceKey:'id'
 
-    })
+    });
     User.hasMany(User,{
       as:'addedUsers',
       foreignKey:'addedBy',
       sourceKey:'id'
 
-    })
-    
-    
+    });
+
+
     User.belongsTo(User,{
       as:'adder',
       foreignKey:'addedBy',
       targetKey:'id'
 
-    })
+    });
     User.belongsTo(User,{
       as:'updater',
       foreignKey:'updatedBy',
       targetKey:'id'
 
-    })
+    });
     User.hasMany(Role,{
       foreignKey:'addedBy',
       sourceKey:'id'
-    })
+    });
     User.hasMany(Role,{
       foreignKey:'updatedBy',
       sourceKey:'id'
-    })
+    });
 
     User.hasMany(UserToken,{
-        foreignKey:'user_id',
-        sourceKey:'id'
+      foreignKey:'user_id',
+      sourceKey:'id'
 
-    })
-    
+    });
+
     User.hasMany(UserAuthSettings,{
       foreignKey:'user_id',
       sourceKey:'id'
 
 
 
-    })
+    });
     User.hasMany(RequestLog,{
       foreignKey:'user_id'
-    })
+    });
     User.belongsTo(State,{
       foreignKey:'state_id'
-    })
+    });
     User.belongsTo(Country,{
       foreignKey:'country_id'
-    })
+    });
     User.belongsToMany(Permission, { through: 'users_permissions'});
     User.hasMany(Upload,{
       foreignKey:'addedBy'
 
-    })
+    });
     User.hasMany(Blog,{
       foreignKey:'addedBy'
-    })
+    });
     User.hasMany(BlogCategory,{
       foreignKey:'addedBy'
-    })
-     
+    });
+
 
   }
-   // Can be omitted, so default sails.config.models.connection will be used
+  // Can be omitted, so default sails.config.models.connection will be used
 };
 

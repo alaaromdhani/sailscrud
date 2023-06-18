@@ -22,28 +22,28 @@
 module.exports = {
   //cron : {
   //  login: {
-     // schedule: '* */30 * * * *',      // [REQUIRED]
-    //  onTick: () => {               // [REQUIRED]
-       // sails.services.otpservice.login();
-      //},
-     // timezone: 'America/New_York', // [OPTIONAL] set timezone
-    //  runOnInit: true,              // [OPTIONAL] fire onTick function as soon as the cron is initialized
-     // start: true                   // [OPTIONAL] manually start the cron task (DEFAULT = true) See below for the example
+  // schedule: '* */30 * * * *',      // [REQUIRED]
+  //  onTick: () => {               // [REQUIRED]
+  // sails.services.otpservice.login();
+  //},
+  // timezone: 'America/New_York', // [OPTIONAL] set timezone
+  //  runOnInit: true,              // [OPTIONAL] fire onTick function as soon as the cron is initialized
+  // start: true                   // [OPTIONAL] manually start the cron task (DEFAULT = true) See below for the example
   //  },
-   
+
   //},
 
 
-    /**************************************************************************
+  /**************************************************************************
     *                                                                         *
     * Tell Sails what database(s) it should use in production.                *
     *                                                                         *
     * (https://sailsjs.com/config/datastores)                                 *
     *                                                                         *
     **************************************************************************/
-    datastores: {
-  
-      /***************************************************************************
+  datastores: {
+
+    /***************************************************************************
       *                                                                          *
       * Configure your default production database.                              *
       *                                                                          *
@@ -58,20 +58,20 @@ module.exports = {
       *    (See https://sailsjs.com/config/datastores for help.)                 *
       *                                                                          *
       ***************************************************************************/
-      default: {
-        // adapter: 'sails-mysql',
-        // url: 'mysql://user:password@host:port/database',
-        //--------------------------------------------------------------------------
-        //  /\   To avoid checking it in to version control, you might opt to set
-        //  ||   sensitive credentials like `url` using an environment variable.
-        //
-        //  For example:
-        //  ```
-        //  sails_datastores__default__url=mysql://admin:myc00lpAssw2D@db.example.com:3306/my_prod_db
-        //  ```
-        //--------------------------------------------------------------------------
-  
-        /****************************************************************************
+    default: {
+      // adapter: 'sails-mysql',
+      // url: 'mysql://user:password@host:port/database',
+      //--------------------------------------------------------------------------
+      //  /\   To avoid checking it in to version control, you might opt to set
+      //  ||   sensitive credentials like `url` using an environment variable.
+      //
+      //  For example:
+      //  ```
+      //  sails_datastores__default__url=mysql://admin:myc00lpAssw2D@db.example.com:3306/my_prod_db
+      //  ```
+      //--------------------------------------------------------------------------
+
+      /****************************************************************************
         *                                                                           *
         * More adapter-specific options                                             *
         *                                                                           *
@@ -82,17 +82,17 @@ module.exports = {
         * https://sailsjs.com/config/datastores                                     *
         *                                                                           *
         ****************************************************************************/
-        // ssl: { rejectUnauthorized: true },
-  
-      },
-  
+      // ssl: { rejectUnauthorized: true },
+
     },
-  
-    
-  
-    models: {
-  
-      /***************************************************************************
+
+  },
+
+
+
+  models: {
+
+    /***************************************************************************
       *                                                                          *
       * To help avoid accidents, Sails automatically sets the automigration      *
       * strategy to "safe" when your app lifts in production mode.               *
@@ -102,9 +102,9 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-      migrate: 'alter',
-  
-      /***************************************************************************
+    migrate: 'safe',
+
+    /***************************************************************************
       *                                                                          *
       * If, in production, this app has access to physical-layer CASCADE         *
       * constraints (e.g. PostgreSQL or MySQL), then set those up in the         *
@@ -113,13 +113,13 @@ module.exports = {
       * choose to keep this enabled.)                                            *
       *                                                                          *
       ***************************************************************************/
-      // cascadeOnDestroy: false,
-  
-    },
-  
-  
-  
-    /**************************************************************************
+    // cascadeOnDestroy: false,
+
+  },
+
+
+
+  /**************************************************************************
     *                                                                         *
     * Always disable "shortcut" blueprint routes.                             *
     *                                                                         *
@@ -129,13 +129,13 @@ module.exports = {
     * > all environments (not just in production.)                            *
     *                                                                         *
     ***************************************************************************/
-    blueprints: {
-      shortcuts: false,
-    },
-  
-  
-  
-    /***************************************************************************
+  blueprints: {
+    shortcuts: false,
+  },
+
+
+
+  /***************************************************************************
     *                                                                          *
     * Configure your security settings for production.                         *
     *                                                                          *
@@ -146,9 +146,9 @@ module.exports = {
     * tested with CSRF protection turned on in development mode too.           *
     *                                                                          *
     ***************************************************************************/
-    security: {
-  
-      /***************************************************************************
+  security: {
+
+    /***************************************************************************
       *                                                                          *
       * If this app has CORS enabled (see `config/security.js`) with the         *
       * `allowCredentials` setting enabled, then you should uncomment the        *
@@ -159,19 +159,19 @@ module.exports = {
       * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
       *                                                                          *
       ***************************************************************************/
-      cors: {
-        allRoutes: true,
-        allowCredentials: true, // Allows cookies and session through CORS from here
-        allowOrigins: ['http://localhost:3000','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
-        allowResponseHeaders: 'set-cookie',
-        allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
-      },
-  
+    cors: {
+      allRoutes: true,
+      allowCredentials: true, // Allows cookies and session through CORS from here
+      allowOrigins: ['http://localhost:3000','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
+      allowResponseHeaders: 'set-cookie',
+      allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
     },
-  
-  
-  
-    /***************************************************************************
+
+  },
+
+
+
+  /***************************************************************************
     *                                                                          *
     * Configure how your app handles sessions in production.                   *
     *                                                                          *
@@ -181,11 +181,11 @@ module.exports = {
     * > this section from your `config/env/production.js` file.                *
     *                                                                          *
     ***************************************************************************/
-    session: {
-      name:'__session.id__',
-      secret: '7c9b93a38b567fe0836335056ccb3bb8',
-  
-      /***************************************************************************
+  session: {
+    name:'__session.id__',
+    secret: '7c9b93a38b567fe0836335056ccb3bb8',
+
+    /***************************************************************************
       *                                                                          *
       * Production session store configuration.                                  *
       *                                                                          *
@@ -200,20 +200,20 @@ module.exports = {
       * > (For a full list, see https://sailsjs.com/plugins/sessions)            *
       *                                                                          *
       ***************************************************************************/
-      // adapter: '@sailshq/connect-redis',
-      // url: 'redis://user:password@localhost:6379/databasenumber',
-      //--------------------------------------------------------------------------
-      // /\   OR, to avoid checking it in to version control, you might opt to
-      // ||   set sensitive credentials like this using an environment variable.
-      //
-      // For example:
-      // ```
-      // sails_session__url=redis://admin:myc00lpAssw2D@bigsquid.redistogo.com:9562/0
-      // ```
-      //
-      //--------------------------------------------------------------------------
-  
-      /***************************************************************************
+    // adapter: '@sailshq/connect-redis',
+    // url: 'redis://user:password@localhost:6379/databasenumber',
+    //--------------------------------------------------------------------------
+    // /\   OR, to avoid checking it in to version control, you might opt to
+    // ||   set sensitive credentials like this using an environment variable.
+    //
+    // For example:
+    // ```
+    // sails_session__url=redis://admin:myc00lpAssw2D@bigsquid.redistogo.com:9562/0
+    // ```
+    //
+    //--------------------------------------------------------------------------
+
+    /***************************************************************************
       *                                                                          *
       * Production configuration for the session ID cookie name.                 *
       *                                                                          *
@@ -228,9 +228,9 @@ module.exports = {
       * https://sailsjs.com/config/session#?the-session-id-cookie                *
       *                                                                          *
       ***************************************************************************/
-      // name: '__Host-sails.sid',
-  
-      /***************************************************************************
+    // name: '__Host-sails.sid',
+
+    /***************************************************************************
       *                                                                          *
       * Production configuration for the session ID cookie.                      *
       *                                                                          *
@@ -251,13 +251,13 @@ module.exports = {
       * https://sailsjs.com/config/session#?the-session-id-cookie                *
       *                                                                          *
       ***************************************************************************/
-      
-  
-    },
-  
-  
-  
-    /**************************************************************************
+
+
+  },
+
+
+
+  /**************************************************************************
     *                                                                          *
     * Set up Socket.io for your production environment.                        *
     *                                                                          *
@@ -267,9 +267,9 @@ module.exports = {
     * > this section from your `config/env/production.js` file.                *
     *                                                                          *
     ***************************************************************************/
-    sockets: {
-  
-      /***************************************************************************
+  sockets: {
+
+    /***************************************************************************
       *                                                                          *
       * Uncomment the `onlyAllowOrigins` whitelist below to configure which      *
       * "origins" are allowed to open socket connections to your Sails app.      *
@@ -278,30 +278,30 @@ module.exports = {
       * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
       *                                                                          *
       ***************************************************************************/
-       onlyAllowOrigins: [
-         'http://localhost:8100',
-     
-       ],
-       beforeConnect: function(handshake, proceed) {
-          console.log('poceeed')
-        // Send back `true` to allow the socket to connect.
-        // (Or send back `false` to reject the attempt.)
-        return proceed(undefined, true);
-      
-      },
-       onConnect: function(session, socket) {
-        console.log('new socket is coming')
-        socket.emit('documents', 'ala');
-        socket.on('my other event', function (data) {
-          console.log(data);
-        });
-       // By default: do nothing
-       // This is a good place to subscribe a new socket to a room, inform other users 
-       // that someone new has come online, or any other custom socket.io logic
-      }
-  
-  
-      /***************************************************************************
+    onlyAllowOrigins: [
+      'http://localhost:8100',
+
+    ],
+    beforeConnect: function(handshake, proceed) {
+      console.log('poceeed');
+      // Send back `true` to allow the socket to connect.
+      // (Or send back `false` to reject the attempt.)
+      return proceed(undefined, true);
+
+    },
+    onConnect: function(session, socket) {
+      console.log('new socket is coming');
+      socket.emit('documents', 'ala');
+      socket.on('my other event', (data) => {
+        console.log(data);
+      });
+      // By default: do nothing
+      // This is a good place to subscribe a new socket to a room, inform other users
+      // that someone new has come online, or any other custom socket.io logic
+    }
+
+
+    /***************************************************************************
       *                                                                          *
       * If you are deploying a cluster of multiple servers and/or processes,     *
       * then uncomment the following lines.  This tells Socket.io about a Redis  *
@@ -313,38 +313,38 @@ module.exports = {
       * (https://sailsjs.com/docs/concepts/deployment/scaling)                   *
       *                                                                          *
       ***************************************************************************/
-      // adapter: '@sailshq/socket.io-redis',
-      // url: 'redis://user:password@bigsquid.redistogo.com:9562/databasenumber',
-      //--------------------------------------------------------------------------
-      // /\   OR, to avoid checking it in to version control, you might opt to
-      // ||   set sensitive credentials like this using an environment variable.
-      //
-      // For example:
-      // ```
-      // sails_sockets__url=redis://admin:myc00lpAssw2D@bigsquid.redistogo.com:9562/0
-      // ```
-      //--------------------------------------------------------------------------
-  
-    },
-  
-  
-  
-    /**************************************************************************
+    // adapter: '@sailshq/socket.io-redis',
+    // url: 'redis://user:password@bigsquid.redistogo.com:9562/databasenumber',
+    //--------------------------------------------------------------------------
+    // /\   OR, to avoid checking it in to version control, you might opt to
+    // ||   set sensitive credentials like this using an environment variable.
+    //
+    // For example:
+    // ```
+    // sails_sockets__url=redis://admin:myc00lpAssw2D@bigsquid.redistogo.com:9562/0
+    // ```
+    //--------------------------------------------------------------------------
+
+  },
+
+
+
+  /**************************************************************************
     *                                                                         *
     * Set the production log level.                                           *
     *                                                                         *
     * (https://sailsjs.com/config/log)                                        *
     *                                                                         *
     ***************************************************************************/
-    log: {
-      level: 'debug'
-    },
-  
-  
-  
-    http: {
-  
-      /***************************************************************************
+  log: {
+    level: 'debug'
+  },
+
+
+
+  http: {
+
+    /***************************************************************************
       *                                                                          *
       * The number of milliseconds to cache static assets in production.         *
       * (the "max-age" to include in the "Cache-Control" response header)        *
@@ -353,9 +353,9 @@ module.exports = {
       * reduce this considerably to allow more flexibility in purging the cache. *
       *                                                                          *
       ***************************************************************************/
-      cache: 365.25 * 24 * 60 * 60 * 1000, // One year
-  
-      /***************************************************************************
+    cache: 365.25 * 24 * 60 * 60 * 1000, // One year
+
+    /***************************************************************************
       *                                                                          *
       * Proxy settings                                                           *
       *                                                                          *
@@ -370,13 +370,13 @@ module.exports = {
       * (https://sailsjs.com/config/http)                                        *
       *                                                                          *
       ***************************************************************************/
-      // trustProxy: true,
-  
-    },
-  
-  
-  
-    /**************************************************************************
+    // trustProxy: true,
+
+  },
+
+
+
+  /**************************************************************************
     *                                                                         *
     * Lift the server on port 80.                                             *
     * (if deploying behind a proxy, or to a PaaS like Heroku or Deis, you     *
@@ -385,11 +385,11 @@ module.exports = {
     * this, just try deploying without setting it and see if it works.)       *
     *                                                                         *
     ***************************************************************************/
-    // port: 80,
-  
-  
-  
-    /**************************************************************************
+  // port: 80,
+
+
+
+  /**************************************************************************
     *                                                                         *
     * Configure an SSL certificate                                            *
     *                                                                         *
@@ -406,11 +406,11 @@ module.exports = {
     * > https://sailsjs.com/config/*#?sailsconfigssl                          *
     *                                                                         *
     **************************************************************************/
-    // ssl: undefined,
-  
-  
-  
-    /**************************************************************************
+  // ssl: undefined,
+
+
+
+  /**************************************************************************
     *                                                                         *
     * Production overrides for any custom settings specific to your app.      *
     * (for example, production credentials for 3rd party APIs like Stripe)    *
@@ -418,65 +418,65 @@ module.exports = {
     * > See config/custom.js for more info on how to configure these options. *
     *                                                                         *
     ***************************************************************************/
-    custom: {
-      dafault_user_image:{
-        file_name:'default_user',
-        extension:'jpg',
-        path: 'default',
-       
-      },
-      baseUrl: 'http://localhost:1337/',
-      internalEmailAddress: 'support@example.com',
-      
-      jwt:{
-        jwt_secret:'super-secret-key',
-        expires:3*24*3600    
+  custom: {
+    dafault_user_image:{
+      file_name:'default_user',
+      extension:'jpg',
+      path: 'default',
 
-      },
-      resetPassword:{
-        expires:3//in minutes,
-
-      },
-      otpconf:{
-        authorization_header:"Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==",
-        sender:'2160000'
-
-      },
-      files:{
-        extensions:{
-          images:['gif','png','PNG','jpg','JPG','jpeg','JPEG','webp','svg','ico'],
-          videos:['mp4','avi','mov','webm'],
-          doc:['doc','docs','pdf'],
-          audio:['mp3,MP3'],
-          presentation:['ppt', 'pptx'],
-        },
-         
-         
-        routes:{ //after assets
-             public:'v/public/',
-             private:'v/uploads/'  
-        } 
-
-
-
-      }
-  
-      // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',
-      // stripeSecret: 'sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm',
-      //--------------------------------------------------------------------------
-      // /\   OR, to avoid checking them in to version control, you might opt to
-      // ||   set sensitive credentials like these using environment variables.
-      //
-      // For example:
-      // ```
-      // sendgridSecret=SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU
-      // sails_custom__stripeSecret=sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm
-      // ```
-      //--------------------------------------------------------------------------
-  
     },
-  
-  
-  
-  };
-  
+    baseUrl: 'http://localhost:1337/',
+    internalEmailAddress: 'support@example.com',
+
+    jwt:{
+      jwt_secret:'super-secret-key',
+      expires:3*24*3600
+
+    },
+    resetPassword:{
+      expires:3//in minutes,
+
+    },
+    otpconf:{
+      authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
+      sender:'2160000'
+
+    },
+    files:{
+      extensions:{
+        images:['gif','png','jpg','jpeg','webp','svg','ico'],
+        videos:['mp4','avi','mov','webm'],
+        doc:['doc','docs','pdf'],
+        audio:['mp3'],
+        presentation:['ppt', 'pptx'],
+      },
+
+
+      routes:{ //after assets
+        public:'v/public/',
+        private:'v/uploads/'
+      }
+
+
+
+    }
+
+    // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',
+    // stripeSecret: 'sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm',
+    //--------------------------------------------------------------------------
+    // /\   OR, to avoid checking them in to version control, you might opt to
+    // ||   set sensitive credentials like these using environment variables.
+    //
+    // For example:
+    // ```
+    // sendgridSecret=SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU
+    // sails_custom__stripeSecret=sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm
+    // ```
+    //--------------------------------------------------------------------------
+
+  },
+
+
+
+};
+

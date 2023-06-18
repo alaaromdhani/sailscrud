@@ -14,14 +14,23 @@ module.exports.policies = {
     '*':['lang','passport','role'],
     logout:['lang','passport','role','tokenVerifier'],
     profileCallback:['lang','passport','role','tokenVerifier'],
-    profileUpdater:['lang','passport','role','tokenVerifier']
+    profileUpdater:['lang','passport','role','tokenVerifier','ppUploader'],
 
   },
+  BlogController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'create':['lang','passport','role','tokenVerifier','permissions','blogfileUploader']
+  },
+  UploadController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'create':['lang','passport','role','tokenVerifier','fileUpload']
+  },
   AssetsController:{
-    'streamPublicFile':['lang','passport','role'],
-    'streamPrivateFile':['lang','passport','role','tokenVerifier']
+    streamPublicFile:['lang','passport','role'],
+    streamPrivateFile:['lang','passport','role','tokenVerifier'],
+
   }
-  
+
 
   /***************************************************************************
   *                                                                          *
