@@ -165,7 +165,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    sails.blogservice.update(req,(err,data)=>{
+    sails.services.blogservice.update(req,(err,data)=>{
       if(err){
         ErrorHandlor(req,err,res);
       }else{
