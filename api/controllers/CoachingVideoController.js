@@ -27,7 +27,7 @@ module.exports = {
             }
           }
           else{
-            return ErrorHandlor(req,new ValidationError({message:createVideoSchema.message}))
+            return ErrorHandlor(req,new ValidationError({message:createVideoSchema.message}),res)
           }
         }
   ,
