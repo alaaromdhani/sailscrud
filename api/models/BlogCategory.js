@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-
+const getSlug = require("speakingurl")
 /**
  * @module BlogCategory
  *
@@ -9,7 +9,12 @@ const { DataTypes } = require("sequelize");
  */
 module.exports = {
   options: {
-    tableName: 'blog_categories'
+    tableName: 'blog_categories',
+      hooks:{
+          async beforeSave(blogCategory,options){
+            blogCategory.slug = getSlug(blogCategory.category_name)
+          }
+      }
   },
   datastore: 'default',
   tableName: 'blog_categories',
@@ -25,16 +30,16 @@ module.exports = {
       unique: true,
       minLength: 1
     },
-    
+
     slug: {
       type: DataTypes.STRING,
       required: true,
       unique: true,
       minLength: 1
     },
-    
 
-    
+
+
   },
   associations:()=>{
     BlogCategory.hasMany(Blog,{
@@ -43,10 +48,10 @@ module.exports = {
     BlogCategory.belongsTo(User,{
         foreignKey:'addedBy'
     })
-    
 
 
-   
+
+
 
   }
 

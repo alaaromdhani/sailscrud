@@ -3,8 +3,6 @@ const BlogShema = joi.object({
 
   title: joi.string().required(),
 
-  slug: joi.string().required(),
-
   short_description: joi.string().required(),
 
   description: joi.string().required(),

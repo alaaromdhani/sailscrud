@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-
+const getSlug = require('speakingurl')
 /**
  * @module Blog
  *
@@ -13,7 +13,8 @@ module.exports = {
     hooks:{
 
 
-      beforeCreate:async (blog, options)=>{
+      beforeSave:async (blog, options)=>{
+        blog.slug = getSlug(blog.title)
         blog.status = true;
       },
 

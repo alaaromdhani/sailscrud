@@ -33,6 +33,7 @@
     "sails-hook-sequelize": "^2.0.0",
     "sails-hook-sockets": "^2.0.0",
     "sequelize": "^6.31.1",
+    "speakingurl": "^14.0.1",
     "url": "^0.11.0",
     "uuid": "^9.0.0"
   },
