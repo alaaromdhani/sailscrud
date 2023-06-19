@@ -40,6 +40,7 @@ const UpdateBlogShema = joi.object({
   meta_keywords: joi.string(),
 
   status: joi.boolean(),
+  meta_img:joi.number().integer(),
 
 });
 module.exports = {BlogShema,UpdateBlogShema};

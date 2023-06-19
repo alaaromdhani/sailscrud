@@ -9,6 +9,7 @@ const { Op, UnknownConstraintError } = require('sequelize');
 const { resolve } = require('path');
 const SqlError = require('../../utils/errors/sqlErrors');
 const UnkownError = require('../../utils/errors/UnknownError');
+
 const path = require('path');
 
 module.exports={
@@ -21,6 +22,7 @@ module.exports={
         foreignKey:'role_id'
       }
     }}).then(blog=>{
+
       return new Promise((resolve,reject)=>{
         if(!blog){
           return reject(new RecordNotFoundErr());
@@ -56,7 +58,13 @@ module.exports={
       callback(null,blog);
 
     }).catch(err=>{
-      callback(err,null);
+      console.log(err)
+      if(err instanceof  ValidationError || err instanceof UnauthorizedError){
+        callback(err,null)
+      }
+      else{
+        callback(new SqlError(err),null)
+      }
 
     });
 
@@ -64,6 +72,7 @@ module.exports={
 
   },
   update:(req,callback)=>{
+    console.log('aalxsqx')
     Blog.findOne({where:{id:req.params.id},include:{
       model:User,
       foreignKey:'addedBy',
@@ -86,13 +95,13 @@ module.exports={
 
       });
     }).then(blog=>{
-      const schemaValidation = schemaValidation(UpdateBlogShema)(req.body);
+      const updateSchemaValidation = schemaValidation(UpdateBlogShema)(req.body);
       return new Promise((resolve,reject)=>{
-        if(schemaValidation.isValid){
+        if(updateSchemaValidation.isValid){
           return resolve(blog);
         }
         else{
-          return reject(new ValidationError({message:schemaValidation.message}));
+          return reject(new ValidationError({message:updateSchemaValidation.message}));
         }
       });
 
@@ -107,7 +116,13 @@ module.exports={
       callback(null,blog);
 
     }).catch(err=>{
-      callback(err,null);
+      console.log(err)
+      if(err instanceof  ValidationError || err instanceof UnauthorizedError){
+        callback(err,null)
+      }
+      else{
+        callback(new SqlError(err),null)
+      }
 
     });
 
