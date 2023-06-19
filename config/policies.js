@@ -27,7 +27,9 @@ module.exports.policies = {
   },
   AssetsController:{
     streamPublicFile:['lang','passport','role'],
+    downloadPublicFile:['lang','passport','role'],
     streamPrivateFile:['lang','passport','role','tokenVerifier'],
+    downloadPrivateFile:['lang','passport','role','tokenVerifier']
 
   },
   TestController:{

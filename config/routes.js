@@ -22,7 +22,8 @@ module.exports.routes = {
   'get /register/states/:countryId':'AuthController.getStatesByCountry',
   'get /v/uploads/:filename':'AssetsController.streamPrivateFile',
   'get /v/public/:filename':'AssetsController.streamPublicFile',
-  'post /upload/bulk':'TestController.upload'
+  'get /d/uploads/:filename':'AssetsController.downloadPrivateFile',
+  'get /d/public/:filename':'AssetsController.downloadPublicFile',
 
 
 

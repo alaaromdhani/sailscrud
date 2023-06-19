@@ -32,9 +32,7 @@ module.exports = {
         await User.sequelize.query(`DELETE FROM users_features WHERE UserId =`+user.id);
         await User.sequelize.query(`DELETE FROM users_permissions WHERE UserId =`+user.id);
 
-
-
-      },
+        },
 
 
     }
