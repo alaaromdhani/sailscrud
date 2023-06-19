@@ -17,20 +17,26 @@ const SqlError = require('../../utils/errors/sqlErrors');
 
 module.exports = {
   create :async(req,res)=>{
-    console.log(req.files)
-    if(req.operation && req.operation.error){
-    return   ErrorHandlor(req,req.operation.error,res);
-    }
-    else if(req.upload){
-    return   DataHandlor(req,req.upload,res);
+    if(req.operation){
+      if(req.operation.files && req.operation.files.length ){
+        try{
+          return DataHandlor(req,await Upload.bulkCreate(req.operation.files,{
+            individualHooks:true
+          }),res )
+        } catch(e){
+          console.log(e)
+          return ErrorHandlor(req,new SqlError(e),res)
+        }
+      }
+      else {
+        return ErrorHandlor(req,req.operation.files,res)
+      }
     }
     else{
-      if(req.files && req.files.length){
-        return ErrorHandlor(req,new UnkownError(),res)
-
-      }
-      return ErrorHandlor(req,new ValidationError({message:'the file is required'}),res);
+      return ErrorHandlor(req,new ValidationError({message:'uploads is required'}),res)
     }
+
+
   },
 
   async find(req, res) {

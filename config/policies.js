@@ -23,13 +23,19 @@ module.exports.policies = {
   },
   UploadController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
-    'create':['lang','passport','role','tokenVerifier','fileUpload']
+    'create':['lang','passport','role','tokenVerifier','permissions','bulkUpload']
   },
   AssetsController:{
     streamPublicFile:['lang','passport','role'],
     streamPrivateFile:['lang','passport','role','tokenVerifier'],
 
+  },
+  TestController:{
+    upload:['lang','passport','role','bulkUpload'],
+
+
   }
+
 
 
   /***************************************************************************

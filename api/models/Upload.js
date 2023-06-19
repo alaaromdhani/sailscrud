@@ -36,6 +36,7 @@ module.exports = {
 
       ,
       beforeSave: async (upload, options) => {
+        upload.isDeleted = false
         if(upload.isPublic){
           upload.link = sails.config.custom.baseUrl+'v/public/'+upload.file_name;
         }
@@ -110,8 +111,6 @@ module.exports = {
     isDeleted:{
       type: DataTypes.BOOLEAN,
       defaultValue:false,
-
-
     }
   },
   associations:()=>{
