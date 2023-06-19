@@ -177,7 +177,7 @@ module.exports = {
   },
 
   async destroy(req, res) {
-    sails.blogservice.delete(req,(err,data)=>{
+    sails.services.blogservice.delete(req,(err,data)=>{
       if(err){
         ErrorHandlor(req,err,res);
       }else{

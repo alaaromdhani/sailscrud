@@ -14,8 +14,12 @@ module.exports = {
 
 
       beforeSave:async (blog, options)=>{
+        if(blog.isNewRecord){
+            blog.status =true
+
+          }
         blog.slug = getSlug(blog.title)
-        blog.status = true;
+
       },
 
 
