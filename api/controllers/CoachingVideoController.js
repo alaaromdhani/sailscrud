@@ -52,10 +52,10 @@ module.exports = {
           })),
         }
         : {};
-      const permission = req.user.Permissions.filter(p=>p.Model.name===req.model && p.action==='update').at(0)
+     /* const permission = req.user.Permissions.filter(p=>p.Model.name===req.model && p.action==='update').at(0)
       if(!permission){
         where.isDeleted=false
-      }
+      }*/
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
