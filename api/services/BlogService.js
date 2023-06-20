@@ -72,15 +72,15 @@ module.exports={
 
   },
   update:(req,callback)=>{
-    console.log('aalxsqx')
-    Blog.findOne({where:{id:req.params.id},include:{
+
+    Blog.findOne({where:{id:req.params.id},include:[{
       model:User,
       foreignKey:'addedBy',
       include:{
         model:Role,
         foreignKey:'role_id'
       }
-    }}).then(blog=>{
+    }]}).then(blog=>{
       return new Promise((resolve,reject)=>{
         if(!blog){
           return reject(new RecordNotFoundErr());

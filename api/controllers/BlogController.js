@@ -150,11 +150,20 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await Blog.findByPk(req.params.id,{include:{
+      const data = await Blog.findByPk(req.params.id,{include:[{
         model:BlogCategory,
         foreignKey:'category_id',
 
-      }});
+      },{
+          model:Upload,
+          foreignKey:'banner',
+          as:'Banner'
+        },
+          {
+            model:Upload,
+            foreignKey:'meta_img',
+            as:'MetaImage'
+          }]});
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
