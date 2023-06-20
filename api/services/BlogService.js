@@ -130,20 +130,30 @@ module.exports={
 
   },
   deleteBlogCategory:(req,callback)=>{
-    BlogCategory.findOne({where:{id:req.params.id},include:{
+    BlogCategory.findOne({where:{id:req.params.id},include:[{
       model:User,
       foreignKey:'addedBy',
       include:{
         model:Role,
         foreignKey:'role_id'
-      }
-    }}).then(blog=>{
+
+         },
+        },{
+          model:Blog,
+        foreignKey:'category_id'
+
+
+      }]}).then(blog=>{
       return new Promise((resolve,reject)=>{
         if(!blog){
           return reject(new RecordNotFoundErr());
         }
         if(req.role.weight>=blog.User.Role.weight && blog.addedBy!=req.user.id){
           return reject(new UnauthorizedError({specific:'you cannot delete a role unless it is created from a lower user or yourself'}));
+
+        }
+        if(blog.Blogs && blog.Blogs.length){
+          return reject(new UnauthorizedError({specific:'you cannot delete this category it has some blogs related'}));
 
         }
         resolve(blog);
