@@ -17,7 +17,8 @@ const validateOptions=async (req,file,cb)=>{
      req.operation = {};
    }
    try {
-     const fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
+     let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
+      fileOptions.addedBy = req.user.id
      files.push(fileOptions);
 
      req.upload = fileOptions;
