@@ -37,13 +37,13 @@ module.exports={
 
       });
     }).then(blog=>{
-      const schemaValidation = schemaValidation(UpdateBlogcategoryShema)(req.body);
+      const updateBlogCatgeoryschemaValidation = schemaValidation(UpdateBlogcategoryShema)(req.body);
       return new Promise((resolve,reject)=>{
-        if(schemaValidation.isValid){
+        if(updateBlogCatgeoryschemaValidation.isValid){
           return resolve(blog);
         }
         else{
-          return reject(new ValidationError({message:schemaValidation.message}));
+          return reject(new ValidationError({message:updateBlogCatgeoryschemaValidation.message}));
         }
       });
 
