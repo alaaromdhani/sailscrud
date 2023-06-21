@@ -8,7 +8,11 @@ const getSlug = require('speakingurl')
  *   These are useful for situations when there is a need to create ad hoc policies unrelated to models.
  */
 module.exports = {
+
   options: {
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
+    scopes: {},
     tableName: 'blogs',
     hooks:{
 

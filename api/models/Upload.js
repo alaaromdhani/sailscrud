@@ -10,6 +10,9 @@ const path = require('path');
  */
 
 module.exports = {
+  charset: 'utf8',
+  collate: 'utf8_general_ci',
+  scopes: {},
   options: {
     tableName: 'uploads',
     hooks:{

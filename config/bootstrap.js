@@ -13,10 +13,14 @@ const permissionSeeders = require('../utils/seeders/permission');
 const featureSeeders = require('../utils/seeders/features')
 const modelSeasers = require('../utils/seeders/model');
 
+
 const roleSeeders = require('../utils/seeders/roles')
 const userSeesers = require('../utils/seeders/user');
 const countrySeeders = require('../utils/seeders/country');
 const stateSeeders = require('../utils/seeders/state');
+const  nivauScolaireSeeders = require('../utils/seeders/niveauScoleaire');
+const  matiereSeeders = require('../utils/seeders/matiere');
+const  trimestresSeeders = require('../utils/seeders/trimestres');
 const default_user_image = require('../seeders/defaultProfilePict');
 
 module.exports.bootstrap = async function() {
@@ -28,31 +32,35 @@ module.exports.bootstrap = async function() {
 
       }
     })
-    
+
 
 
   }*/
-  
-  
+
+
   await default_user_image()
   await modelSeasers()
-  
+
    await countrySeeders()
    await stateSeeders()
+
    await featureSeeders()
    await roleSeeders()
 
     await permissionSeeders()
     console.log('now user seaders')
    await userSeesers()
-   
-    
+  await nivauScolaireSeeders()
+  await matiereSeeders()
+  await trimestresSeeders()
+
+
 
 
   /*import _ from 'lodash'
   exports.createModels = function () {
     sails.log.verbose('sails-hook-permissions: syncing waterline models');
-  
+
     var models = _.compact(_.map(sails.models, function (model, name) {
       return model && model.globalId && model.identity && {
         name: model.globalId,
@@ -60,7 +68,7 @@ module.exports.bootstrap = async function() {
         attributes: _.omit(model.attributes, _.functions(model.attributes))
       };
     }));
-  
+
     return Promise.all(_.map(models, function (model) {
       return sails.models.model.findOrCreate({ name: model.name }, model);
     }));

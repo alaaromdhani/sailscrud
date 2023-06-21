@@ -15,9 +15,13 @@ const eventCallback = () => { // items, options
 */
 
 module.exports = {
+
   datastore: 'default',
   tableName: 'vcoachings',
   options: {
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
+    scopes: {},
     tableName: 'vcoachings',
     hooks:{
         beforeCreate:(coachingVideo,options)=>{

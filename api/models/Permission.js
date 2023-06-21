@@ -8,6 +8,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = {
+
   options: {
     tableName: 'permissions'
   },
@@ -26,24 +27,24 @@ module.exports = {
        * TODO remove enum and support permissions based on all controller
        * actions, including custom ones
        */
-      
+
     },
-    
-    
-    
-      
-      
-   
-    
-    
+
+
+
+
+
+
+
+
   },
-  
-      
-   
-  
-  
+
+
+
+
+
   associations : function(){
-     
+
      Permission.belongsTo(Model,{
       foreignKey:'model_id'
 
@@ -51,19 +52,19 @@ module.exports = {
      })
      Permission.belongsToMany(User, { through: 'users_permissions'});
      Permission.belongsToMany(Role, { through: 'roles_permissions'});
-     
-     
-     
-    
 
-      
-   
+
+
+
+
+
+
 
 
   }
 
-  
 
- 
+
+
 
 };
