@@ -22,6 +22,7 @@ const  nivauScolaireSeeders = require('../utils/seeders/niveauScoleaire');
 const  matiereSeeders = require('../utils/seeders/matiere');
 const  trimestresSeeders = require('../utils/seeders/trimestres');
 const default_user_image = require('../seeders/defaultProfilePict');
+const chaptersSeeders = require('../utils/seeders/chatpter')
 
 module.exports.bootstrap = async function() {
   /*function getAllKeys(object){
@@ -53,6 +54,7 @@ module.exports.bootstrap = async function() {
   await nivauScolaireSeeders()
   await matiereSeeders()
   await trimestresSeeders()
+  await chaptersSeeders()
 
 
 
