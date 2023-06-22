@@ -170,7 +170,6 @@ module.exports = {
       const extention= file.originalname.split('.').pop();
       if(!extention){
         return reject(new ValidationError({message:'extention is required'}));
-
       }
       let today = new Date()
       if(!parameter.destination){

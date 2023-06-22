@@ -235,7 +235,7 @@ module.exports={
             type:'images'
           }
         })
-        if(uploads.length!==uploadIds.length){
+        if(uploads.length!==uploadIds.length && req.body.meta_img!=req.body.banner){
           return callback(new ValidationError({message:'a file with type image is required'}),null)
         }
       }

@@ -30,6 +30,7 @@ const validateOptions=async (req,file,cb)=>{
           }
          if(req.body.banner){
            req.body.banner = parseInt(req.body.banner)
+           uploadId = req.body.banner
          }
          if(req.body.category_id && typeof (req.body.category_id)==='string'){
            req.body.category_id = parseInt(req.body.category_id)
