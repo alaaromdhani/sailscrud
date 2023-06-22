@@ -53,7 +53,12 @@ module.exports= {
                 callback(null,data)
               }
         }).catch(err=>{
+          if(err instanceof ValidationError || err instanceof recordNotFoundErr || err instanceof SqlError){
             callback(err,null)
+          }
+          else{
+            callback(new SqlError(err),null)
+          }
         })
 
     },
