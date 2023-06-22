@@ -7,6 +7,7 @@
  */
 const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
+const {NiveauScolaireShema} = require('../../utils/validations/NiveauScolaireSchema');
 
 module.exports = {
 
@@ -22,6 +23,9 @@ module.exports = {
         if(ns.isNewRecord){
           ns.active=true
         }
+      },
+      async beforeDestroy(ns,options){
+        await NiveauScolaire.sequelize.query(`DELETE FROM matieres_niveau_scolaires WHERE NiveauScolaireId =${ns.id}`);
       }
     }
   },
@@ -49,7 +53,9 @@ module.exports = {
     }
   },
   associations:()=>{
-
+    NiveauScolaire.belongsToMany(Matiere,{
+        through:'matieres_niveau_scolaires'
+    })
   }
 
 

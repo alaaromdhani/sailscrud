@@ -22,7 +22,11 @@ module.exports = {
           if(matiere.isNewRecord){
               matiere.active=true
           }
+      },
+      async beforeDestroy(matiere,options){
+        await Matiere.sequelize.query(`DELETE FROM matieres_niveau_scolaires WHERE MatiereId =${matiere.id}`);
       }
+
     }
     },
 
@@ -52,7 +56,9 @@ module.exports = {
     }
   },
   associations:()=>{
-
+      Matiere.belongsToMany(NiveauScolaire,{
+        through:'matieres_niveau_scolaires'
+      })
   }
 
 

@@ -14,18 +14,14 @@ const SqlError = require('../../utils/errors/sqlErrors');
 const ValidationError = require('../../utils/errors/validationErrors');
 module.exports = {
   async create(req, res) {
-    const createMatiereSchema =schemaValidation(MatiereShema)(req.body)
-    if(createMatiereSchema.isValid){
-      try {
-        const data = await Matiere.create(req.body);
-        return DataHandlor(req,data,res);
-      } catch (err) {
-        return ErrorHandlor(req,new SqlError(err),res);
-      }
-    }
-    else{
-      return ErrorHandlor(req,new ValidationError({message:createThemeSchema.message}),res)
-    }
+    sails.services.matiereservice.createMatiere(req,(err,data)=>{
+          if(err){
+            return ErrorHandlor(req,err,res)
+          }
+          else{
+              return DataHandlor(req,data,res)
+          }
+    })
   },
   async find(req, res) {
     try {
@@ -54,6 +50,11 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Matiere.findAndCountAll({
         where,
+        include:{
+            model:NiveauScolaire,
+            through:'matieres_niveau_scolaires',
+            attributes:['id','name_ar','name_fr']
+        },
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
@@ -85,23 +86,14 @@ module.exports = {
   },
 
   async update(req, res) {
-    const updateMatiereValidation = schemaValidation(UpdateMatiereShema)(req.body)
-    if(updateMatiereValidation.isValid){
-      try {
-        const data = await Matiere.findByPk(req.params.id);
-        if (!data) {
-          return ErrorHandlor(req,new RecordNotFoundErr(),res)
-        }
-        const updatedMatiere = await data.update(req.body);
-         return DataHandlor(req,updatedMatiere,res)
-      } catch (err) {
-        return ErrorHandlor(req,new SqlError(err),res);
+    sails.services.matiereservice.updateMatiere(req,(err,data)=>{
+      if(err){
+        return ErrorHandlor(req,err,res)
       }
-    }
-    else{
-      return ErrorHandlor(req,new ValidationError({message:updateMatiereValidation.message}),res)
-    }
-
+      else{
+        return DataHandlor(req,data,res)
+      }
+    })
   },
 
   /*async destroy(req, res) {
