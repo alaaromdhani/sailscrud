@@ -77,7 +77,14 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await NiveauScolaire.findByPk(req.params.id);
+      const data = await NiveauScolaire.findByPk(req.params.id,{
+          include:{
+              model:Matiere,
+            foreignKey:'matiere_id',
+            through:MatiereNiveau
+
+          }
+      });
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }

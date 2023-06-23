@@ -34,8 +34,10 @@ module.exports.policies = {
   },
   TestController:{
     upload:['lang','passport','role','bulkUpload'],
-
-
+  },
+  CourseController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'rateCourse':['lang','passport','role','tokenVerifier']
   }
 
 

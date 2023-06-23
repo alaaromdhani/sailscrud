@@ -172,8 +172,9 @@ module.exports = {
     User.hasMany(BlogCategory,{
       foreignKey:'addedBy'
     });
-
-
+    User.hasMany(Rate,{
+      foreignKey:'ratedBy'
+    })
   }
   // Can be omitted, so default sails.config.models.connection will be used
 };

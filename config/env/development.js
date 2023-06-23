@@ -442,6 +442,10 @@ module.exports = {
       sender:'2160000'
 
     },
+    ratings:{
+        maxValue:5,
+        minValue:0
+    },
     files:{
       extensions:{
         images:['gif','png','jpg','jpeg','webp','svg','ico'],

@@ -11,19 +11,22 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
-    hooks:{
+    hooks: {
       beforeSave(course,options){
         if(course.isNewRecord){
-            course.active = true
-            course.rating =0
+          course.active = true
+          course.rating =0
         }
+        console.log('adding a course')
       },
-      beforeDestroy(){
-
-
-      }
+      async beforeDestroy(course,options){
+        await Rate.destroy({
+          where:{course_id:course.id}
+        })}
 
     },
+
+
     tableName: 'courses'
   },
   datastore: 'default',
@@ -57,7 +60,7 @@ module.exports = {
   },
   associations:()=>{
     Course.belongsTo(NiveauScolaire, {
-      foreignKey:'niveau_scoleaire_id'
+      foreignKey:'niveau_scolaire_id'
     });
     Course.belongsTo(Chapitre, {
       foreignKey:'chapitre_id'
@@ -65,6 +68,13 @@ module.exports = {
     Course.belongsTo(Matiere, {
       foreignKey:'matiere_id'
     });
+    Course.belongsTo(User,{
+      foreignKey:'addedBy'
+    })
+    Course.hasMany(Rate,{
+      foreignKey:'course_id'
+    })
+
   }
 
 };

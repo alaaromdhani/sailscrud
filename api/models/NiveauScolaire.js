@@ -54,7 +54,7 @@ module.exports = {
   },
   associations:()=>{
     NiveauScolaire.belongsToMany(Matiere,{
-        through:'matieres_niveau_scolaires'
+        through:MatiereNiveau
     })
   }
 
