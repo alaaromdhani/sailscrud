@@ -96,7 +96,7 @@ module.exports = {
     })
   },
 
-  /*async destroy(req, res) {
+  async destroy(req, res) {
     try {
       const data = await Matiere.findByPk(req.params.id);
       if (!data) {
@@ -107,5 +107,5 @@ module.exports = {
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
-  },*/
+  },
 };
