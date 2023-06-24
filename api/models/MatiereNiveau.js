@@ -21,7 +21,7 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
-    tableName: 'users_niveau_scolaires',
+    tableName: 'matieres_niveau_scolaires',
   },
   attributes: {
     id: {

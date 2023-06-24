@@ -4,7 +4,9 @@ const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessag
 const SqlError = require('../../utils/errors/sqlErrors');
 const ValidationError = require('../../utils/errors/validationErrors');
 const recordNotFoundErr = require('../../utils/errors/recordNotFound')
+const unauthorizedErr = require('../../utils/errors/UnauthorizedError')
 const {Op} = require('sequelize');
+
 module.exports= {
     createMatiere: (req,callback)=>{
 
@@ -64,6 +66,7 @@ module.exports= {
     },
   updateMatiere:(req,callback)=>{
     let relatedNs
+
     let subject
     new Promise((resolve, reject) => {
       const updateMatiereSchema =schemaValidation(UpdateMatiereShema)(req.body)
@@ -74,15 +77,28 @@ module.exports= {
          return  reject(new ValidationError({message:updateMatiereSchema.message}))
       }
     }).then(matiere=>{
-         return Matiere.findByPk(req.params.id)
+         if(typeof (req.body.active)==='boolean' && !req.body.active){
+           return matiere.findByPk(req.params.id,{
+             include:{
+               model:Course,
+               foreignKey:'matiere_id'
+             }
+           })
+         }
+          return matiere.findByPk(req.params.id)
     }).then(matiere=>{
         return new Promise((resolve, reject) => {
-            if(matiere){
-              subject = matiere
-              return resolve(req.body)
+            if(!matiere){
+              return reject(new recordNotFoundErr())
+            }
+            else if(matiere.Courses && matiere.Courses.length){
+              return reject(new unauthorizedErr({
+                specific:'you can\'t set this matiere as inactive cause it belongs to some courses'
+              }))
             }
             else{
-              return reject(new recordNotFoundErr())
+              subject = matiere
+              return resolve(req.body)
             }
         })
     }).then(matiere=>{
@@ -131,6 +147,35 @@ module.exports= {
         callback(new SqlError(err),null)
       }
     })
+
+
+  },
+  deleteMatiere:(req,callback)=>{
+        Matiere.findByPk(req.params.id,{
+            include:{
+              model:Course,
+              foreignKey:'matiere_id'
+            }
+        }).then(m=>{
+            return new Promise((resolve, reject) => {
+                  if(!m){
+                    return reject(new recordNotFoundErr())
+                  }
+                  else if(m.Courses && m.Courses.length ){
+                    return reject(new unauthorizedErr())
+                  }
+                  else{
+                      return resolve(m)
+                  }
+            })
+        }).then(m=>{
+              return m.destroy()
+        }).then(sd=>{
+            callback(null,{})
+        }).catch(e=>{
+          callback(e,null)
+        })
+
 
 
   }
