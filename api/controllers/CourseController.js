@@ -155,12 +155,12 @@ module.exports = {
     try {
       const data = await Course.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'Course not found' });
+        return ErrorHandlor(req,new recordNotfFoundErr(),res)
       }
       const updatedCourse = await data.update(req.body);
-      return res.json(updatedCourse);
+      return DataHandlor(req,updatedCourse,res);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 
