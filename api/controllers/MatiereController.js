@@ -97,15 +97,13 @@ module.exports = {
   },
 
   async destroy(req, res) {
-    try {
-      const data = await Matiere.findByPk(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: 'Matiere not found' });
+    sails.services.matiereservice.deleteMatiere(req,(err,data)=>{
+      if(err){
+        return ErrorHandlor(req,err,res)
       }
-      await data.destroy();
-      return res.status(204).send();
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      else{
+        return DataHandlor(req,data,res)
+      }
+    })
   },
 };
