@@ -1,5 +1,7 @@
 const recordNotFoundErr = require('../../utils/errors/recordNotFound');
 const unauthorizedErr = require('../../utils/errors/UnauthorizedError');
+const ValidationError = require('../../utils/errors/validationErrors');
+const SqlError = require('../../utils/errors/sqlErrors');
 module.exports = {
       deleteNiveauScolaire:(req,callback)=>{
         NiveauScolaire.findByPk(req.params.id,{
@@ -24,7 +26,12 @@ module.exports = {
           }).then(sd=>{
             callback(null,{})
           }).catch(e=>{
-            callback(e,null)
+                if(e instanceof ValidationError || e instanceof recordNotFoundErr || e instanceof SqlError){
+                  callback(e,null)
+                }
+                else{
+                  callback(new SqlError(e),null)
+                }
           })
       }
 }
