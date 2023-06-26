@@ -21,7 +21,7 @@ module.exports = {
         sails.services.userservice.create(req,req.body,(err,user)=>{
           console.log(err)
           if(err){
-             ErrorHandlor(req,err,res)      
+             ErrorHandlor(req,err,res)
           }
           else{
             DataHandlor(req,user,res)
@@ -33,13 +33,13 @@ module.exports = {
       else{
         ErrorHandlor(req,new ValidationError(bodyValidation),res)
       }
-   
-      
-     
+
+
+
   },
 
   async find(req, res) {
-    
+
     try {
       const page = parseInt(req.query.page)+1 || 1;
       const limit = req.query.limit || 10;
@@ -47,7 +47,7 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(User.sequelize.models.User.rawAttributes);
-      
+
 
       // Create the filter conditions based on the search query
       let where = search
@@ -59,10 +59,10 @@ module.exports = {
           })),
         }
         : {};
-      
-       
+
+
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await User.findAndCountAll({
@@ -71,18 +71,18 @@ module.exports = {
           model:Role,
           where:{
             weight:{
-              [Op.gt]:req.role.weight 
+              [Op.gt]:req.role.weight
             }
           },
           foreignKey:'role_id'
-        
+
        },{
         model:User,
-        
+
         foreignKey:'addedBy',
         as:'adder',
         attributes:['username']
-        
+
 
        }],
         order,
@@ -118,13 +118,13 @@ module.exports = {
             foreignKey:'role_id',
             attributes:['name']
           }],
-          
+
 
       });
       if (!data) {
         return ErrorHandlor(req,{message:'user not found'},res);
       }
-      
+
       return DataHandlor(req,data,res)
     } catch (err) {
       return ErrorHandlor(req,new SqlError(err),res);
@@ -149,11 +149,11 @@ module.exports = {
     }
     else{
       ErrorHandlor(req,new ValidationError(bodyValidation),res)
-      
-    }
- 
 
-    
+    }
+
+
+
   },
 
   async destroy(req, res) {

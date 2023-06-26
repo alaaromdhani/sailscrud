@@ -5,12 +5,9 @@ const ValidationError = require('../../utils/errors/validationErrors');
 const schemaValidation = require('../../utils/validations');
 const { UpdateBlogShema, BlogShema } = require('../../utils/validations/BlogSchema');
 const { UpdateBlogcategoryShema } = require('../../utils/validations/BlogcategorySchema');
-const { Op, UnknownConstraintError } = require('sequelize');
-const { resolve } = require('path');
+const { Op} = require('sequelize');
 const SqlError = require('../../utils/errors/sqlErrors');
-const UnkownError = require('../../utils/errors/UnknownError');
 
-const path = require('path');
 
 module.exports={
   updateBlogCategory:(req,callback)=>{

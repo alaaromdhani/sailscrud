@@ -6,12 +6,9 @@
  */
 
 
-const schemaValidation = require('../../utils/validations');
-const {MatiereShema, UpdateMatiereShema} = require('../../utils/validations/MatiereSchema');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound')
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
 const SqlError = require('../../utils/errors/sqlErrors');
-const ValidationError = require('../../utils/errors/validationErrors');
 module.exports = {
   async create(req, res) {
     sails.services.matiereservice.createMatiere(req,(err,data)=>{
@@ -45,7 +42,7 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Matiere.findAndCountAll({

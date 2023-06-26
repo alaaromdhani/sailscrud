@@ -2,7 +2,6 @@ const multer = require('multer')
 const {ErrorHandlor} = require('../../utils/translateResponseMessage');
 const ValidationError = require('../../utils/errors/validationErrors');
 const path = require('path');
-const {uuid} = require('sails-hook-orm/constants/deprecated-validations.list');
 
 const validateOptions = async (req,file,cb)=>{
   if(!req.operation){

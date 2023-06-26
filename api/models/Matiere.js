@@ -5,7 +5,7 @@
  *   la matière d'étude et peut etre la meme pour plusieur niveau
  *
  */
-const Sequelize = require('sequelize');
+
 const { DataTypes } = require('sequelize');
 
 module.exports = {

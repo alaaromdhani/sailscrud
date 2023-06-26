@@ -1,6 +1,6 @@
 const {
-    DataTypes, Op 
-  } = require('sequelize'); 
+    DataTypes
+  } = require('sequelize');
   module.exports = {
     options: {
       tableName: 'UserTokens'
@@ -19,39 +19,38 @@ const {
       },
       isActive:{ type:DataTypes.BOOLEAN },
       isDeleted:{ type:DataTypes.BOOLEAN }
-      
+
     },
     associations:()=>{
-        
-        
+
+
         UserToken.belongsTo(User,{
             foreignKey:'user_id',
             targetKey:'id'
-  
-  
+
+
         })
-  
-  
-  
+
+
+
     }
-  
-  
+
+
       //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
       //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
       //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
-  
-  
+
+
       //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
       //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
       //  ╚═╝╩ ╩╚═╝╚═╝═╩╝╚═╝
-  
-  
+
+
       //  ╔═╗╔═╗╔═╗╔═╗╔═╗╦╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
       //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
       //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
-  
-    
-  
+
+
+
   };
-  
-  
+

@@ -5,7 +5,6 @@
  *   tells the type of the course,
  *   PREDEFINED MODEL
  */
-const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
 
 module.exports = {

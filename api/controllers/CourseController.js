@@ -55,7 +55,7 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Course.findAndCountAll({

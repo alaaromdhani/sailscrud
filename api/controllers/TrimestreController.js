@@ -8,7 +8,6 @@
 
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
 const schemaValidation = require('../../utils/validations');
-const {CourseShema} = require('../../utils/validations/CourseSchema');
 const SqlError = require('../../utils/errors/sqlErrors');
 const ValidationError = require('../../utils/errors/validationErrors');
 const recordNotFoundErr = require('../../utils/errors/recordNotFound');
@@ -52,7 +51,7 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Trimestre.findAndCountAll({

@@ -13,19 +13,26 @@ const { CountryShema, UpdateCountrySchema } = require("../../utils/validations/C
 
 module.exports = {
   async create(req, res) {
-    try {
-      const data = await Country.create(req.body);
-      return DataHandlor(req,data,res)
-    } catch (err) {
-      return ErrorHandlor(req,new SqlError(err),res)
+    const addCountryValidation = schemaValidation(CountryShema)(req.body)
+
+    if(addCountryValidation.isValid){
+      try {
+        const data = await Country.create(req.body);
+        return DataHandlor(req,data,res)
+      } catch (err) {
+        return ErrorHandlor(req,new SqlError(err),res)
+      }
     }
-  },
+    else{
+      return  ErrorHandlor(req,new ValidationError({message:addCountryValidation.message}))
+    }
+    },
 
   async find(req, res) {
     try {
       const page = parseInt(req.query.page)+1|| 1;
       const limit = req.query.limit || 10;
-      const isActive = (req.query.active!=undefined && req.query.active=='true' )?true:undefined 
+      const isActive = (req.query.active!=undefined && req.query.active=='true' )?true:undefined
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
@@ -42,13 +49,13 @@ module.exports = {
           })),
         }
         : {};
-        
+
         if(isActive){
           where.active=true
         }
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
-      
+      const order = [[sortBy, sortOrder]];
+
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Country.findAndCountAll({
         where,
@@ -76,7 +83,7 @@ module.exports = {
           include:{
             model:State,
             foreignKey:'country_id',
-          
+
           }
 
       });
@@ -98,9 +105,9 @@ module.exports = {
         if (!data) {
           return ErrorHandlor(req,new RecordNotFoundErr(),res);
         }
-        
+
         const updatedCountry = await data.update(req.body);
-        
+
         if(req.body.active!=undefined){
           console.log('active is here')
             await State.update({active:req.body.active},{where:{country_id:updatedCountry.id}})
@@ -115,7 +122,7 @@ module.exports = {
     else{
       ErrorHandlor(req,new ValidationError({message:bodyVlidation.message}),res)
     }
-    
+
   },
 
   async destroy(req, res) {

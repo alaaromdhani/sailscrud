@@ -1,6 +1,1 @@
-done //now the profile picture is a link of an upload 
-done// the upload can be updated and isDeleted can be changed to true
-done//solution: we prevent this from happening by sending a error everyTime w try to soft delete a profile picture or to make it private 
-done// if we delete an upload the user that has a profile picture related to that upload will assign the default profile picture 
-done// hook before deleting an upload we delete the file          
-imergency// validation of category_id when the adding the blog
+//not-done:state schema adding

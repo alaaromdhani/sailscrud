@@ -9,8 +9,7 @@ const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 const SqlError = require('../../utils/errors/sqlErrors');
 const ValidationError = require('../../utils/errors/validationErrors');
 const { ErrorHandlor, DataHandlor } = require('../../utils/translateResponseMessage');
-const schemaValidation = require('../../utils/validations');
-const { BlogShema } = require('../../utils/validations/BlogSchema');
+
 
 
 module.exports = {
@@ -111,7 +110,7 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Blog.findAndCountAll({

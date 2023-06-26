@@ -6,9 +6,8 @@
  */
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
-const ValidationError = require("../../utils/errors/validationErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
-const schemaValidation = require("../../utils/validations");
+
 
 module.exports = {
   async create(req, res) {
@@ -23,7 +22,7 @@ module.exports = {
   async find(req, res) {
     try {
       const page = parseInt(req.query.page)+1 || 1;
-      const isActive = (req.query.active!=undefined && req.query.active=='true' )?true:undefined 
+      const isActive = (req.query.active!=undefined && req.query.active=='true' )?true:undefined
       const limit = req.query.limit || 10;
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
@@ -47,7 +46,7 @@ module.exports = {
         }
         console.log(where.active)
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await State.findAndCountAll({
@@ -93,13 +92,13 @@ module.exports = {
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
-        
+
       const updatedState = await data.update(req.body);
       if(updatedState.active==true){
         await Country.update({active:true},{where:{id:updatedState.country_id}})
 
       }
-    
+
       return DataHandlor(req,updatedState,res)
       } catch (err) {
         return ErrorHandlor(res,new SqlError(err),res);

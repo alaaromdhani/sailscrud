@@ -5,13 +5,12 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage");
 const schemaValidation = require("../../utils/validations");
-const { BlogcategoryShema,UpdateBlogcategoryShema } = require("../../utils/validations/BlogcategorySchema");
+const { BlogcategoryShema } = require("../../utils/validations/BlogcategorySchema");
 
 
 module.exports = {
@@ -25,14 +24,14 @@ module.exports = {
         return DataHandlor(req,data,res);
       } catch (err) {
         return ErrorHandlor(req,new SqlError(err),res);
-      }    
-    
+      }
+
     }else{
         return ErrorHandlor(req,new ValidationError({message:createBlogCatgeoryValidation.message}),res)
     }
-    
+
   },
- 
+
   async find(req, res) {
     try {
       const page = parseInt(req.query.page)+1 || 1;
@@ -55,7 +54,7 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await BlogCategory.findAndCountAll({
@@ -88,7 +87,7 @@ module.exports = {
     } catch (err) {
       return ErrorHandlor(req,new SqlError(err),res);
     }
-  
+
   },
 
   async update(req, res) {

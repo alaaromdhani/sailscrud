@@ -1,5 +1,5 @@
 const path = require("path")
-const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
+const { ErrorHandlor} = require("../../utils/translateResponseMessage")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 
 module.exports={

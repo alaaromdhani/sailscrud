@@ -21,7 +21,7 @@ module.exports = {
       if(bodyValidation.isValid){
 
         sails.services.roleservice.create(req,req.body,(err,role)=>{
-          
+
           if(err){
             console.log(err)
             ErrorHandlor(req,err,res)
@@ -34,8 +34,8 @@ module.exports = {
       })
       }
       else{
-        ErrorHandlor(req,new ValidationError(bodyValidation),res)      
-      
+        ErrorHandlor(req,new ValidationError(bodyValidation),res)
+
       }
 
   },
@@ -62,7 +62,7 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Role.findAndCountAll({
@@ -80,7 +80,7 @@ module.exports = {
         },{
             model:User,
             foreignKey:'role_id',
-            
+
 
         }],
         order,
@@ -129,10 +129,10 @@ module.exports = {
     if(bodyValidation.isValid){
 
       sails.services.roleservice.update(req,req.body,(err,user)=>{
-        
+
         if(err){
           ErrorHandlor(req,err,res)
-          
+
         }
         else{
           DataHandlor(req,user,res)
@@ -142,7 +142,7 @@ module.exports = {
     })
     }
     else{
-      ErrorHandlor(req,new ValidationError(bodyValidation),res)      
+      ErrorHandlor(req,new ValidationError(bodyValidation),res)
     }
   },
 

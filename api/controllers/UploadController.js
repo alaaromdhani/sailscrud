@@ -11,10 +11,7 @@ const schemaValidation = require('../../utils/validations');
 const { updateUploadShema } = require('../../utils/validations/UploadSchema');
 const ValidationError = require('../../utils/errors/validationErrors');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
-const UnkownError = require('../../utils/errors/UnknownError');
 const SqlError = require('../../utils/errors/sqlErrors');
-
-
 module.exports = {
   create :async(req,res)=>{
     if(req.operation){
@@ -65,7 +62,7 @@ module.exports = {
 
       }
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+      const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Upload.findAndCountAll({

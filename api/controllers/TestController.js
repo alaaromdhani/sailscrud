@@ -1,10 +1,7 @@
 const {ErrorHandlor, DataHandlor} = require('../../utils/translateResponseMessage');
 const ValidationError = require('../../utils/errors/validationErrors');
 const SqlError = require('../../utils/errors/sqlErrors')
-const UnkonwnError = require('../../utils/errors/UnknownError')
-const path = require('path');
-const fs = require('fs');
-const {dirname} = require('path');
+
 module.exports={
   upload:async (req,res)=>{
    if(req.operation){
