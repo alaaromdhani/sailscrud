@@ -52,6 +52,17 @@ module.exports = {
       return ErrorHandlor(req,new SQLError(error),res)
     }
   },
+  async destroy(req, res) {
+    sails.services.configservice.deleteChapitre(req,(err,data)=>{
+        if(err){
+            return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+    })
+  },
+
 
 
 };

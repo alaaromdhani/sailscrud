@@ -7,7 +7,9 @@ const { DataTypes } = require("sequelize");
  *   a child of a course (subcourse)
  */
 module.exports = {
+  datastore: 'default',
   options: {
+    tableName: 'c_intercatives',
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
@@ -26,11 +28,8 @@ module.exports = {
 
     },
 
-
-    tableName: 'c_intercatives'
   },
-  datastore: 'default',
-  tableName: 'courses',
+  tableName: 'c_intercatives',
   attributes: {
     id:{
       type:DataTypes.INTEGER,
@@ -67,6 +66,9 @@ module.exports = {
     })
     CoursInteractive.belongsTo(Upload,{
       foreignKey:'org_file'
+    })
+    CoursInteractive.hasMany(Rate,{
+      foreignKey:'c_interactive_id'
     })
 
   }

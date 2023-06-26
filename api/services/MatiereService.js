@@ -162,7 +162,7 @@ module.exports= {
                     return reject(new recordNotFoundErr())
                   }
                   else if(m.Courses && m.Courses.length ){
-                    return reject(new unauthorizedErr())
+                    return reject(new unauthorizedErr({specific:'you cannot delete matiere with courses attributed to it'}))
                   }
                   else{
                       return resolve(m)

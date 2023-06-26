@@ -7,9 +7,29 @@
 
 
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
+const schemaValidation = require('../../utils/validations');
+const {CourseShema} = require('../../utils/validations/CourseSchema');
+const SqlError = require('../../utils/errors/sqlErrors');
+const ValidationError = require('../../utils/errors/validationErrors');
+const recordNotFoundErr = require('../../utils/errors/recordNotFound');
+const {TrimestreShema, UpdateTrimestreShema} = require('../../utils/validations/TrimestreSchema');
+const recordNotfFoundErr = require('../../utils/errors/recordNotFound');
 module.exports = {
-
-
+  async create(req,res){
+    const createTrimestreValidation = schemaValidation(TrimestreShema)(req.body)
+    if(createTrimestreValidation.isValid){
+      try {
+        let  courseToCreate = req.body
+        const data = await Trimestre.create(courseToCreate);
+        return DataHandlor(req,data,res)
+      } catch (err) {
+        return ErrorHandlor(req,new SqlError(err),res);
+      }
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:createTrimestreValidation.message}),res)
+    }
+  },
   async find(req, res) {
     try {
       const page = parseInt(req.query.page)+1+1 || 1;
@@ -54,5 +74,49 @@ module.exports = {
       return ErrorHandlor(req,new SQLError(error),res);
     }
   },
+  async findOne(req, res) {
+    try {
+      const data = await Trimestre.findByPk(req.params.id);
+      if (!data) {
+        return ErrorHandlor(req,new recordNotFoundErr(),res)
+      }
+      return DataHandlor(req,data,res)
+    } catch (err) {
+      return ErrorHandlor(req,new SqlError(err),res);
+    }
+  },
+  async update(req, res) {
+    const updateTrimestre = schemaValidation(UpdateTrimestreShema)(req.body)
+      if(updateTrimestre.isValid){
+        try {
+          const data = await Trimestre.findByPk(req.params.id);
+          if (!data) {
+            return ErrorHandlor(req,new recordNotfFoundErr(),res)
+          }
+          const updatedCourse = await data.update(req.body);
+          return DataHandlor(req,updatedCourse,res);
+        } catch (err) {
+          return ErrorHandlor(req,new SqlError(err),res);
+        }
+      }
+      else{
+          return ErrorHandlor(req,new ValidationError({message:updateTrimestre.message}))
+      }
+  },
+
+  async destroy(req, res) {
+    try {
+      const data = await Trimestre.findByPk(req.params.id);
+      if (!data) {
+        return ErrorHandlor(req,new recordNotfFoundErr(),res)
+      }
+      await data.destroy();
+      return DataHandlor(req, {},res);
+    } catch (err) {
+      return ErrorHandlor(req,new SqlError(err),res);
+    }
+  },
+
+
 
 };

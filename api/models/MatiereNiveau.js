@@ -43,6 +43,7 @@ module.exports = {
       MatiereNiveau.belongsTo(NiveauScolaire,{
         foreignKey:'NiveauScolaireId'
       })
+
   }
 
 

@@ -34,6 +34,9 @@ module.exports = {
     Rate.belongsTo(Course,{
         foreignKey:'course_id'
     })
+    Rate.belongsTo(CoursInteractive,{
+        foreignKey:'c_interactive_id'
+    })
   }
 
 

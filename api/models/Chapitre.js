@@ -40,7 +40,9 @@ module.exports = {
 
   },
   associations:()=>{
-
+    Chapitre.hasMany(Course,{
+        foreignKey:'chapitre_id'
+    })
   }
 
 
