@@ -85,7 +85,7 @@ module.exports= {
              }
            })
          }
-          return matiere.findByPk(req.params.id)
+          return Matiere.findByPk(req.params.id)
     }).then(matiere=>{
         return new Promise((resolve, reject) => {
             if(!matiere){
