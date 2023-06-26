@@ -78,7 +78,7 @@ module.exports= {
       }
     }).then(matiere=>{
          if(typeof (req.body.active)==='boolean' && !req.body.active){
-           return matiere.findByPk(req.params.id,{
+           return Matiere.findByPk(req.params.id,{
              include:{
                model:Course,
                foreignKey:'matiere_id'
@@ -91,7 +91,11 @@ module.exports= {
             if(!matiere){
               return reject(new recordNotFoundErr())
             }
-
+            else if(matiere.Courses && matiere.Courses.length){
+              return reject(new unauthorizedErr({
+                specific:'you can\'t set this matiere as inactive cause it belongs to some courses'
+              }))
+            }
             else{
               subject = matiere
               return resolve(req.body)
@@ -136,7 +140,6 @@ module.exports= {
         callback(null,data)
       }
     }).catch(err=>{
-      console.log(err)
       if(err instanceof ValidationError || err instanceof recordNotFoundErr || err instanceof SqlError){
         callback(err,null)
       }
