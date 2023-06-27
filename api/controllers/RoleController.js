@@ -47,7 +47,7 @@ module.exports = {
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
-      const attributes = Object.keys(Role.sequelize.models.User.rawAttributes);
+      const attributes = Object.keys(Role.sequelize.models.Role.rawAttributes);
 
 
       // Create the filter conditions based on the search query

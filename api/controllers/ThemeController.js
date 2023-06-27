@@ -35,6 +35,7 @@ module.exports = {
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
+      const attributes = Object.keys(Theme.sequelize.models.Theme.rawAttributes);
 
 
       // Create the filter conditions based on the search query
@@ -71,6 +72,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res)
     } catch (error) {
+      console.log(error)
       return ErrorHandlor(req,new SqlError(error),res); ;
     }
   },

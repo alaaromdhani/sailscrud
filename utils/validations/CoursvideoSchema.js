@@ -1,3 +1,4 @@
+const joi = require('joi')
 const CoursVideoShema = joi.object({
     name: joi.string().required(),
     description:joi.string().required(),
@@ -10,7 +11,7 @@ const CoursVideoShema = joi.object({
 const UpdateCoursVideoShema = joi.object({
     name: joi.string(),
     description:joi.string(),
-    status: string().valid('public','private'),
+    status: joi.string().valid('public','private'),
     commentaire:joi.string(),
     parent:joi.number(),
     validity:joi.boolean(),
