@@ -34,7 +34,7 @@ module.exports = {
 
   async find(req, res) {
     try {
-      const page = parseInt(req.query.page)+1+1 || 1;
+      const page = parseInt(req.query.page)+1 || 1;
       const limit = req.query.limit || 10;
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute

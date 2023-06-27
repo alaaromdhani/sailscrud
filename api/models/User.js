@@ -20,7 +20,9 @@ module.exports = {
     hooks:{
       beforeSave: async (user, options) => {
         if (user.changed('password') || user.isNewRecord) {
-          console.log(user.password);
+            if(user.isNewRecord){
+              user.isDeleted =false
+            }
           user.password = await bcrypt.hash(user.password, 10);
         }
       },

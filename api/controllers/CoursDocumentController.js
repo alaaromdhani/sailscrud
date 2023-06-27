@@ -1,31 +1,42 @@
 /**
- * Api/CoursInteractiveController.js
+ * Api/CoursDocumentController.js
  *
- * @description :: Server-side logic for managing cours_interactive endpoints
+ * @description :: Server-side logic for managing cours_document endpoints
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
-const ValidationError = require("../../utils/errors/validationErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
-const schemaValidation = require("../../utils/validations");
-const { CoursInteractiveShema } = require("../../utils/validations/CoursInteractiveSchema");
 
 
 module.exports = {
   async create(req, res) {
-    const createCoursIntercativeValidation = schemaValidation(CoursInteractiveShema)(req.body)
-    if(createCoursIntercativeValidation.isValid){
-      try {
-        const data = await CoursInteractive.create(req.body);
-        return DataHandlor(req,data,res)
-      } catch (err) {
-        return ErrorHandlor(req,new SqlError(err),res)
-      }
+    if(req.operation){
+        if(req.operation.error){
+          return ErrorHandlor(req,req.operation.error,res)
+        }
+        else{
+          try{
+            const upload = await Upload.create(req.upload)
+            let data = req.operation.data
+            data.document = upload.id 
+            return DataHandlor(req,await data.save(),res) 
+          }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+          }
+        }
     }
     else{
-        return ErrorHandlor(req,new ValidationError({message:createCoursIntercativeValidation.message}))
+      sails.services.subcourseservice.createDocumentCourse(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+      })
+        
     }
   },
 
@@ -36,7 +47,7 @@ module.exports = {
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
-      const attributes = Object.keys(CoursInteractive.sequelize.models.CoursInteractive.rawAttributes);
+      const attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
 
 
       // Create the filter conditions based on the search query
@@ -51,10 +62,10 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
-      const order = [[sortBy, sortOrder]];
+      const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
-      const { count, rows } = await CoursInteractive.findAndCountAll({
+      const { count, rows } = await CoursDocument.findAndCountAll({
         where,
         order,
         limit: parseInt(limit, 10),
@@ -70,34 +81,38 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res)
     } catch (error) {
-      return ErrorHandlor(req,new SqlError(error),res)
+      return ErrorHandlor(req,new SqlError(error),res);
     }
   },
 
   async findOne(req, res) {
     try {
-      const data = await CoursInteractive.findByPk(req.params.id);
+      const data = await CoursDocument.findByPk(req.params.id);
       if (!data) {
-        return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
-        return DataHandlor(req,data,res)
+      return DataHandlor(req,data,res)
     } catch (err) {
-        return ErrorHandlor(req,new SqlError(err),res)
+      return ErrorHandlor(req,new SqlError(err),res)
     }
   },
 
   async update(req, res) {
-    sails.services.subcourseservice.updateInteractiveCourse(req,(err,data)=>{
-        
-
-    })
-  },
+    sails.services.subcourseservice.updateDocCourse(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+      })
+    },
 
   async destroy(req, res) {
     try {
-      const data = await CoursInteractive.findByPk(req.params.id);
+      const data = await CoursDocument.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'CoursInteractive not found' });
+        return res.status(404).json({ error: 'CoursDocument not found' });
       }
       await data.destroy();
       return res.status(204).send();

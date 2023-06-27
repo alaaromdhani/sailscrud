@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 
+
 /**
  * @module Course
  *
@@ -12,17 +13,18 @@ module.exports = {
     collate: 'utf8_general_ci',
     scopes: {},
     hooks: {
-      beforeSave(course,options){
+      beforeSave:(course,options)=>{
         if(course.isNewRecord){
           course.active = true
           course.rating =0
         }
         console.log('adding a course')
       },
-      async beforeDestroy(course,options){
+      beforeDestroy:async (course,options)=>{
         await Rate.destroy({
           where:{course_id:course.id}
-        })}
+        })
+      }
 
     },
 
@@ -71,9 +73,11 @@ module.exports = {
     Course.belongsTo(User,{
       foreignKey:'addedBy'
     })
-    Course.hasMany(Rate,{
-      foreignKey:'course_id'
+    Course.belongsToMany(Trimestre,{
+      through:'trimestres_cours'
     })
+
+    
 
   }
 

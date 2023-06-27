@@ -65,5 +65,8 @@ module.exports = {
           CoachingVideo.belongsTo(Theme,{
             foreignKey:'theme_id'
           })
+          CoachingVideo.hasMany(Rate,{
+            foreignKey:'cv_id' 
+          })
     }
 };

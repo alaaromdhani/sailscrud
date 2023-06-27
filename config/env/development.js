@@ -450,7 +450,7 @@ module.exports = {
       extensions:{
         images:['gif','png','jpg','jpeg','webp','svg','ico'],
         videos:['mp4','avi','mov','webm'],
-        doc:['doc','docs','pdf'],
+        doc:['doc','docx','pdf'],
         audio:['mp3'],
         presentation:['ppt', 'pptx'],
       },

@@ -31,12 +31,19 @@ module.exports = {
     Rate.belongsTo(User,{
         foreignKey:'ratedBy'
     })
-    Rate.belongsTo(Course,{
-        foreignKey:'course_id'
-    })
     Rate.belongsTo(CoursInteractive,{
         foreignKey:'c_interactive_id'
     })
+    Rate.belongsTo(CoursDocument,{
+      foreignKey:'c_document_id'
+    })
+    Rate.belongsTo(CoursVideo,{
+      foreignKey:'c_video_id'
+    })
+    Rate.belongsTo(CoursInteractive,{
+      foreignKey:'cv_id'
+    })
+
   }
 
 

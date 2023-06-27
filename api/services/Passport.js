@@ -79,7 +79,7 @@ else{
   
     passport.deserializeUser(function (id, next) {
        
-      return User.findOne({where:{id: id},include:[{
+      return User.findOne({where:{id: id,isDeleted:false},include:[{
         model:Role,
         foreighKey:'role_id'
 

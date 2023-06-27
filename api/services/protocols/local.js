@@ -65,7 +65,7 @@ exports.register = function (user,callback){
 exports.login = function (req, identifier, password, next) {
     console.log()
     var isEmail = validateEmail(identifier)
-      , query   = {};
+      , query   = {isDeleted:false};
   
     if (isEmail) {
       query.email = identifier;

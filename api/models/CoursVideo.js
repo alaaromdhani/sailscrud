@@ -1,37 +1,37 @@
 const { DataTypes } = require("sequelize");
 
 /**
- * @module CoursIntercative
+ * @module CoursVideo
  *
  * @description
- *   a child of a course (subcourse)
+ *   a child of a course (subcourse) that requires a video link with  vimeo or youtube
  */
 module.exports = {
   datastore: 'default',
   options: {
-    tableName: 'c_intercatives',
+    tableName: 'c_video',
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
     hooks: {
       beforeSave:(course,options)=>{
         if(course.isNewRecord){
-          course.active = false,
-          course.validity = false,
-          course.status = "private"
-          course.rating =0
+            course.active = false,
+            course.validity = false,
+            course.status = "private"
+            course.rating =0
         }
         console.log('adding a course')
       },
-      beforeDestroy:async (course,options)=>{
+      beforeDestroy:async(course,options)=>{
         await Rate.destroy({
-          where:{c_interactive_id:course.id}
-        })}
+          where:{c_video_id:course.id}
+      })}
 
     },
 
   },
-  tableName: 'c_intercatives',
+  tableName: 'c_video',
   attributes: {
     id:{
       type:DataTypes.INTEGER,
@@ -53,7 +53,7 @@ module.exports = {
       allowNull: true
     },
     status:{
-      type:DataTypes.ENUM(['public','private']),
+      type:DataTypes.ENUM('private','public'),
       defaultValue:'private',    
       allowNull:false
     },
@@ -71,18 +71,26 @@ module.exports = {
       allowNull:false,  
       defaultValue: false
     },
+    source: {
+        type: DataTypes.ENUM('youtube','vimeo'),
+        required: true,
+    },
+      url: {
+        type: DataTypes.STRING,
+        required: true,
+    },
 
 
   },
   associations:()=>{
-    CoursInteractive.belongsTo(Course,{
+    CoursVideo.belongsTo(Course,{
       foreignKey:'parent'
     })
-    CoursInteractive.belongsTo(User,{
+    CoursVideo.belongsTo(User,{
       foreignKey:'addedBy'
     })
-    CoursInteractive.hasMany(Rate,{
-      foreignKey:'c_interactive_id'
+    CoursVideo.hasMany(Rate,{
+      foreignKey:'c_video_id'
     })
 
   }

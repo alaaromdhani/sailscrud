@@ -34,7 +34,11 @@ module.exports = {
   before(scope, done) {
     function DataTypeToJsConverter(type){
         let dataType = type.key
-      if(dataType =='STRING'){
+        if(dataType =='TEXT'){
+         
+          return 'string()'
+      }
+        if(dataType =='STRING'){
          
           return 'string()'
       }

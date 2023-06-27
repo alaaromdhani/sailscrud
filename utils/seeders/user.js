@@ -1,7 +1,7 @@
 
 
 var superUser = {
-    firstName:'السنة السادسة إبتدائي',
+    firstName:'ala',
     lastName:'romdhani',
     username:'ala.romdhani',
     password:'123456',

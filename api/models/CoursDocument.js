@@ -1,20 +1,20 @@
 const { DataTypes } = require("sequelize");
 
 /**
- * @module CoursIntercative
+ * @module CoursDocument
  *
  * @description
- *   a child of a course (subcourse)
+ *   a child of a course (subcourse) that requires an upload of a document( pdf,word ..... )
  */
 module.exports = {
   datastore: 'default',
   options: {
-    tableName: 'c_intercatives',
+    tableName: 'c_documents',
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
     hooks: {
-      beforeSave:(course,options)=>{
+      beforeSave(course,options){
         if(course.isNewRecord){
           course.active = false,
           course.validity = false,
@@ -23,15 +23,15 @@ module.exports = {
         }
         console.log('adding a course')
       },
-      beforeDestroy:async (course,options)=>{
+      async beforeDestroy(course,options){
         await Rate.destroy({
-          where:{c_interactive_id:course.id}
+          where:{c_document_id:course.id}
         })}
 
     },
 
   },
-  tableName: 'c_intercatives',
+  tableName: 'c_documents',
   attributes: {
     id:{
       type:DataTypes.INTEGER,
@@ -72,17 +72,19 @@ module.exports = {
       defaultValue: false
     },
 
-
   },
   associations:()=>{
-    CoursInteractive.belongsTo(Course,{
+    CoursDocument.belongsTo(Course,{
       foreignKey:'parent'
     })
-    CoursInteractive.belongsTo(User,{
+    CoursDocument.belongsTo(User,{
       foreignKey:'addedBy'
     })
-    CoursInteractive.hasMany(Rate,{
-      foreignKey:'c_interactive_id'
+    CoursDocument.belongsTo(Upload,{
+      foreignKey:'document'
+    })
+    CoursDocument.hasMany(Rate,{
+      foreignKey:'c_document_id'
     })
 
   }
