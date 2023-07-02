@@ -453,9 +453,9 @@ module.exports = {
         doc:['doc','docx','pdf'],
         audio:['mp3'],
         presentation:['ppt', 'pptx'],
+        zipfiles:['zip']
       },
-
-
+      maxSize:100000000,
       routes:{ //after assets
         public:'v/public/',
         private:'v/uploads/'

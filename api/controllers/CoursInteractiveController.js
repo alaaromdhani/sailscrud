@@ -18,7 +18,9 @@ module.exports = {
     const createCoursIntercativeValidation = schemaValidation(CoursInteractiveShema)(req.body)
     if(createCoursIntercativeValidation.isValid){
       try {
-        const data = await CoursInteractive.create(req.body);
+        let c  = req.body
+        c.addedBy = req.user.id
+        const data = await CoursInteractive.create(c);
         return DataHandlor(req,data,res)
       } catch (err) {
         return ErrorHandlor(req,new SqlError(err),res)
@@ -88,21 +90,23 @@ module.exports = {
 
   async update(req, res) {
     sails.services.subcourseservice.updateInteractiveCourse(req,(err,data)=>{
-        
-
+      if(err){
+          return ErrorHandlor(req,err,res)
+      }
+      else{
+          return DataHandlor(req,data,res)
+      }
     })
   },
 
   async destroy(req, res) {
-    try {
-      const data = await CoursInteractive.findByPk(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: 'CoursInteractive not found' });
+    sails.services.subcourseservice.deleteInteractiveCourse(req,(err,data)=>{
+      if(err){
+          return ErrorHandlor(req,err,res)
       }
-      await data.destroy();
-      return res.status(204).send();
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      else{
+          return DataHandlor(req,data,res)
+      }
+    })
   },
 };

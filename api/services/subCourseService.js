@@ -1,5 +1,6 @@
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
+const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
 const { UpdateCoursInteractiveShema } = require("../../utils/validations/CoursInteractiveSchema")
@@ -8,6 +9,13 @@ const { UpdateCoursVideoShema } = require("../../utils/validations/CoursvideoSch
 
 module.exports = {
     createDocumentCourse:(req,callback)=>{
+        console.log('adding without file')
+        if(req.body.parent){
+            req.body.parent = parseInt(req.body.parent)     
+        }
+        if(req.body.document){
+            req.body.document = parseInt(req.body.document)     
+        }
         new Promise((resolve,reject)=>{
             const createDocCoursValidation = schemaValidation(CoursDocumentShemaWithFile)(req.body)  
             if(createDocCoursValidation.isValid){
@@ -31,6 +39,7 @@ module.exports = {
                 }
             })
         }).then(dc=>{
+            dc.addedBy = req.user.id
             return CoursDocument.create(dc)
         }).then(dc=>{
                 callback(null,dc)
@@ -62,7 +71,7 @@ module.exports = {
                 if(!cd){
                     return reject(new RecordNotFoundErr())
                 }
-                else if(cd.User.role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
                     return reject(new UnauthorizedError({specific:'you cannot update a course record cause it is created by a user higher than  you'}))
                 }
                 else{
@@ -105,6 +114,7 @@ module.exports = {
 
             callback(null,c)
         }).catch(e=>{
+            console.log(e)
             if(e instanceof ValidationError || e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
                 callback(e,null)
               }
@@ -124,20 +134,25 @@ module.exports = {
                     }
                 }
             }).then(cd=>{
-                if(!cd){
-                    return reject(new RecordNotFoundErr())
-                }
-                else if(cd.User.role.weight<=req.role.weight && cd.addedBy != req.user.id){
-                    return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
-                }
-                else{
-                    return resolve(cd)
-                }
+                return new Promise((resolve,reject)=>{
+                    if(!cd){
+                        return reject(new RecordNotFoundErr())
+                    }
+                    else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                        return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
+                    }
+                    else{
+                        return resolve(cd)
+                    }
+
+                })
+                
             }).then(cd=>{
                 return cd.destroy()
             }).then(sd=>{
                 callback(null,{})    
             }).catch(e=>{
+                console.log(e)
                 if(e instanceof ValidationError || e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
                     callback(e,null)
                   }
@@ -163,7 +178,7 @@ module.exports = {
                 if(!cd){
                     return reject(new RecordNotFoundErr())
                 }
-                else if(cd.User.role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
                     return reject(new UnauthorizedError({specific:'you cannot update a course record cause it is created by a user higher than  you'}))
                 }
                 else{
@@ -196,7 +211,7 @@ module.exports = {
         })
 
     },
-    deleteIntercativeCourse:(req,callback)=>{
+    deleteInteractiveCourse:(req,callback)=>{
         CoursIntercative.findByPk(req.params.id,{
             include:{
                 model:User,
@@ -207,15 +222,18 @@ module.exports = {
                 }
             }
         }).then(cd=>{
-            if(!cd){
-                return reject(new RecordNotFoundErr())
-            }
-            else if(cd.User.role.weight<=req.role.weight &&cd.addedBy != req.user.id){
-                return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
-            }
-            else{
-                return resolve(cd)
-            }
+            return new Promise((resolve,reject)=>{
+                if(!cd){
+                    return reject(new RecordNotFoundErr())
+                }
+                else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                    return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
+                }
+                else{
+                    return resolve(cd)
+                }
+
+            })
         }).then(cd=>{
             return cd.destroy()
         }).then(sd=>{
@@ -246,7 +264,7 @@ module.exports = {
                 if(!cd){
                     return reject(new RecordNotFoundErr())
                 }
-                else if(cd.User.role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
                     return reject(new UnauthorizedError({specific:'you cannot update a course record cause it is created by a user higher than  you'}))
                 }
                 else{
@@ -291,15 +309,18 @@ module.exports = {
                 }
             }
         }).then(cd=>{
-            if(!cd){
-                return reject(new RecordNotFoundErr())
-            }
-            else if(cd.User.role.weight<=req.role.weight &&cd.addedBy != req.user.id){
-                return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
-            }
-            else{
-                return resolve(cd)
-            }
+            return new Promise((resolve,reject)=>{
+                if(!cd){
+                    return reject(new RecordNotFoundErr())
+                }
+                else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                    return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
+                }
+                else{
+                    return resolve(cd)
+                }
+
+            })
         }).then(cd=>{
             return cd.destroy()
         }).then(sd=>{

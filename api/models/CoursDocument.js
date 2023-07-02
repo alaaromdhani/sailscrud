@@ -14,7 +14,7 @@ module.exports = {
     collate: 'utf8_general_ci',
     scopes: {},
     hooks: {
-      beforeSave(course,options){
+      beforeCreate: async (course,options)=>{
         if(course.isNewRecord){
           course.active = false,
           course.validity = false,
@@ -23,7 +23,7 @@ module.exports = {
         }
         console.log('adding a course')
       },
-      async beforeDestroy(course,options){
+       beforeDestroy: async(course,options)=>{
         await Rate.destroy({
           where:{c_document_id:course.id}
         })}
@@ -59,7 +59,7 @@ module.exports = {
     },
     rating:{
       type:DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
     },
     validity:{
       type:DataTypes.BOOLEAN,

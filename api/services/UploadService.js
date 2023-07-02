@@ -5,6 +5,7 @@ const fs = require('fs');
 const UnkownError = require('../../utils/errors/UnknownError');
 const SqlError = require('../../utils/errors/sqlErrors');
 const {DataTypes} = require('sequelize');
+const yauzl = require("yauzl")
 
 module.exports = {
   fileUploader:(req,callback)=>{
@@ -207,7 +208,59 @@ module.exports = {
     });
 
 
-  }
+  },
+  zipFileOptions:async (file,parameter)=>{
+    let options = {};
+    return new Promise((resolve,reject)=>{
+      const extention= file.originalname.split('.').pop();
+      if(!extention){
+        return reject(new ValidationError({message:'extention is required'}));
+      }
+      let today = new Date()
+      if(!parameter.destination){
+        parameter.destination = '../../assets/uploads/'+today.getFullYear()+'-'+today.getMonth()+"/"+file.originalname.split(".").shift()
+      }
+      const type = Object.keys(sails.config.custom.files.extensions).filter(ext=>sails.config.custom.files.extensions[ext].map(item=>item.toLowerCase()).includes(extention.toLowerCase())).at(0);
+      if(!type){
+        return reject(new ValidationError({message:'a valid type is required'}));
+      }
+      if(parameter.type &&  parameter.type!==type){
+        return reject(new ValidationError({message:'a file with type '+parameter.type+" is required"}))
+      }
+      options.file_original_name = file.originalname;
+     // options.isPublic=typeof (parameter.isPublic)==='boolean'?options.isPublic=parameter.isPublic:false;
+      options.path=parameter.destination.split('assets/').pop();
+    //  options.file_name=uuidv4();
+      options.type = type;
+      options.file_size = file.size?file.size:1234;
+      options.extension = extention;
+      fs.mkdir(path.join(__dirname,parameter.destination),{recursive:true},err => {
+        if(err){
+            return reject(new UnkownError())
+        }
+        else{
+           return  resolve(options)
+        }
+      })
+    });
+  },
+  zipFileUploader:(req,callback)=>{
+      if(req.operation){
+          if(req.operation.error){
+              callback(req.operation.error,null)
+          } 
+          else{
+            const upload = req.operation.data
+               yauzl.open(path.join("../../assets/",upload.path))      
+          
+          
+          } 
+      }
+      else{
+        callback(new ValidationError({message:'zipfile is required'}),null)
+      }
+    }
+
 
 
 

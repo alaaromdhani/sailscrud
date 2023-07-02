@@ -4,53 +4,61 @@ const { CoursDocumentShema } = require('../../utils/validations/CoursdocumentSch
 const ValidationError = require('../../utils/errors/validationErrors');
 const SqlError = require('../../utils/errors/sqlErrors');
 const optionsVerifier= async (req,file,cb)=>{
+    console.log('file middleware applicated')
+   if(req.body.document){
+        return cb(null,false)
+    }
+   else{
     if(!req.operation){
-         req.operation = {}   
-    }
-    if((file.fieldname==='mi'&&req.body.meta_img) ||(file.fieldname==='b'&&req.body.banner)){
-        return cb(null,false)
-    }
-    try{
-        let uploadOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'doc',isPublic:true});
-        let coursDocument ={}
+        req.operation = {}   
+   }
+   try{
+       let uploadOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'doc',isPublic:true});
+//        console.log(uploadOptions)
+       let coursDocument ={}
+       
+       Object.keys(req.body).filter(k=>k!='doc').forEach(k=>{
+           coursDocument[k] = req.body[k]
+       })
+       try{
+            if(coursDocument.parent){
+                coursDocument.parent = parseInt(coursDocument.parent)     
+            }
+           const createDocCoursValidation = schemaValidation(CoursDocumentShema)(coursDocument)
+           if(createDocCoursValidation.isValid){
+                coursDocument.addedBy = req.user.id   
+               const createdCourse = await CoursDocument.create(coursDocument)    
+               req.operation.data=createdCourse    
+               req.upload = uploadOptions
+               req.upload.addedBy = req.user.id
+               return cb(null,true)
+           }
+           else{
+               req.operation={
+                   error:new ValidationError({message:createDocCoursValidation.message})
+               }
+               return cb(null,false)
+           }
+
+       }catch(e){
+           req.operation={
+               error:new SqlError(e)
+           }
+           return cb(null,false)
+       }
+
+       
+   }
+   catch(e){
         
-        Object.keys(req.body).filter(k=>k!='doc').forEach(k=>{
-            coursDocument[k] = req.body[k]
-        })
-        try{
-            const createDocCoursValidation = schemaValidation(CoursDocumentShema)(coursDocument)
-            if(createDocCoursValidation.isValid){
-                 coursDocument.addedBy = req.user.id   
-                const createdCourse = await CoursDocument.create(coursDocument)    
-                req.operation.data=createdCourse    
-                req.upload = uploadOptions
-                req.upload.addedBy = req.user.id
-                return cb(null,true)
-            }
-            else{
-                req.operation={
-                    error:new ValidationError({message:createDocCoursValidation.message})
-                }
-                return cb(null,false)
-            }
+       req.operation={
+           error:e
+       }
+       return cb(null,false)
 
-        }catch(e){
-            req.operation={
-                error:new SqlError(e)
-            }
-            return cb(null,false)
-        }
+   }
 
-        
-    }
-    catch(e){
-        req.operation={
-            err:e
-        }
-        return cb(null,false)
-
-    }
-
+   }
 }
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -63,9 +71,11 @@ const storage = multer.diskStorage({
     },
 })
 const upload  = multer({
-    fileFilter:optionsVerifier
+    fileFilter:optionsVerifier,
+    storage:storage
 })
 module.exports =(req,res,next)=>{
+    
 
     return upload.fields([{ name: 'doc', maxCount: 1 }])(req,res,(err)=>{
         if(!err){return next();}

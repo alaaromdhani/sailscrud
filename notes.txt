@@ -1,1 +1,14 @@
-//not-done:state schema adding
+use cases:
+    --->adding a document course:
+        1-adding a document without a file (checked)
+        2-adding a document without a file from divice
+            a-adding a pdf
+            b-adding an image or a video ....
+            advanced :
+                trying to update the extention of shell file and uploading it
+        3-adding a document course with file and with file from library 
+    ---> find all with search 
+    ---> update :
+        1-with file from library that is not a doc file
+        2-update a document course that is not created by you and is created by user higher than you 
+    --->delete a document course     

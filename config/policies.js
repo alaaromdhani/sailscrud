@@ -38,6 +38,10 @@ module.exports.policies = {
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'rateCourse':['lang','passport','role','tokenVerifier']
+  },
+  CoursDocumentController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'create':['lang','passport','role','tokenVerifier','permissions','coursFileUploader']
   }
 
 

@@ -5,15 +5,29 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const SqlError = require("../../utils/errors/sqlErrors");
+const ValidationError = require("../../utils/errors/validationErrors");
+const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+const schemaValidation = require("../../utils/validations");
+const { CoursVideoShema } = require("../../utils/validations/CoursvideoSchema");
+
 
 module.exports = {
   async create(req, res) {
-    try {
-      const data = await CoursVideo.create(req.body);
-      return res.status(201).json(data);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      const createVideoCourseValidation = schemaValidation(CoursVideoShema)(req.body)
+      if(createVideoCourseValidation.isValid){
+        try {
+          let c  = req.body
+          c.addedBy = req.user.id
+          return DataHandlor(req,await CoursVideo.create(c),res)
+        } catch (err) {
+          return ErrorHandlor(req,new SqlError(err),res);
+        }
+      }
+      else{
+        return ErrorHandlor(req,new ValidationError({message:createVideoCourseValidation.message}),res)
+      }
   },
 
   async find(req, res) {
@@ -48,16 +62,16 @@ module.exports = {
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
 
-      return res.json({
+      return DataHandlor(req,{
         success: true,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      });
+      },res)
     } catch (error) {
-      return res.serverError(error);
+      return ErrorHandlor(req,new SqlError(error),res)
     }
   },
 
@@ -65,37 +79,32 @@ module.exports = {
     try {
       const data = await CoursVideo.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'CoursVideo not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
-      return res.json(data);
+      return DataHandlor(req,data,res);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 
-  async update(req, res) {
-    try {
-      const data = await CoursVideo.findByPk(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: 'CoursVideo not found' });
+  update(req, res) {
+    sails.services.subcourseservice.updateVideoCourse(req,(err,data)=>{
+      if(err){
+          return ErrorHandlor(req,err,res)
       }
-      const updatedCoursVideo = await data.update(req.body);
-      return res.json(updatedCoursVideo);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      else{
+          return DataHandlor(req,data,res)
+      }
+    })
   },
-
-  async destroy(req, res) {
-    try {
-      const data = await CoursVideo.findByPk(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: 'CoursVideo not found' });
+ destroy(req, res) {
+    sails.services.subcourseservice.deleteVideoCourse(req,(err,data)=>{
+      if(err){
+          return ErrorHandlor(req,err,res)
       }
-      await data.destroy();
-      return res.status(204).send();
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      else{
+          return DataHandlor(req,data,res)
+      }
+    })
   },
 };
