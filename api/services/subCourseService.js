@@ -276,11 +276,11 @@ module.exports = {
         }).then(cd=>{
             const updateVideoCourseSchema = schemaValidation(UpdateCoursVideoShema)(req.body)
             return new Promise((resolve,reject)=>{
-                if(updateIntercativeCourseSchema.isValid){
+                if(updateVideoCourseSchema.isValid){
                         return resolve(req.body)
                 }
                 else{
-                    return reject(new ValidationError({message:updateIntercativeCourseSchema.message}))
+                    return reject(new ValidationError({message:updateVideoCourseSchema.message}))
                 }
 
             })
@@ -289,6 +289,7 @@ module.exports = {
         }).then(c=>{
             callback(null,c)
         }).catch(e=>{
+            console.log(e)
             if(e instanceof ValidationError || e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
                 callback(e,null)
               }
