@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require('fs')
 const { DataTypes } = require("sequelize");
 
 /**
@@ -26,7 +28,32 @@ module.exports = {
       beforeDestroy:async (course,options)=>{
         await Rate.destroy({
           where:{c_interactive_id:course.id}
-        })}
+          
+        })
+        await Obj.destroy({
+            where:{
+                c_interactive_id:course.id
+            }
+        })
+        const fullUrlPath = path.join(__dirname,'../../static/courses/'+course.url)
+        try{
+          await new Promise((resolve,reject)=>{
+            return fs.rmdir(fullUrlPath,{recursive:true},(err)=>{
+                if(err){
+                    return   reject(err)  
+                  }
+                  else{
+                      return resolve()
+                    }
+            })
+            
+          })
+        }
+        catch(e){
+          throw e
+        }
+       }
+        
 
     },
 
@@ -34,9 +61,13 @@ module.exports = {
   tableName: 'c_intercatives',
   attributes: {
     id:{
-      type:DataTypes.INTEGER,
+      type:DataTypes.STRING,
       primaryKey:true,
-      autoIncrement:true
+    },
+    url:{
+      type: DataTypes.STRING,
+      required: true,
+      unique: true,   
     },
     name: {
       type: DataTypes.STRING,

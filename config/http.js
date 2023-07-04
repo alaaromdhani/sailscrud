@@ -9,6 +9,8 @@
  * https://sailsjs.com/config/http
  */
 const bodyParser = require('body-parser')
+const express = require('express');
+const path = require('path');
 module.exports.http = {
 
   /****************************************************************************
@@ -21,7 +23,40 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
-    bodyParser:bodyParser(),
+          bodyParser:(()=>{
+            const octetStreamOptions  ={
+                
+              inflate: true,
+              limit: '100kb',
+              type: 'application/octet-stream'
+          
+
+
+
+      } 
+        
+    
+        return (req,res,next)=>{
+            if(req.headers['content-type']=='application/octet-stream'){
+              const octetStreamBodyParser = bodyParser.raw(octetStreamOptions)
+                console.log('octet stream body')
+                return octetStreamBodyParser(req,res,next)
+            }
+            else{
+              console.log('json content')
+              return bodyParser()(req,res,next)
+            }
+        }
+
+
+    })(),
+    statics:(()=>{
+        console.log('setting static files')
+        return function(req,res,next){
+          return express.static(path.join(__dirname, '../static'))(req,res,next);
+        }
+
+    })(),
 
     /***************************************************************************
     *                                                                          *
@@ -33,7 +68,7 @@ module.exports.http = {
      order: [
        'cookieParser',
        'session',
-
+        'statics',
        'bodyParser',
     //   'compress',
     //   'poweredBy',

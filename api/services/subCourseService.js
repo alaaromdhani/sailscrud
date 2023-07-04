@@ -212,7 +212,7 @@ module.exports = {
 
     },
     deleteInteractiveCourse:(req,callback)=>{
-        CoursIntercative.findByPk(req.params.id,{
+        CoursInteractive.findByPk(req.params.id,{
             include:{
                 model:User,
                 foreignKey:'addedBy',
@@ -239,6 +239,7 @@ module.exports = {
         }).then(sd=>{
             callback(null,{})    
         }).catch(e=>{
+            console.log(e)
             if( e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
                 callback(e,null)
               }

@@ -19,6 +19,7 @@ module.exports = {
       if(createVideoCourseValidation.isValid){
         try {
           let c  = req.body
+          c.rating=0
           c.addedBy = req.user.id
           return DataHandlor(req,await CoursVideo.create(c),res)
         } catch (err) {

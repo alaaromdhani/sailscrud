@@ -51,38 +51,32 @@ module.exports = {
       type:DataTypes.STRING,
       allowNull:false,
       unique:true
-
-
-    },
+     },
     profilePicture:{
       type:DataTypes.STRING,
       defaultValue:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name
-
     },
     firstName:{
       type:DataTypes.STRING,
       allowNull:false
-
-
     },
     lastName:{
       type:DataTypes.STRING,
       allowNull:false
-
-
     },
     birthDate:{
       type:DataTypes.DATE,
       allowNull:false
-
     },
     preferredLanguage:{
       type:DataTypes.ENUM({values:['ar','fr','en']}),
       defaultValue:'ar'
-
-
     },
-
+    sex:{
+      type:DataTypes.ENUM({values:['M','F']}),
+        allowNull:false,  
+       defaultValue:'M',   
+    },
     username:{ type:DataTypes.STRING,allowNull:false,
       unique:true },
     phonenumber:{ type:DataTypes.STRING,allowNull:false,

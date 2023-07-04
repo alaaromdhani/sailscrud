@@ -6,6 +6,10 @@ const UnkownError = require('../../utils/errors/UnknownError');
 const SqlError = require('../../utils/errors/sqlErrors');
 const {DataTypes} = require('sequelize');
 const yauzl = require("yauzl")
+const xml2js = require('xml2js')
+const CoursInteractiveShema = require('../../utils/validations/CoursInteractiveSchema')
+const SchemaValidation = require('../../utils/validations')
+const parser = xml2js.Parser()
 
 module.exports = {
   fileUploader:(req,callback)=>{
@@ -218,19 +222,20 @@ module.exports = {
       }
       let today = new Date()
       if(!parameter.destination){
-        parameter.destination = '../../assets/uploads/'+today.getFullYear()+'-'+today.getMonth()+"/"+file.originalname.split(".").shift()
+        parameter.destination = '../../static/courses/'+today.getFullYear()+'-'+today.getMonth()+"/"+(file.originalname.split(".").shift())
       }
       const type = Object.keys(sails.config.custom.files.extensions).filter(ext=>sails.config.custom.files.extensions[ext].map(item=>item.toLowerCase()).includes(extention.toLowerCase())).at(0);
       if(!type){
         return reject(new ValidationError({message:'a valid type is required'}));
       }
       if(parameter.type &&  parameter.type!==type){
+        //console.log("type",type)
         return reject(new ValidationError({message:'a file with type '+parameter.type+" is required"}))
       }
       options.file_original_name = file.originalname;
      // options.isPublic=typeof (parameter.isPublic)==='boolean'?options.isPublic=parameter.isPublic:false;
-      options.path=parameter.destination.split('assets/').pop();
-    //  options.file_name=uuidv4();
+      options.path=parameter.destination.split('courses/').pop();
+     options.file_name=uuidv4();
       options.type = type;
       options.file_size = file.size?file.size:1234;
       options.extension = extention;
@@ -247,19 +252,134 @@ module.exports = {
   zipFileUploader:(req,callback)=>{
       if(req.operation){
           if(req.operation.error){
-              callback(req.operation.error,null)
+              console.log("error operation ")  
+            callback(req.operation.error,null)
           } 
           else{
+            let objs = []
+            let courseId
             const upload = req.operation.data
-               yauzl.open(path.join("../../assets/",upload.path))      
-          
-          
-          } 
+            const uploadBasePath = path.join(__dirname,'../../static/courses/'+upload.path)
+                    yauzl.open(path.join(__dirname,"../../static/courses/",upload.path+"/"+upload.file_name+"."+upload.extension),{lazyEntries:true},(err,zipFile)=>{
+                   if(err){
+                    console.log(err)
+                    return  callback(new SqlError(err),null)
+                  } 
+                   else{
+                    let entries = []
+                    zipFile.readEntry()
+                    zipFile.once("end",()=>{
+                      console.log('ended unzipping the file successfully')
+                      return sails.services.uploadservice.saveCourse(req,objs,courseId,callback)
+                    })
+                    zipFile.on("entry",async (entry)=>{
+                      
+                      if (/\/$/.test(entry.fileName)) {
+                        console.log('found directory ' , entry.fileName)
+                        fs.mkdir(path.join(uploadBasePath,entry.fileName),{recursive:true},err => {
+                          if(err){
+                              return callback(new SqlError(err),null) 
+                          }
+                          else{
+                              zipFile.readEntry()
+                          }
+                         })
+                      }
+                      else{
+                        entries.push(entry.fileName)
+                        
+                          const filePath = path.join(uploadBasePath,entry.fileName)
+                          const fileDirectory = path.dirname(filePath)
+                          if (!fs.existsSync(fileDirectory)) {
+                            fs.mkdirSync(fileDirectory, { recursive: true })
+                          }
+                        try{
+                          zipFile.openReadStream(entry,(err,readStream)=>{
+                            if(err){
+                            return  callback(new SqlError(err),null)
+                            }
+                            else{
+                                     if(entry.fileName==='tincan.xml'){
+                                         readStream.on('data',async chunk=>{
+                                           await parser.parseString(chunk,(err,result)=>{
+                                               if(!err){
+                                                 result.tincan.activities[0].activity.forEach(element => {
+                                                         objs.push({
+                                                             id:element.$.id,
+                                                             type:element.$.type,
+                                                             name:element.name[0]._,
+                                                             description:element.name[0]._,
+                                                             course_id:null
+                                                         })
+                                                 
+                                                         if(element.launch){
+                                                         courseId =element.$.id
+                                                         }
+                                                 });
+                                               }
+                                               else{
+                                                 console.log(err)
+                                               }
+                                           })
+                                         })
+                                       }
+                                     try{
+                                         readStream.on("end",()=>{
+                                           zipFile.readEntry()
+                                         })
+                                         readStream.pipe(fs.createWriteStream(path.join(uploadBasePath,entry.fileName)))
+                                       } 
+                                       catch(e){
+                                         console.log(e)
+                                         return callback(new SqlError(e))
+ 
+                                       }
+                               } 
+                           
+                           })
+                        }catch(e){
+                          console.log(e)
+                          return callback(new ValidationError({message:'valid xapi cours is required'}))
+                        }
+                      }
+                      
+                    })
+         
+                  }
+                })      
+              } 
       }
       else{
         callback(new ValidationError({message:'zipfile is required'}),null)
       }
-    }
+    },
+    saveCourse:async (req,objs,courseId,callback)=>{
+        if(!courseId){
+            return callback(new ValidationError({message:'valid xapi course is required'}))
+        }
+        else{
+        let course = req.body
+
+       delete course.zipFile
+          course.rating = 0
+          course.addedBy = req.user.id
+          course.url  = req.upload.path
+         course.id = courseId 
+            objs.forEach(o=>{
+              o.c_interactive_id = courseId
+             })
+              try{
+                    let c = await CoursInteractive.create(course)
+                      req.cours = c
+                    await Obj.bulkCreate(objs)
+                    return callback(null,c)
+              }
+             catch(e){
+                  return callback(new SqlError(e),null)
+                }           
+          }
+      }
+      
 
 
 

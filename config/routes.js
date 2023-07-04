@@ -24,7 +24,11 @@ module.exports.routes = {
   'get /v/public/:filename':'AssetsController.streamPublicFile',
   'get /d/uploads/:filename':'AssetsController.downloadPrivateFile',
   'get /d/public/:filename':'AssetsController.downloadPublicFile',
-  'post /api/v1/rate_course/:id':'CourseController.rateCourse'
+  'post /api/v1/rate_course/:id':'CourseController.rateCourse',
+  'get /cours/:id':'CoursInteractiveController.accessCourse',
+  'GET /lrs/activities/state':'LrsController.getActivityState',
+  'PUT /lrs/activities/state':'LrsController.putState',
+  'PUT /lrs/statements':'LrsController.putStatement',
 
 
 

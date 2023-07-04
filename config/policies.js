@@ -34,6 +34,7 @@ module.exports.policies = {
   },
   TestController:{
     upload:['lang','passport','role','bulkUpload'],
+    accessCourse:['lang','passport','role']
   },
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
@@ -42,6 +43,14 @@ module.exports.policies = {
   CoursDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','coursFileUploader']
+  },
+  CoursInteractiveController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
+    'accessCourse':['lang','passport','role','tokenVerifier','cours-feature']
+  },
+  LrsController:{
+    '*':[]
   }
 
 

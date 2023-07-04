@@ -8,7 +8,7 @@ const UserShema = joi.object({
     phonenumber: joi.string().required(),
     password: joi.string().required(),
     birthDate:joi.string().required(),
-  
+    sex:joi.string().valid('M','F'),    
     role_id:joi.number().integer(),
     permissions: joi.array().items(PermissionShema).allow(null),
     features:joi.array().items(joi.string()).allow(null),
@@ -21,7 +21,7 @@ const registerSchema = joi.object({
     username: joi.string().required(),
     phonenumber: joi.string().required(),
     birthDate:joi.string().required(),
-    
+     sex:joi.string().valid('M','F'),    
     password: joi.string().required(),
     country_id:joi.number().integer().required(),
     state_id:joi.number().integer().required(),
@@ -31,7 +31,7 @@ const updateUserSchema= joi.object({
     lastName:joi.string(),
     email: joi.string(),
     isDeleted: joi.boolean(),
-   
+    sex:joi.string().valid('M','F'),    
     username: joi.string(),
     phonenumber: joi.string(),
     birthDate:joi.string(),
@@ -41,6 +41,8 @@ const updateUserSchema= joi.object({
     state_id:joi.number().integer(),
 })
 const profileUpdate= joi.object({
+    
+    sex:joi.string().valid('M','F'),    
     firstName:joi.string(),
     lastName:joi.string(),
     email: joi.string(),

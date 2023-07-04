@@ -3,6 +3,8 @@ const schemaValidation = require('../../utils/validations');
 const { CoursDocumentShema } = require('../../utils/validations/CoursdocumentSchema');
 const ValidationError = require('../../utils/errors/validationErrors');
 const SqlError = require('../../utils/errors/sqlErrors');
+const path = require('path');
+const { ErrorHandlor } = require('../../utils/translateResponseMessage');
 const optionsVerifier= async (req,file,cb)=>{
     console.log('file middleware applicated')
    if(req.body.document){

@@ -162,7 +162,7 @@ module.exports = {
     cors: {
       allRoutes: true,
       allowCredentials: true, // Allows cookies and session through CORS from here
-      allowOrigins: ['http://localhost:3000','http://localhost', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
+      allowOrigins: ['http://localhost:3000','http://localhost:4200', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
       allowResponseHeaders: 'set-cookie',
       allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
     },
@@ -425,6 +425,7 @@ module.exports = {
       path: 'default',
 
     },
+    lrsEndPoint:'http://localhost:1337/lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a',
     baseUrl: 'http://localhost:1337/',
     internalEmailAddress: 'support@example.com',
 
@@ -450,7 +451,7 @@ module.exports = {
       extensions:{
         images:['gif','png','jpg','jpeg','webp','svg','ico'],
         videos:['mp4','avi','mov','webm'],
-        doc:['doc','docx','pdf'],
+        doc:['doc','docx','pdf','ppt','pptx'],
         audio:['mp3'],
         presentation:['ppt', 'pptx'],
         zipfiles:['zip']
@@ -460,10 +461,13 @@ module.exports = {
         public:'v/public/',
         private:'v/uploads/'
       }
+    },
+    /*courses:{
+      interactive:{
+        files:['story.html','analytics-frame.html','meta.html']
 
-
-
-    }
+      }
+    }*/
 
     // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',
     // stripeSecret: 'sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm',
