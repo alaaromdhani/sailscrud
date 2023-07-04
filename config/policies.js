@@ -38,16 +38,23 @@ module.exports.policies = {
   },
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
-    'rateCourse':['lang','passport','role','tokenVerifier']
   },
   CoursDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
-    'create':['lang','passport','role','tokenVerifier','permissions','coursFileUploader']
+    'create':['lang','passport','role','tokenVerifier','permissions','coursFileUploader'],
+    'rateCourse':['lang','passport','role','tokenVerifier']
   },
   CoursInteractiveController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
-    'accessCourse':['lang','passport','role','tokenVerifier','cours-feature']
+    'accessCourse':['lang','passport','role','tokenVerifier','cours-feature'],
+    'rateCourse':['lang','passport','role','tokenVerifier']
+  },
+  CoursVideoController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
+    'accessCourse':['lang','passport','role','tokenVerifier','cours-feature'],
+    'rateCourse':['lang','passport','role','tokenVerifier']
   },
   LrsController:{
     '*':[]

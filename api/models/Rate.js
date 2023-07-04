@@ -40,8 +40,8 @@ module.exports = {
     Rate.belongsTo(CoursVideo,{
       foreignKey:'c_video_id'
     })
-    Rate.belongsTo(CoursInteractive,{
-      foreignKey:'cv_id'
+    Rate.belongsTo(Course,{
+      foreignKey:'course_id'
     })
 
   }

@@ -90,54 +90,7 @@ module.exports = {
       return ErrorHandlor(req,new SqlError(error),res)
     }
   },
-  async rateCourse(req,res){
-    try {
-      const course = await Course.findByPk(req.params.id)
-      if (course) {
-
-        const rateCourseSchema = schemaValidation(RateShema)(req.body)
-              if (rateCourseSchema.isValid) {
-                let [rate, created] = await Rate.findOrCreate({
-                  where: {
-                    ratedBy: req.user.id,
-                    course_id: req.params.id
-                  }, defaults: {
-                    ratedBy: req.user.id,
-                    course_id: req.params.id,
-                    rating: req.body.rating
-                  }
-                })
-
-                if (!created) {
-                  rate.rating = req.body.rating
-                  await rate.save()
-                }
-                const ratesCount = await Rate.findAll({
-                  where: {
-                    course_id: req.params.id
-                  },
-                  attributes: [
-                    [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
-                  ]
-
-                })
-                console.log(ratesCount)
-                course.rating = ratesCount[0].dataValues.avgRating
-                return DataHandlor(req, await course.save(), res)
-
-                } else {
-                  return ErrorHandlor(req, new ValidationError({message: rateCourseSchema.message}), res)
-                }
-      } else {
-        return ErrorHandlor(req, new recordNotfFoundErr(), res)
-      }
-    }
-    catch(e){
-      console.log(e)
-      return ErrorHandlor(req,new SqlError(e),res)
-    }
-
-  },
+  
 
   async findOne(req, res) {
     try {

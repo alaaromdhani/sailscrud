@@ -8,6 +8,9 @@
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+const schemaValidation = require("../../utils/validations");
+const RateShema = require("../../utils/validations/RateSchema");
+
 
 
 module.exports = {
@@ -117,5 +120,73 @@ module.exports = {
         return DataHandlor(req,data,res)
       }
     })
+  },
+  async rateCourse(req,res){
+    try {
+      const course = await CoursDocument.findByPk(req.params.id,{
+        include:{
+          model:Course,
+          foreignKey:'parent'
+        }
+      })
+      if (course) {
+
+        const rateCourseSchema = schemaValidation(RateShema)(req.body)
+              if (rateCourseSchema.isValid) {
+                  try{
+                    let [rate, created] = await Rate.findOrCreate({
+                      where: {
+                        ratedBy: req.user.id,
+                        c_document_id: req.params.id,
+                        course_id:course.parent
+                      }, defaults: {
+                        ratedBy: req.user.id,
+                        c_document_id: req.params.id,
+                        course_id:course.parent,
+                        rating: req.body.rating
+                      }
+                    })
+                    if (!created) {
+                      rate.rating = req.body.rating
+                      await rate.save()
+                    }
+                    const subCourseratesCount = await Rate.findAll({
+                      where: {
+                        c_document_id: req.params.id
+                      },
+                      attributes: [
+                        [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                      ]
+                    })
+                    const parentCourseratesCount = await Rate.findAll({
+                      where: {
+                        course_id: course.parent
+                      },
+                      attributes: [
+                        [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                      ]
+                    })
+                    const parentCourse =course.Course 
+                      console.log()
+                      parentCourse.rating = parentCourseratesCount[0].dataValues.avgRating
+                      course.rating = subCourseratesCount[0].dataValues.avgRating
+                      await parentCourse.save()
+                      return DataHandlor(req, await course.save(), res)
+                  }catch(e){
+                    return ErrorHandlor(req,new SqlError(e),res)
+                  }
+                
+                } else {
+                  return ErrorHandlor(req, new ValidationError({message: rateCourseSchema.message}), res)
+                }
+      } else {
+        return ErrorHandlor(req, new recordNotfFoundErr(), res)
+      }
+    }
+    catch(e){
+      console.log(e)
+      return ErrorHandlor(req,new SqlError(e),res)
+    }
+
   },
 };
