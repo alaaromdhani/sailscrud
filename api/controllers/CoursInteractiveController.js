@@ -162,9 +162,9 @@ module.exports = {
                           account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
                           objectType:'Agent'
                         })
-                        let endpoint = 'http://localhost:8080/lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a'
+                        let endpoint = sails.config.custom.lrsEndPoint
                         console.log(ci.url)
-                        let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'story.html?actor='+tincanActor+"&endpoint="+endpoint
+                        let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
                         return res.view("pages/player.ejs",{
                               url:fullUrl,
                               username:req.user.username,

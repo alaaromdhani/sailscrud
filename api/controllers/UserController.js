@@ -11,6 +11,7 @@ const schemaValidation = require("../../utils/validations");
 const {UserShema, updateUserSchema} = require("../../utils/validations/UserSchema");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 const SqlError = require("../../utils/errors/sqlErrors");
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 
 
 module.exports = {
@@ -160,12 +161,12 @@ module.exports = {
     try {
       const data = await User.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'User not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
       await data.destroy();
-      return res.status(204).send();
+      return DataHandlor(req,{},res)
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res)
     }
   },
 };

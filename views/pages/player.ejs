@@ -8,19 +8,17 @@ let myIframe = document.querySelector('#myIframe')
 const iframe = document.getElementById('myIframe');
 const iframeWin = iframe.contentWindow || iframe;
 const iframeDoc = iframe.contentDocument || iframeWin.document;
-
-
 var script = iframeDoc.createElement("script");
   script.append(`
     window.onload = function() {
-        let player = GetPlayer();
-        player.SetVar(\'USERNAME\',\'<%=username%>\');
-        player.SetVar(\'SEXE\',\'<%=sex%>\');
-        console.log(player.GetVar(\'USERNAME\'));
+      let player = GetPlayer();
+      player.SetVar(\'USERNAME\',\'ala\');
+      player.SetVar(\'SEXE\',\'f\');
   }
 `);
   iframeDoc.documentElement.appendChild(script);
 
+  
 
 
 
