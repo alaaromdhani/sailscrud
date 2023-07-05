@@ -55,24 +55,22 @@ module.exports= {
         }).then(data=>{
             return Matiere.create(data)
         }).then(async data=>{
-              if(relatedNs){
-                createdMatiere = data    
-                const ns = req.body.ns
-                    return ns.map(d=>{
-                        return {     
-                          MatiereId:data.id,
-                          name:d.name,
-                          NiveauScolaireId:d.NiveauScolaireId
-                          }
-                    })
+            if(relatedNs){
+            createdMatiere = data    
+            const ns = req.body.ns
+                let matiere_niveau_scolaire=  ns.map(d=>{
+                    return {     
+                      MatiereId:data.id,
+                      name:d.name,
+                      NiveauScolaireId:d.NiveauScolaireId
+                      }
+                })
+                await MatiereNiveau.bulkCreate(matiere_niveau_scolaire)
+                callback(null,createdMatiere)
               }
               else{
                 callback(null,data)
               }
-        }).then(matiere_niveau_scolaire=>{
-            return MatiereNiveau.bulkCreate(matiere_niveau_scolaire)
-        }).then(sd=>{
-            callback(null,createdMatiere)
         }).catch(err=>{
           console.log(err)
           if(err instanceof ValidationError || err instanceof recordNotFoundErr || err instanceof SqlError){
@@ -149,31 +147,29 @@ module.exports= {
       return subject.save()
     }).then(async data=>{
       if(relatedNs){
-        return MatiereNiveau.destroy({
+
+        await MatiereNiveau.destroy({
             where:{
-              id:data.id  
+              MatiereId:data.id  
             }
           })
-      }
-      else{
-        callback(null,data)
-      }
-    }).then(sd=>{
-        console.log(sd)
+          
         let groupedData = req.body.ns.map(d=>{
-          return {
+           return {
             MatiereId:subject.id,
             NiveauScolaireId:d.NiveauScolaireId,
             name:d.name
           }
 
         })
-        return MatiereNiveau.bulkCreate(groupedData)
-
-    }).then(data=>{
-        callback(null,subject)
-
+        await MatiereNiveau.bulkCreate(groupedData)
+        callback(null,data)
+      }
+      else{
+        callback(null,data)
+      }
     }).catch(err=>{
+      console.log(err)
       if(err instanceof ValidationError || err instanceof recordNotFoundErr || err instanceof SqlError){
         callback(err,null)
       }
