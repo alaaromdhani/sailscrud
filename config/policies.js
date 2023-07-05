@@ -42,20 +42,24 @@ module.exports.policies = {
   CoursDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','coursFileUploader'],
-    'rateCourse':['lang','passport','role','tokenVerifier']
+    'rateCourse':['lang','passport','role','tokenVerifier'],
+    'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
+    
   },
   CoursInteractiveController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
     'accessCourse':['lang','passport','role','tokenVerifier','cours-feature'],
     'rateCourse':['lang','passport','role','tokenVerifier'],
-    'getResults':['lang','passport','role','tokenVerifier']
+    'getResults':['lang','passport','role','tokenVerifier'],
+    'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
   },
   CoursVideoController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
     'accessCourse':['lang','passport','role','tokenVerifier','cours-feature'],
-    'rateCourse':['lang','passport','role','tokenVerifier']
+    'rateCourse':['lang','passport','role','tokenVerifier'],
+    'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
   },
   LrsController:{
     '*':[]

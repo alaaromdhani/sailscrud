@@ -177,5 +177,17 @@ module.exports = {
     }
 
   },
+  commentCourse:(req,res)=>{
+    sails.services.subcourseservice.commentSubCourse(req,"video",(err,data)=>{
+      if(err){
+          return ErrorHandlor(req,err,res)
+      }
+      else{
+        return DataHandlor(req,data,res)
+      }
+    })
+
+
+  }
   
 };

@@ -4,6 +4,7 @@ const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
 const { UpdateCoursInteractiveShema } = require("../../utils/validations/CoursInteractiveSchema")
+const CourscommentShema = require("../../utils/validations/CourscommentSchema")
 const {CoursDocumentShemaWithFile, UpdateCoursDocumentShema } = require("../../utils/validations/CoursdocumentSchema")
 const { UpdateCoursVideoShema } = require("../../utils/validations/CoursvideoSchema")
 
@@ -337,6 +338,219 @@ module.exports = {
         })
 
     },
+    commentSubCourse:(req,type,callback)=>{
+        let subcourse
+        let ModelReference
+        const addCommentValidation = schemaValidation(CourscommentShema)(req.body)
+          new Promise((resolve,reject)=>{
+            if(addCommentValidation.isValid){
+                 return resolve(req.body)        
+            } 
+            else{
+                return reject(new ValidationError({message:addCommentValidation.message}))
+            }     
+        }).then(body=>{
+            return new Promise((resolve,reject)=>{
+                if(type=="interactive"){
+                    ModelReference = CoursInteractive
+                    return resolve() 
+                }
+                 if(type=="document"){
+                    ModelReference = CoursDocument
+                    return resolve() 
+                }
+                 if(type=="video"){
+                    ModelReference = CoursVideo
+                    return resolve()
+                 }
+                 if(!ModelReference){
+                    return reject(new ValidationError({message:'valid cours type is required'}))
+                 }
+
+
+            })
+        }).then(()=>{
+                return ModelReference.findByPk(req.params.id,{
+                    include:{
+                        model:Course,
+                        foreignKey:'parent'
+                    }
+                })
+        }).then(record=>{
+              return new Promise((resolve,reject)=>{
+                    if(!record){
+                        return reject(new RecordNotFoundErr())
+                    }
+                    else{
+                        return resolve(record)
+                    }
+                })
+        }).then(course=>{
+            subcourse = course 
+            return MatiereNiveau.findOne({where:{
+                MatiereId:course.Course.matiere_id,
+                NiveauScolaireId:course.Course.niveau_scolaire_id
+                    
+            },include:[{
+                model:User,
+                foreignKey:'intern_teacher',
+                as:'Teacher',
+                include:{
+                    model:Role,
+                    foreignKey:'role_id'
+                }
+            },{
+                model:User,
+                foreignKey:'inspector',
+                as:'Inspector',
+                include:{
+                    model:Role,
+                    foreignKey:'role_id'
+                }
+            }]})            
+        }).then(matiere_niveau=>{
+                return new Promise((resolve,reject)=>{
+                    console.log(matiere_niveau.Inspector.id)
+                    if(matiere_niveau.Teacher || matiere_niveau.Inspector){
+                        let r 
+                        if(req.role.weight == matiere_niveau.Teacher.Role.weight && req.user.id==matiere_niveau.Teacher.id){
+                                r = "teacher"
+                        }
+                        if(req.role.weight == matiere_niveau.Inspector.Role.weight && req.user.id==matiere_niveau.Inspector.id){
+                            r = "inspector"
+                        }
+                        if((req.role.weight < matiere_niveau.Inspector.Role.weight) &&(req.role.weight < matiere_niveau.Teacher.Role.weight) ){
+                            r='other'
+                        }
+                        if(!r){
+                            return    reject(new UnauthorizedError({specific:'you are not one of the authoriezd people to do this'}))
+                        }   
+                        return resolve(req.body)
+                    }
+                    else{
+                        return reject(new ValidationError({message:'the responsible of this subject in this school level is required'}))    
+                    }
+                })
+        }).then(comment=>{
+            comment.addedBy = req.user.id
+            if(type=="interactive"){
+                comment.c_interactive_id = subcourse.id
+            }
+            if(type=="video"){
+                comment.c_video_id  = subcourse.id  
+            }
+            if(type=="document"){
+                comment.c_document_id  = subcourse.id  
+            }
+            comment.course_id = subcourse.Course.id
+            return CoursComment.create(comment)
+
+        }).then(comment=>{
+            callback(null,comment)
+        }).catch(e=>{
+              if( e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
+                callback(e,null)
+              }
+              else{
+                callback(new SqlError(e),null)
+              }
+        })
+
+    },
+    updateCoursComment:(req,callback)=>{
+        let comment;
+        CoursComment.findByPk(req.params.id,{
+            include:{
+                model:User,
+                foreignKey:'addedBy',
+                include:{
+                    model:Role,
+                    foreignKey:'role_id'
+                }
+            }
+        }).then(c=>{
+            return new Promise((resolve,reject)=>{
+                if(!c){
+                    return reject(new RecordNotFoundErr())
+                }
+                else if(c.User.Role.weight<=req.role.weight && c.addedBy != req.user.id){
+                    return reject(new UnauthorizedError({specific:'you cannot update a comment record cause it is created by a user higher than  you'}))
+                }
+                else{
+                    comment = c
+                    return resolve(c)
+                }
+            })
+        }).then(cd=>{
+            const updateCommentValidation = schemaValidation(CourscommentShema)(req.body)
+            return new Promise((resolve,reject)=>{
+                if(updateCommentValidation.isValid){
+                        return resolve(req.body)
+                }
+                else{
+                    return reject(new ValidationError({message:updateCommentValidation.message}))
+                }
+
+            })
+        }).then(c=>{
+                return comment.update(c)
+        }).then(c=>{
+            callback(null,c)
+        }).catch(e=>{
+            console.log(e)
+            if(e instanceof ValidationError || e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
+                callback(e,null)
+              }
+              else{
+                callback(new SqlError(e),null)
+              }
+        })
+
+
+    },
+    deleteCoursComment:(req,callback)=>{
+        CoursComment.findByPk(req.params.id,{
+            include:{
+                model:User,
+                foreignKey:'addedBy',
+                include:{
+                    model:Role,
+                    foreignKey:'role_id'
+                }
+            }
+        }).then(cd=>{
+            return new Promise((resolve,reject)=>{
+                if(!cd){
+                    return reject(new RecordNotFoundErr())
+                }
+                else if(cd.User.Role.weight<=req.role.weight && cd.addedBy != req.user.id){
+                    return reject(new UnauthorizedError({specific:'you cannot delete a course record cause it is created by a user higher than  you'}))
+                }
+                else{
+                    return resolve(cd)
+                }
+
+            })
+        }).then(cd=>{
+            return cd.destroy()
+        }).then(sd=>{
+            callback(null,{})    
+        }).catch(e=>{
+            if( e instanceof RecordNotFoundErr || e instanceof SqlError || e instanceof UnauthorizedError){
+                callback(e,null)
+              }
+              else{
+                callback(new SqlError(e),null)
+              }
+        })
+
+
+
+
+    }
+    
+    
+
 
 
 }

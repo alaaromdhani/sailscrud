@@ -48,10 +48,7 @@ module.exports = {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    commentaire: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
+    
     status:{
       type:DataTypes.ENUM(['public','private']),
       defaultValue:'private',    
@@ -84,6 +81,9 @@ module.exports = {
       foreignKey:'document'
     })
     CoursDocument.hasMany(Rate,{
+      foreignKey:'c_document_id'
+    })
+    CoursDocument.hasMany(CoursComment,{
       foreignKey:'c_document_id'
     })
 

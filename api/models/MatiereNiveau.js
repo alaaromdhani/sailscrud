@@ -43,6 +43,14 @@ module.exports = {
       MatiereNiveau.belongsTo(NiveauScolaire,{
         foreignKey:'NiveauScolaireId'
       })
+      MatiereNiveau.belongsTo(User,{
+        foreignKey:'intern_teacher',
+        as:'Teacher'
+      })
+      MatiereNiveau.belongsTo(User,{
+        foreignKey:'inspector',
+        as:'Inspector'
+      })
 
   }
 

@@ -48,8 +48,10 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(User.sequelize.models.User.rawAttributes);
-
-
+      let role_name
+      if(req.query.role){
+          role_name = req.query.role
+      }
       // Create the filter conditions based on the search query
       let where = search
         ? {
@@ -64,20 +66,25 @@ module.exports = {
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = [[sortBy, sortOrder]];
+        let role_options = {
+          model:Role,
+          where:{
+            weight:{
+              [Op.gte]:req.role.weight
+            }
+          },
+          foreignKey:'role_id',
+          attributes:['name','weight']
+
+       }
+       if(role_name){
+          role_options.where.name = role_name
+       }
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await User.findAndCountAll({
         where,
-        include:[{
-          model:Role,
-          where:{
-            weight:{
-              [Op.gt]:req.role.weight
-            }
-          },
-          foreignKey:'role_id'
-
-       },{
+        include:[role_options,{
         model:User,
 
         foreignKey:'addedBy',

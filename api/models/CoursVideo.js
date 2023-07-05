@@ -48,10 +48,7 @@ module.exports = {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    commentaire: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
+    
     status:{
       type:DataTypes.ENUM('private','public'),
       defaultValue:'private',    
@@ -90,6 +87,9 @@ module.exports = {
       foreignKey:'addedBy'
     })
     CoursVideo.hasMany(Rate,{
+      foreignKey:'c_video_id'
+    })
+    CoursVideo.hasMany(CoursComment,{
       foreignKey:'c_video_id'
     })
 

@@ -62,7 +62,9 @@ module.exports= {
                     return {     
                       MatiereId:data.id,
                       name:d.name,
-                      NiveauScolaireId:d.NiveauScolaireId
+                      NiveauScolaireId:d.NiveauScolaireId,
+                      inspector:d.inspector,
+                      intern_teacher:d.intern_teacher
                       }
                 })
                 await MatiereNiveau.bulkCreate(matiere_niveau_scolaire)
@@ -122,7 +124,7 @@ module.exports= {
     }).then(matiere=>{
 
       if(matiere.ns && matiere.ns.length>0){
-        console.log('tab',matiere.ns)
+        //console.log('tab',matiere.ns)
         return NiveauScolaire.findAll({
           where:{
             id:{
@@ -158,7 +160,9 @@ module.exports= {
            return {
             MatiereId:subject.id,
             NiveauScolaireId:d.NiveauScolaireId,
-            name:d.name
+            name:d.name,
+            inspector:d.inspector,
+            intern_teacher:d.intern_teacher
           }
 
         })
@@ -181,7 +185,8 @@ module.exports= {
 
   },
   deleteMatiere:(req,callback)=>{
-        Matiere.findByPk(req.params.id,{
+    let subject 
+    Matiere.findByPk(req.params.id,{
             include:{
               model:Course,
               foreignKey:'matiere_id'
@@ -196,10 +201,17 @@ module.exports= {
                   }
                   else{
                       return resolve(m)
-                  }
-            })
+                  }})
+            
         }).then(m=>{
-              return m.destroy()
+          subject = m 
+          return MatiereNiveau.destroy({
+            where:{
+               MatiereId:m.id 
+            }
+          })
+        }).then(m=>{
+                 return subject.destroy()
         }).then(sd=>{
             callback(null,{})
         }).catch(e=>{

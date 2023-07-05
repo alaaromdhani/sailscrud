@@ -23,6 +23,8 @@ module.exports = {
           course.status = "private"
           course.rating =0
         }
+        course.thumbnail = sails.config.custom.baseUrl+'courses/'+course.url+'/'+'story_content/thumbnail.jpg'
+
         console.log('adding a course')
       },
       beforeDestroy:async (course,options)=>{
@@ -79,10 +81,7 @@ module.exports = {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    commentaire: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
+    
     status:{
       type:DataTypes.ENUM(['public','private']),
       defaultValue:'private',    
@@ -113,6 +112,9 @@ module.exports = {
       foreignKey:'addedBy'
     })
     CoursInteractive.hasMany(Rate,{
+      foreignKey:'c_interactive_id'
+    })
+    CoursInteractive.hasMany(CoursComment,{
       foreignKey:'c_interactive_id'
     })
 

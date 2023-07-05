@@ -31,7 +31,11 @@ module.exports.routes = {
   'GET /lrs/activities/state':'LrsController.getActivityState',
   'PUT /lrs/activities/state':'LrsController.putState',
   'PUT /lrs/statements':'LrsController.putStatement',
-  'GET /api/v1/results/:id':'CoursInteractiveController.getResults'
+  'GET /api/v1/results/:id':'CoursInteractiveController.getResults',
+  'POST /api/v1/comment_interactive_cours/:id':'CoursInteractiveController.commentCourse',
+  'POST /api/v1/comment_video_cours/:id':'CoursVideoController.commentCourse',
+  'POST /api/v1/comment_document_cours/:id':'CoursDocumentController.commentCourse',
+ 
 
 
 

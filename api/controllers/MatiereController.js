@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-
+const _ = require('lodash')
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound')
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
 const SqlError = require('../../utils/errors/sqlErrors');
@@ -72,12 +72,77 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await Matiere.findByPk(req.params.id);
-      if (!data) {
-        return ErrorHandlor(req,new RecordNotFoundErr(),res)
+      const data = await MatiereNiveau.findAll({
+        where:{
+          MatiereId:req.params.id
+        },
+        include:[{
+          model:Matiere,
+          foreignKey:'MatiereId'  
+        },
+        {
+          model:NiveauScolaire,
+          foreignKey:'NiveauScolaireId'  
+        },
+        {
+          model:User,
+          foreignKey:'intern_teacher',
+          as:'Teacher',
+          attributes:['username','firstName','lastName','id'] 
+        },
+        {
+          model:User,
+          foreignKey:'inspector',
+          as:'Inspector',
+          attributes:['username','firstName','lastName','id'] 
+        }
+      
+      ]
+
+      });
+    
+      if (!data || !data.length) {
+        try{
+          const matiere = await Matiere.findByPk(req.params.id)
+          if(!matiere){
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+          }
+          return DataHandlor(req,matiere,res) 
+        }catch(e){
+          return ErrorHandlor(req,new SqlError(e),res)
+        }
       }
-      return DataHandlor(req,data,res)
+      else{
+            let matiere = {}
+            Object.keys(data[0].Matiere.dataValues).forEach(k=>{
+              matiere[k] = data[0].Matiere[k]
+            })
+            console.log(matiere.id)
+          matiere.ns = []  
+            const grouped = _.groupBy(data,'MatiereId')
+        grouped[matiere.id].forEach(element => {
+            let d = {}  
+            if(element.NiveauScolaire){
+              d.NiveauScolaire = element.NiveauScolaire
+            }
+            if(element.name){
+                d.name = element.name
+            }
+            if(element.Teacher){
+              d.Teacher = element.Teacher
+            }
+            if(element.Inspector){
+              d.Inspector = element.Inspector
+            }
+            matiere.ns.push(d)  
+          });
+          
+      return DataHandlor(req,matiere,res)
+
+      }
+        
     } catch (err) {
+      console.log(err)
       return ErrorHandlor(req,new SqlError(err),res);
     }
   },

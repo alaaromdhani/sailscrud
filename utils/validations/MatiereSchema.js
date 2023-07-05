@@ -5,7 +5,9 @@ const MatiereShema = joi.object({
     color: joi.string().required(),
     ns:joi.array().items(joi.object({
          name:joi.string().required(),
-         NiveauScolaireId:joi.number().required()  
+         NiveauScolaireId:joi.number().required(),  
+         intern_teacher:joi.number().required(),
+         inspector:joi.number().required()
     }))
 })
 const UpdateMatiereShema = joi.object({
@@ -15,7 +17,9 @@ const UpdateMatiereShema = joi.object({
   active:joi.boolean(),
   ns:joi.array().items(joi.object({
     name:joi.string().required(),
-    NiveauScolaireId:joi.number().required()  
+    NiveauScolaireId:joi.number().required(),  
+    intern_teacher:joi.number().required(),
+    inspector:joi.number().required()
   }))
 })
 module.exports = {MatiereShema,UpdateMatiereShema}

@@ -16,9 +16,8 @@ module.exports = {
 
 
 
-        }).then(()=>{
-           return  new Promise(async(resove,reject)=>{
-                if(!role.permissions && !role.features){
+        }).then(async ()=>{
+            if(!role.permissions && !role.features){
                     let regitredRole = await Role.findOne({where:{name:'registred'},include:[{
                         model:Permission,
                         through:'roles_permissions'
@@ -33,7 +32,9 @@ module.exports = {
 
 
             }
-            else{
+           return  new Promise(async(resove,reject)=>{
+                
+           
                     let permissions = []
                     let features = []
                     if(role.permissions){
@@ -58,8 +59,7 @@ module.exports = {
                     
                     return resove({permissions,features})
 
-            }
-
+           
 
             })
 

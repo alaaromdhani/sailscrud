@@ -68,5 +68,6 @@ module.exports = {
           CoachingVideo.hasMany(Rate,{
             foreignKey:'cv_id' 
           })
+          
     }
 };

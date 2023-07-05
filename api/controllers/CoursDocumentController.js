@@ -189,4 +189,16 @@ module.exports = {
     }
 
   },
+  commentCourse:(req,res)=>{
+    sails.services.subcourseservice.commentSubCourse(req,"document",(err,data)=>{
+      if(err){
+          return ErrorHandlor(req,err,res)
+      }
+      else{
+        return DataHandlor(req,data,res)
+      }
+    })
+
+
+  }
 };

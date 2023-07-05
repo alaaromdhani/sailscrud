@@ -1,3 +1,7 @@
 use cases:
----> why we can't put the three types of course in the same table
 ---> the link to articulate auth hhhhhh : https://articulate.com/support/article/Storyline-360-Supplying-the-Actor-via-a-Query-String
+---> 1/matiere update 
+     2/matiere-create
+     3/comment 3 types of  course with a random user 
+     4/comment 3 types of  course with a another inspector not responsible for that subject and that level
+     5/comment    right
