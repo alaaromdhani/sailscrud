@@ -33,7 +33,7 @@ module.exports = {
     name: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
+      
     },
   },
   associations:()=>{

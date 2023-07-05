@@ -6,12 +6,29 @@
  */
 
 
+const ValidationError = require('../../utils/errors/validationErrors');
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
+const SqlError = require("../../utils/errors/sqlErrors")
 module.exports = {
   async find(req, res) {
+    const {MatiereId,NiveauScolaireId} = req.query
+    let name
+    if(MatiereId && NiveauScolaireId){
+      let matiere_niveau = await MatiereNiveau.findOne({
+        where:{
+          MatiereId,
+          NiveauScolaireId
+        }
+      })
+      if(matiere_niveau){
+        name=matiere_niveau.name
+      }
+    }
+    
     try {
-      const page = parseInt(req.query.page)+1 || 1;
+      
       const limit = req.query.limit || 10;
+      const page = parseInt(req.query.page)+1 || 1;
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
@@ -32,23 +49,36 @@ module.exports = {
       // Create the sorting order based on the sortBy and sortOrder parameters
 
       // Perform the database query with pagination, filtering, sorting, and ordering
-      const { count, rows } = await Chapitre.findAndCountAll({
+      let queryOptions = {
         where,
         order,
-        limit: parseInt(limit, 10),
-        offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
-      });
+      }
 
-      return DataHandlor(req,{
+      if(typeof limit=='number'){
+          queryOptions.limit = parseInt(limit, 10)
+          queryOptions.offset = (parseInt(page, 10) - 1) * parseInt(limit, 10)
+      }
+      const { count, rows } = await Chapitre.findAndCountAll(queryOptions);
+      if(name){
+        rows.forEach(element => {
+            element.name = element.name.replace("chapter",name)
+        }); 
+      }
+      let dataOptions= {
         success: true,
         data: rows,
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
         totalCount: count,
-        totalPages: Math.ceil(count / parseInt(limit, 10)),
-      },res);
+      }
+      if(typeof limit=='number'){
+        dataOptions.page= parseInt(page, 10)
+        dataOptions.limit= parseInt(limit, 10)
+        dataOptions.totalPages= Math.ceil(count / parseInt(limit, 10))
+      }
+      
+      return DataHandlor(req,dataOptions,res);
     } catch (error) {
-      return ErrorHandlor(req,new SQLError(error),res)
+      console.log(error)
+      return ErrorHandlor(req,new SqlError(error),res)
     }
   },
   async destroy(req, res) {

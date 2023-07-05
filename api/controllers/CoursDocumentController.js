@@ -180,7 +180,7 @@ module.exports = {
                   return ErrorHandlor(req, new ValidationError({message: rateCourseSchema.message}), res)
                 }
       } else {
-        return ErrorHandlor(req, new recordNotfFoundErr(), res)
+        return ErrorHandlor(req, new RecordNotFoundErr(), res)
       }
     }
     catch(e){
