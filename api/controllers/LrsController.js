@@ -8,9 +8,8 @@ module.exports = {
     getActivityState:async (req,res)=>{
 
         const {agent,activityId} = req.query
-        const data = 'ActivityState('+activityId+'|'+agent+': resume'
-        res.status(200).send(data)
-       /* let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
+       
+        let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
         let activity = await CoursInteractive.findOne({where:{id:activityId}})
             if(dbAgent&&activity){
                     let activityState = await ActivityState.findOne({where:{agent_id:dbAgent.id,c_interactive_id:activity.id}})
@@ -43,7 +42,7 @@ module.exports = {
             else{
                     return ErrorHandlor(req,new ValidationError({message:'activity and agent are required'}),res)
             }
-              */
+            
 
 
 
@@ -51,8 +50,7 @@ module.exports = {
 
     },
     putState:async (req,res)=>{
-        res.status(200).send({data:{mess:'object is created successfully'}})
-         /*const {agent,activityId} = req.query
+         const {agent,activityId} = req.query
         let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
         let activity = await CoursInteractive.findOne({where:{id:activityId}})
         if(dbAgent && activity){
@@ -67,10 +65,10 @@ module.exports = {
         }
         else{
                 return ErrorHandlor(req,new ValidationError({message:'agent and activity are required'}))
-        }*/
+        }
     },
     putStatement:async (req,res)=>{
-    /* let timestamp = req.body.timestamp
+        let timestamp = req.body.timestamp
         let statementId = req.body.id 
        let agentName = req.body.actor.name
        let verbId = req.body.verb.id
@@ -103,11 +101,7 @@ module.exports = {
                     }
                 })
 
-                /*
-                
-                */
-
-            /*    if(!created && object.definition.name['en-US']!==custom_object.description){
+                if(!created && object.definition.name['en-US']!==custom_object.description){
                     custom_object.description = object.definition.name['en-US']
                       await custom_object.save()  
                 }
@@ -158,7 +152,7 @@ module.exports = {
              return ErrorHandlor(req,new ValidationError(),res)   
        }
         
-        */
+    
        return res.status(200).json({data:{mess:'object is created successfully'}})
     },
     getStatements:async (req,res)=>{

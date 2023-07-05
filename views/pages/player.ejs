@@ -12,8 +12,8 @@ var script = iframeDoc.createElement("script");
   script.append(`
     window.onload = function() {
       let player = GetPlayer();
-      player.SetVar(\'USERNAME\',\'ala\');
-      player.SetVar(\'SEXE\',\'f\');
+      player.SetVar(\'USERNAME\',\'<%= username %>\');
+      player.SetVar(\'SEXE\',\'<%= sex %>\');
   }
 `);
   iframeDoc.documentElement.appendChild(script);

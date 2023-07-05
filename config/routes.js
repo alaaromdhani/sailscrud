@@ -31,6 +31,7 @@ module.exports.routes = {
   'GET /lrs/activities/state':'LrsController.getActivityState',
   'PUT /lrs/activities/state':'LrsController.putState',
   'PUT /lrs/statements':'LrsController.putStatement',
+  'GET /api/v1/results/:id':'CoursInteractiveController.getResults'
 
 
 
