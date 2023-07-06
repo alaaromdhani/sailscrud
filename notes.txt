@@ -1,7 +1,17 @@
-use cases:
+full test:
 ---> the link to articulate auth hhhhhh : https://articulate.com/support/article/Storyline-360-Supplying-the-Actor-via-a-Query-String
----> 1/matiere update 
-     2/matiere-create
-     3/comment 3 types of  course with a random user 
-     4/comment 3 types of  course with a another inspector not responsible for that subject and that level
-     5/comment    right
+
+---> 1/matiere update with and without ns 
+     2/matiere-create with and without ns
+     3/create a course attributed to a matiere a subject a level and a chapter 
+     4/filter a course by subject,chapter,level
+     5/comment 3 types of  course with a random user  
+     6/comment 3 types of  course with a another inspector not responsible for that subject and that level
+     7/comment    right
+     8/add 3 types of courses
+     9/rate courses with diffrent users
+     10/add-interactive course
+     11/try the interactive course with certain users
+     12/ check the results at any time during the course 
+     13/ clear results during the attemp and view results
+    14/delete the course 

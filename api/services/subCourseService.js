@@ -213,15 +213,28 @@ module.exports = {
 
     },
     deleteInteractiveCourse:(req,callback)=>{
+        let ci
         CoursInteractive.findByPk(req.params.id,{
-            include:{
+            include:[{
                 model:User,
                 foreignKey:'addedBy',
                 include:{
                     model:Role,
                     foreignKey:'role_id'
                 }
-            }
+            }]
+        }).then(cd=>{
+             ci =cd  
+            return ActivityState.findOne({where:{deprecated:false,c_interactive_id:cd.id}})
+        }).then(acts=>{
+            return new Promise((resolve,reject)=>{
+                    if(!acts){
+                        return resolve(ci)
+                    }
+                    else{
+                        return reject(new UnauthorizedError({specific:'you cant delete a course that some people attempted'}))
+                    }
+            })
         }).then(cd=>{
             return new Promise((resolve,reject)=>{
                 if(!cd){

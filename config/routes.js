@@ -35,6 +35,7 @@ module.exports.routes = {
   'POST /api/v1/comment_interactive_cours/:id':'CoursInteractiveController.commentCourse',
   'POST /api/v1/comment_video_cours/:id':'CoursVideoController.commentCourse',
   'POST /api/v1/comment_document_cours/:id':'CoursDocumentController.commentCourse',
+  'DELETE /api/v1/attemp/:id':'CoursInteractiveController.clearHistory',
  
 
 

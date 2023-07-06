@@ -1,3 +1,4 @@
+const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const UnkownError = require("../../utils/errors/UnknownError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
@@ -12,7 +13,7 @@ module.exports = {
         let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
         let activity = await CoursInteractive.findOne({where:{id:activityId}})
             if(dbAgent&&activity){
-                    let activityState = await ActivityState.findOne({where:{agent_id:dbAgent.id,c_interactive_id:activity.id}})
+                    let activityState = await ActivityState.findOne({where:{agent_id:dbAgent.id,c_interactive_id:activity.id,deprecated:false}})
                      if(!activityState){
                         const data = 'ActivityState('+activityId+'|'+agent+': resume'
                         try{
@@ -56,8 +57,20 @@ module.exports = {
         if(dbAgent && activity){
             try{
                 console.log(req.body)
-                await ActivityState.update({state:req.body},{where:{c_interactive_id:activityId,agent_id:dbAgent.id}})
-                return DataHandlor(req,{},res)
+                const activityState = await ActivityState.findOne({
+                    where:{
+                        c_interactive_id:activityId,
+                        agent_id:dbAgent.id,
+                        deprecated:false                        
+                    }
+                })
+                if(activityState){
+                    await activityState.update({state:req.body})
+                    return DataHandlor(req,{},res)
+                }
+                else{
+                    return ErrorHandlor(req,new RecordNotFoundErr(),res)
+                }
             }
             catch(e){
                    return ErrorHandlor(req,new SqlError(e),res) 
@@ -80,9 +93,15 @@ module.exports = {
        if(timestamp && statementId && agentName && verbId && verbName && objectId){
             let custom_object
             let created  
-        const agent = await Agent.findOne({where:{account_name:agentName}})
             const object =req.body.object 
             const courseId =object.id.split('/')[0]
+        const agent = await Agent.findOne({where:{account_name:agentName}})
+        let activityState = await ActivityState.findOne({where:{agent_id:agent.id,c_interactive_id:courseId,deprecated:false}})
+            if(!activityState){
+                //i case the the results has been resetted so he has to repeat the course  
+                return ErrorHandlor(req,new UnauthorizedError({specific:'this course has been resetted so all statement will be depercated'}),res)
+            }   
+            
             const obj = await Obj.findOne({where:{id:objectId}})// the 
             if(!obj){
                 [custom_object,created] = await CustomObject.findOrCreate({

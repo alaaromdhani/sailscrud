@@ -6,7 +6,15 @@ const {
   
   module.exports = {
     options: {
-      tableName: 'activitystates'
+      tableName: 'activitystates',
+      hooks:{
+           beforeSave:(activityState,options)=>{
+            if(activityState.isNewRecord){
+                activityState.deprecated = false
+            }
+            
+          },
+      }
     },
     datastore: 'default',
     tableName: 'activitystates',
@@ -29,7 +37,9 @@ const {
             type: DataTypes.BLOB,
             
         },
-        
+        deprecated:{
+            type:DataTypes.BOOLEAN    
+        },
         metadata:{
             type: DataTypes.STRING,
         }

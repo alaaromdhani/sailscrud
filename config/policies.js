@@ -53,6 +53,7 @@ module.exports.policies = {
     'rateCourse':['lang','passport','role','tokenVerifier'],
     'getResults':['lang','passport','role','tokenVerifier'],
     'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
+    'clearHistory':['lang','passport','role','tokenVerifier'],
   },
   CoursVideoController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],

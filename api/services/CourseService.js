@@ -1,4 +1,4 @@
-const {UpdateCourseShema} = require('../../utils/validations/CourseSchema');
+const {UpdateCourseShema, CourseShema} = require('../../utils/validations/CourseSchema');
 const schemaValidation = require('../../utils/validations')
 const ValidationError = require('../../utils/errors/validationErrors');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound')
@@ -6,8 +6,59 @@ const UnauthorizedErr = require('../../utils/errors/UnauthorizedError')
 const recordNotFoundErr = require('../../utils/errors/recordNotFound');
 const SqlError = require('../../utils/errors/sqlErrors');
 module.exports = {
-    createCourse:()=>{
+    createCourse:(req,callback)=>{
+          
+          new Promise((resolve,reject)=>{
+              const createCourseValidation = schemaValidation(CourseShema)(req.body)
+              if(createCourseValidation.isValid){
+                  return resolve(req.body)
+              }
+              else{
+                  return reject(new ValidationError({message:createCourseValidation.message}))
+              }
+            }).then(course=>{
+                  return MatiereNiveau.findOne({where:{
+                      MatiereId:course.matiere_id,
+                      NiveauScolaireId:course.niveau_scolaire_id
+                    }})
+                  
+              }).then(matiere_niveau=>{
+                return new Promise((resolve,reject)=>{
+                  if(matiere_niveau){
+                      let course = req.body 
+                      course.matiere_niveau_id =matiere_niveau.id 
+                      return resolve(course)
+                  }
+                  else{
+                      return reject(new ValidationError({message:'the relation between the subject and the level  must be done'})) 
+                  }
+                })
+              }).then(c=>{
+                c.addedBy = req.user.id
+                c.rating = 0
+                return Course.create(c)
+              }).then(c=>{
+                  callback(null,c)
+              }).catch(e=>{
+                if(e instanceof ValidationError){
+                  callback(e,null)
+                }
+                else{
+                  callback(new SqlError(e),null)
+                }
 
+
+
+              })
+            /*
+              try {
+                  let  courseToCreate = req.body
+                  const data = await Course.create(courseToCreate);
+                  return DataHandlor(req,data,res)
+                } catch (err) {
+                  return ErrorHandlor(req,new SqlError(err),res);
+                }
+            */
 
       },
     updateCourse:(req,callback)=>{

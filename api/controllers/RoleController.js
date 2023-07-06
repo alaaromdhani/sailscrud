@@ -105,14 +105,21 @@ module.exports = {
   async findOne(req, res) {
     try {
       const data = await Role.findByPk(req.params.id,{
-        include:{
+        include:[{
           model:Permission,
           through:'roles_permissions',
+          attributes:['action'],
           include:{
             model:Model,
             attributes: ['name']
           }
-        }
+        },{
+            model:Feature,
+            attributes:['name'],
+            through:'roles_features',
+            
+
+        }]
 
     });
       if (!data) {
@@ -120,6 +127,7 @@ module.exports = {
       }
       return DataHandlor(req,data,res);
     } catch (err) {
+      console.log(err)
       return ErrorHandlor(req,new SqlError(err),res);
     }
   },

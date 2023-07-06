@@ -16,22 +16,15 @@ const SqlError = require('../../utils/errors/sqlErrors');
 
 module.exports = {
   async create(req, res) {
-    const createCourseValidation = schemaValidation(CourseShema)(req.body)
-    if(createCourseValidation.isValid){
-      try {
-        let  courseToCreate = req.body
-        courseToCreate.addedBy = req.user.id
-        courseToCreate.rating = 0
-        const data = await Course.create(courseToCreate);
-        return DataHandlor(req,data,res)
-      } catch (err) {
-        return ErrorHandlor(req,new SqlError(err),res);
-      }
-    }
-    else{
-      return ErrorHandlor(req,new ValidationError({message:createCourseValidation.message}),res)
-    }
-    },
+      sails.services.courseservice.createCourse(req,(err,data)=>{
+          if(err){
+            return ErrorHandlor(req,err,res)
+          }
+          else{
+            return DataHandlor(req,data,res)
+          }
+       })  
+  },
 
   async find(req, res) {
     try {
@@ -58,7 +51,7 @@ module.exports = {
       const order = [[sortBy, sortOrder]];
 
       // Perform the database query with pagination, filtering, sorting, and ordering
-      const { count, rows } = await Course.findAndCountAll({
+      let { count, rows } = await Course.findAndCountAll({
         where,
         include:[{
           model:Matiere,
@@ -71,11 +64,21 @@ module.exports = {
         },{
           model:Chapitre,
           foreignKey:'chapitre_id',
-          attributes:['name']
-        }],
+          attributes:['name'],
+
+        },
+        {
+          model:MatiereNiveau,
+          foreignKey:'matiere_niveau_id',
+          attributes:['name'],
+        }
+          ],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+      });
+      rows.forEach(element => {
+          element.Chapitre.name = element.Chapitre.name.replace("chapter",element.MatiereNiveau.name)
       });
 
       return DataHandlor(req,{

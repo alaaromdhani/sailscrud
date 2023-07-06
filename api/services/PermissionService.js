@@ -76,7 +76,7 @@ module.exports = {
 
     },
     convertFeatures:(user,features)=>{
-        return features.map(f=>user.Features.filter(feature=>feature.name==f.name).at(0));
+        return features.map(f=>user.Features.filter(feature=>feature.name==f).at(0)).filter(f=>f!=undefined);
 
 
 

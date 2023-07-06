@@ -76,9 +76,9 @@ module.exports = {
     Course.belongsToMany(Trimestre,{
       through:'trimestres_cours'
     })
-
-    
-
+    Course.belongsTo(MatiereNiveau,{
+      foreignKey:'matiere_niveau_id'
+    })
   }
 
 };

@@ -87,6 +87,10 @@ module.exports = {
       defaultValue:'private',    
       allowNull:false
     },
+    thumbnail:{
+      type:DataTypes.STRING,
+      allowNull: true,
+    },
     rating:{
       type:DataTypes.FLOAT,
       allowNull: false,
