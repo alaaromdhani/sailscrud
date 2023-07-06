@@ -70,6 +70,15 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await CoursDocument.findAndCountAll({
         where,
+        include:{
+          model:CoursComment,
+          foreignKey:'c_document_id',
+          include:{
+             model:User,
+             foreignKey:'addedBy',
+             attributes:['username','lastName','firstName','email','profilePicture'] 
+          }
+        },
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),

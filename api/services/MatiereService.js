@@ -6,6 +6,7 @@ const ValidationError = require('../../utils/errors/validationErrors');
 const recordNotFoundErr = require('../../utils/errors/recordNotFound')
 const unauthorizedErr = require('../../utils/errors/UnauthorizedError')
 const {Op} = require('sequelize');
+const { groupBy } = require('lodash');
 
 
 module.exports= {
@@ -149,25 +150,7 @@ module.exports= {
       return subject.save()
     }).then(async data=>{
       if(relatedNs){
-
-        await MatiereNiveau.destroy({
-            where:{
-              MatiereId:data.id  
-            }
-          })
-          
-        let groupedData = req.body.ns.map(d=>{
-           return {
-            MatiereId:subject.id,
-            NiveauScolaireId:d.NiveauScolaireId,
-            name:d.name,
-            inspector:d.inspector,
-            intern_teacher:d.intern_teacher
-          }
-
-        })
-        await MatiereNiveau.bulkCreate(groupedData)
-        callback(null,data)
+          sails.services.matiereservice.handleNs(req,data,callback)
       }
       else{
         callback(null,data)
@@ -181,6 +164,78 @@ module.exports= {
         callback(new SqlError(err),null)
       }
     })
+
+
+  },
+  handleNs:(req,matiere,callback)=>{
+    let groupedRecords
+    try{
+        const inputs =req.body.ns.map(o=>{return {MatiereId:req.params.id,NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector}}) 
+        const grouping =_.groupBy(inputs,'NiveauScolaireId')
+    //
+          let recordsToUpdate=[]
+          let recordsToCreate=[]
+          let recordsToDelete=[]
+        MatiereNiveau.findAll({where:{MatiereId:req.params.id},include:{
+            model:Course,
+            foreignKey:'matiere_niveau_id'
+        }}).then(async matieres_niveaux=>{
+          try{
+
+            groupedRecords =_.groupBy(matieres_niveaux,'NiveauScolaireId')   
+            inputs.filter(i=>groupedRecords[i.NiveauScolaireId]?false:true).forEach(i=>{
+              recordsToCreate.push(i)
+            })
+            matieres_niveaux.forEach(mn=>{
+               // console.log(mn)
+              if(!grouping[mn.NiveauScolaireId]){
+                  recordsToDelete.push(mn)
+              }
+               else if(mn.name!=grouping[mn.NiveauScolaireId].at(0).name ||mn.inspector!=grouping[mn.NiveauScolaireId].at(0).inspector||mn.intern_teacher!=grouping[mn.NiveauScolaireId].at(0).intern_teacher ){
+                console.log(mn.name)
+                   mn.name = grouping[mn.NiveauScolaireId].at(0).name
+                  mn.inspector = grouping[mn.NiveauScolaireId].at(0).inspector
+                  mn.intern_teacher = grouping[mn.NiveauScolaireId].at(0).intern_teacher
+                 
+                  recordsToUpdate.push(mn)
+              }
+              console.log(grouping[mn.NiveauScolaireId])
+
+            })
+            if(recordsToDelete.length){
+             await Promise.all(recordsToDelete.filter(mn=>!mn.Courses.length).map(mn=>{
+                return mn.destroy()
+             }))
+            }
+            if(recordsToCreate.length){
+              await MatiereNiveau.bulkCreate(recordsToCreate)
+            }
+            if(recordsToUpdate.length){
+              await Promise.all(recordsToUpdate.map(r=>{
+                return r.save()
+              }))
+            }
+            return callback(null,{recordsToCreate,recordsToDelete,recordsToUpdate})
+          }
+          catch(e){
+              return callback(new SqlError(e),null)
+          }
+        
+        })
+
+
+
+
+
+
+        
+
+      }catch(e){
+        console.log(e)
+          callback(new SqlError(e),null)
+
+      }
+       
 
 
   },

@@ -28,6 +28,9 @@ module.exports = {
 
   async find(req, res) {
     try {
+      const matiere_id = req.query.matiere
+      const niveau_scolaire_id =   req.query.ns
+      const chapitre_id = req.query.chapitre
       const page = parseInt(req.query.page)+1 || 1;
       const limit = req.query.limit || 10;
       const search = req.query.search;
@@ -37,7 +40,7 @@ module.exports = {
 
 
       // Create the filter conditions based on the search query
-      const where = search
+      let where = search
         ? {
           [Sequelize.Op.or]: attributes.map((attribute) => ({
             [attribute]: {
@@ -46,7 +49,15 @@ module.exports = {
           })),
         }
         : {};
-
+        if(matiere_id){
+          where.matiere_id = matiere_id
+        } 
+        if(niveau_scolaire_id){
+          where.niveau_scolaire_id = niveau_scolaire_id
+        }
+        if(chapitre_id){
+          where.chapitre_id = chapitre_id
+        }
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = [[sortBy, sortOrder]];
 

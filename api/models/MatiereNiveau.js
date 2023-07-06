@@ -51,6 +51,9 @@ module.exports = {
         foreignKey:'inspector',
         as:'Inspector'
       })
+      MatiereNiveau.hasMany(Course,{
+        foreignKey:'matiere_niveau_id'
+      })
 
   }
 
