@@ -10,7 +10,16 @@ let roles = [
 {
     name:"public",
     weight:1000
+},
+{
+    name:"MadarTeacher",
+    weight:10
+},
+{
+    name:"MadarInspector",
+    weight:5
 }
+
 ]
 module.exports = async ()=>{
     const dbRoles = await Role.findAll()

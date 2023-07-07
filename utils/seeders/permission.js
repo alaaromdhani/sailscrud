@@ -7,6 +7,30 @@ let grants = { //defining the grants for permissions
         actions:['*'],
         features:['*'],
     },
+    MadarTeacher:{
+        models:['coursinteractive','coursvideo','coursdocument','courscomment'],
+        actions:['*'],
+        features:['*'],
+        restrictions:[
+            {model:'coursinteractive',actions:['read']},
+            {model:'coursvideo',actions:['read']},
+            {model:'coursdocument',actions:['read']},
+            
+        ],
+        
+    },
+    MadarInspector:{
+        models:['coursinteractive','coursvideo','coursdocument','courscomment'],
+        actions:['*'],
+        features:['*'],
+        restrictions:[
+            {model:'coursinteractive',actions:['read']},
+            {model:'coursvideo',actions:['read']},
+            {model:'coursdocument',actions:['read']},
+            
+        ],
+        
+    },
     registred:{
         models:['user','role'],
         actions:['create','read'],
