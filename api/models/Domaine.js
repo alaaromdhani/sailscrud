@@ -41,7 +41,7 @@ module.exports = {
       required: true,
     },
     status: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         defaultValue:true    
         //        required: true,
     },
