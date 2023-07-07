@@ -40,6 +40,7 @@ module.exports.bootstrap = async function() {
 
 
   await default_user_image()
+  console.log(sails.models)
   await modelSeasers()
 
    await countrySeeders()

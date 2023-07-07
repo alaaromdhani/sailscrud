@@ -102,7 +102,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-    migrate: 'alter',
+    migrate: 'safe',
 
     /***************************************************************************
       *                                                                          *
@@ -419,6 +419,16 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
   custom: {
+    roles:{
+        teacher:{
+          name:'MadarTeacher',
+          weight:10
+        },
+        inspector:{
+          name:'MadarInspector',
+          weight:5
+        }
+    },
     dafault_user_image:{
       file_name:'default_user',
       extension:'jpg',

@@ -1,10 +1,9 @@
 
-let data =   [{ name:'العربية',color: '#f20530'},
-    {name:'الرياضيات',color:  '#05aff2'},
-      { name:'الإيقاظ العلمي',color:  '#f2e205'},
+let data =   [{ name:'اللغة العربية',color: '#f20530'},
+    {name:'العلوم و التكنولوجيا',color:  '#05aff2'},
         { name:'الفرنسية'   , color:  '#f28705'},
     {name: 'الإنجليزية'  ,color:  '#d7f205'},
-      {name: 'التنشئة الإجتماة الإجتماعية',color:  '#a65d03'}]
+      {name: 'التنشئة الإجتماعية',color:  '#a65d03'}]
 
 const verify = async()=>{
     return (await Domaine.findAll()).length>0

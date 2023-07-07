@@ -1,54 +1,59 @@
 const _ = require('@sailshq/lodash')
 const {Op, fn} = require('sequelize')
 
-let grants = { //defining the grants for permissions
-    superadmin:{
-        models:['*'],
-        actions:['*'],
-        features:['*'],
-    },
-    MadarTeacher:{
-        models:['coursinteractive','coursvideo','coursdocument','courscomment'],
-        actions:['*'],
-        features:['*'],
-        restrictions:[
-            {model:'coursinteractive',actions:['read']},
-            {model:'coursvideo',actions:['read']},
-            {model:'coursdocument',actions:['read']},
-            
-        ],
-        
-    },
-    MadarInspector:{
-        models:['coursinteractive','coursvideo','coursdocument','courscomment'],
-        actions:['*'],
-        features:['*'],
-        restrictions:[
-            {model:'coursinteractive',actions:['read']},
-            {model:'coursvideo',actions:['read']},
-            {model:'coursdocument',actions:['read']},
-            
-        ],
-        
-    },
-    registred:{
-        models:['user','role'],
-        actions:['create','read'],
-        features:['*'],
-        restrictions:[
-            {model:'role',actions:['*']}
-        ],
-        
-    },
-    public :{
-        models:[],
-        actions:[],
-        features:[]
-       
-    }
-}
 
 module.exports = async ()=>{
+    let grants = { //defining the grants for permissions
+        superadmin:{
+            models:['*'],
+            actions:['*'],
+            features:['*'],
+        },
+        [sails.config.custom.roles.inspector.name]:{
+            models:['coursinteractive','coursvideo','coursdocument','courscomment','course','niveauscolaire'],
+            actions:['*'],
+            features:['*'],
+            restrictions:[
+                {model:'coursinteractive',actions:['read']},
+                {model:'coursvideo',actions:['read']},
+                {model:'coursdocument',actions:['read']},
+                {model:'course',actions:['read']},
+                {model:'niveauscolaire',actions:['read']},
+                
+                
+            ],
+            
+        },
+        [sails.config.custom.roles.teacher.name]:{
+            models:['coursinteractive','coursvideo','coursdocument','courscomment','course','niveauscolaire'],
+            actions:['*'],
+            features:['*'],
+            restrictions:[
+                {model:'coursinteractive',actions:['read']},
+                {model:'coursvideo',actions:['read']},
+                {model:'coursdocument',actions:['read']},
+                {model:'course',actions:['read']},
+                {model:'niveauscolaire',actions:['read']},
+                
+            ],
+            
+        },
+        registred:{
+            models:['user','role'],
+            actions:['create','read'],
+            features:['*'],
+            restrictions:[
+                {model:'role',actions:['*']}
+            ],
+            
+        },
+        public :{
+            models:[],
+            actions:[],
+            features:[]
+           
+        }
+    }
     
     let allActions = ['read','create','delete','update']
         

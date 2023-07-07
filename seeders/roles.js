@@ -15,6 +15,11 @@ let roles = [
 module.exports = async ()=>{
     const dbRoles = await Role.findAll()
     let unexiting = roles.filter(role=>dbRoles.filter(r=>r.name==role.name).length==0)
-    await Role.bulkCreate(unexiting)  
+    try{
+        await Role.bulkCreate(unexiting)  
+    }
+    catch(e){
+        console.log(e)
+    }
     console.log('roles created')
 }

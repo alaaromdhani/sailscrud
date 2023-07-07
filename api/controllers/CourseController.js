@@ -60,9 +60,20 @@ module.exports = {
         }
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = [[sortBy, sortOrder]];
-
+       let whereNs = {}
+       if(req.role.name===sails.config.custom.roles.teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
+        whereNs ={
+          [Sequelize.Op.or]:[{
+            intern_teacher:req.user.id
+          },{
+            inspector:req.user.id
+          }]
+        }
+       } 
       // Perform the database query with pagination, filtering, sorting, and ordering
+      console.log(whereNs)
       let { count, rows } = await Course.findAndCountAll({
+      
         where,
         include:[{
           model:Matiere,
@@ -82,6 +93,8 @@ module.exports = {
           model:MatiereNiveau,
           foreignKey:'matiere_niveau_id',
           attributes:['name'],
+          where:whereNs
+          
         }
           ],
         order,

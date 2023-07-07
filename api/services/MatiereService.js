@@ -305,7 +305,7 @@ module.exports= {
         if(!domaine){
           return reject(new RecordNotFoundErr()) 
         }
-        if(domaine.Matieres.length){
+        if(domaine.Matieres&&domaine.Matieres.length){
           return reject(new UnauthorizedError({specific:'some subjects belongs to this domain it can be set as inactive'})) 
         }
         return resolve(domaine)
