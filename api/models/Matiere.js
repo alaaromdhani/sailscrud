@@ -59,6 +59,9 @@ module.exports = {
       Matiere.belongsToMany(NiveauScolaire,{
         through:MatiereNiveau
       })
+      Matiere.belongsTo(Domaine,{
+        foreignKey:'domaine_id'
+      })
       Matiere.hasMany(Course,{
         foreignKey:'matiere_id'
       })

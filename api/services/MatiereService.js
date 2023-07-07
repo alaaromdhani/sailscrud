@@ -7,6 +7,9 @@ const recordNotFoundErr = require('../../utils/errors/recordNotFound')
 const unauthorizedErr = require('../../utils/errors/UnauthorizedError')
 const {Op} = require('sequelize');
 const { groupBy } = require('lodash');
+const { UpdateDomaineShema } = require('../../utils/validations/DomaineSchema');
+const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 
 
 module.exports= {
@@ -275,7 +278,91 @@ module.exports= {
 
 
 
+  },
+  updateDomaine:(req,callback)=>{
+    new Promise((resolve,reject)=>{
+      const updateDomaineValidation = schemaValidation(UpdateDomaineShema)(req.body)
+      if(updateDomaineValidation.isValid){
+        return resolve(req.body)
+      }
+      else{
+        return reject(new ValidationError({message:updateDomaineValidation.message}))
+      }
+    }).then(domaine=>{
+      if(typeof(domaine.status)=='boolean' && !domaine.status){
+        return Domaine.findByPk(req.params.id,{
+          include:{
+            model:Matiere,
+            foreignKey:'domaine_id' 
+          }
+        })
+      }
+      else{
+        return Domaine.findByPk(req.params.id)
+      }
+    }).then(domaine=>{
+      return new Promise((resolve,reject)=>{
+        if(!domaine){
+          return reject(new RecordNotFoundErr()) 
+        }
+        if(domaine.Matieres.length){
+          return reject(new UnauthorizedError({specific:'some subjects belongs to this domain it can be set as inactive'})) 
+        }
+        return resolve(domaine)
+      })
+
+    }).then(domaine=>{
+      return domaine.update(req.body)
+    }).then(domaine=>{
+         callback(null,domaine)
+    }).catch(err=>{
+      console.log(err)
+      if(err instanceof ValidationError || err instanceof recordNotFoundErr || err instanceof SqlError || err instanceof UnauthorizedError){
+        callback(err,null)
+      }
+      else{
+        callback(new SqlError(err),null)
+      }
+    })
+
+
+
+  },
+  deleteDomaine:(req,callback)=>{
+    Domaine.findByPk(req.params.id,{
+      include:{
+        model:Matiere,
+        foreignKey:'domaine_id' 
+      }
+    }).then(domaine=>{
+      return new Promise((resolve,reject)=>{
+        if(!domaine){
+          return reject(new RecordNotFoundErr()) 
+        }
+        if(domaine.Matieres.length){
+          return reject(new UnauthorizedError({specific:'some subjects belongs to this domain it can be deleted'})) 
+        }
+        return resolve(domaine)
+      })
+
+    }).then(domaine=>{
+      return domaine.destroy()
+    }).then(sd=>{
+        callback(null,{})
+    }).catch(err=>{
+      console.log(err)
+      if(err instanceof ValidationError || err instanceof recordNotFoundErr || err instanceof SqlError|| err instanceof UnauthorizedError){
+        callback(err,null)
+      }
+      else{
+        callback(new SqlError(err),null)
+      }
+    })
+    
+
+
   }
+
 
 
 

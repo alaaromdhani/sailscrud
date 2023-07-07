@@ -2,6 +2,7 @@ const joi = require('joi')
 const MatiereShema = joi.object({
     name: joi.string().required(),
     description: joi.string().required(),
+    domaine_id:joi.number().required(),
     color: joi.string().required(),
     ns:joi.array().items(joi.object({
          name:joi.string().required(),
@@ -14,6 +15,7 @@ const UpdateMatiereShema = joi.object({
   name: joi.string(),
   description: joi.string(),
   color: joi.string(),
+  domaine_id:joi.number(),
   active:joi.boolean(),
   ns:joi.array().items(joi.object({
     name:joi.string().required(),
