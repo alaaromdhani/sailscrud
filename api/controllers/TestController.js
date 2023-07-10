@@ -3,10 +3,13 @@ const ValidationError = require('../../utils/errors/validationErrors');
 const SqlError = require('../../utils/errors/sqlErrors')
 
 module.exports={
-  accessCourse:(req,res)=>{
-    res.header({'Content-Security-Policy': "frame-ancestors *"})
-    res.view('pages/homepage.ejs')
+  getChildren:async (req,res)=>{
+    console.log(req.params.id)
+    res.status(200).send("hhhh")
   },
+ /* getChildren:(req,res)=>{
+      res.status
+  },*/
   upload:async (req,res)=>{
    if(req.operation){
      if(req.operation.files && req.operation.files.length ){

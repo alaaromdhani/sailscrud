@@ -36,11 +36,11 @@ module.exports.bootstrap = async function() {
 
 
 
+   await featureSeeders()
   }*/
 
 
   await default_user_image()
-  console.log(sails.models)
   await modelSeasers()
 
    await countrySeeders()

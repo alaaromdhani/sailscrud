@@ -13,8 +13,10 @@ const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessag
 const ValidationError = require('../../utils/errors/validationErrors');
 const recordNotfFoundErr = require('../../utils/errors/recordNotFound');
 const SqlError = require('../../utils/errors/sqlErrors');
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 
 module.exports = {
+  
   async create(req, res) {
       sails.services.courseservice.createCourse(req,(err,data)=>{
           if(err){
@@ -118,73 +120,17 @@ module.exports = {
     }
   },
   
-
   async findOne(req, res) {
-    try {
-     let data =await Course.findByPk(req.params.id)
-     if(data){
-      const type = req.query.type || "interactive"
-      if(type!="interactive" && type!="document" && type!=="video"){
-            return ErrorHandlor(req,new ValidationError({message:'type is required'}),res)
+   try{
+      const data = await Course.findByPk(req.params.id)
+      if(!data){
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
-      const page = parseInt(req.query.page)+1 || 1;
-      const limit = req.query.limit || 10;
-      const search = req.query.search;
-      const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
-      const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
-      const order = [[sortBy, sortOrder]];
-      let ModelReference 
-      let attributes
-      if(type=="document"){
-        ModelReference = CoursDocument
-        attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
-      }
-      if(type=="interactive"){
-        ModelReference = CoursInteractive
-        attributes = Object.keys(CoursInteractive.sequelize.models.CoursInteractive.rawAttributes);
-      }
-      if(type=="video"){
-        ModelReference = CoursVideo
-        attributes = Object.keys(CoursVideo.sequelize.models.CoursVideo.rawAttributes);
-      }
-      
-      let where = search
-      ? {
-        [Sequelize.Op.or]: attributes.map((attribute) => ({
-          [attribute]: {
-            [Sequelize.Op.like]: '%'+search+'%',
-          },
-        })),
-      }
-      : {};
-      where.parent = req.params.id
-      const {count,rows} = await ModelReference.findAndCountAll({
-          where,
-          order,
-          limit: parseInt(limit, 10),
-          offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
-      });
-      return DataHandlor(req,{
-        success: true,
-        data: rows,
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
-        totalCount: count,
-        totalPages: Math.ceil(count / parseInt(limit, 10)),
-      },res);
-    
-     }
-     else{
-      
-        return ErrorHandlor(req,new recordNotfFoundErr(),res)
-     }
-      
-        
-      
-    } catch (err) {
-      console.log(err)
-        return ErrorHandlor(req,new SqlError(err),res)
-    }
+      return DataHandlor(req,data,res)
+   }
+   catch(e){
+    return ErrorHandlor(req,new SqlError(e),res)
+   }
   },
 
   async update(req, res) {
@@ -212,4 +158,76 @@ module.exports = {
       return ErrorHandlor(req,new SqlError(err),res);
     }
   },
+  findOneCourse:async(req,res)=>{
+    console.log(req.params.id)
+  try {
+    let data =await Course.findByPk(req.params.id)
+    if(data){
+     const type = req.query.type || "interactive"
+     if(type!="interactive" && type!="document" && type!=="video"){
+           return ErrorHandlor(req,new ValidationError({message:'type is required'}),res)
+     }
+     const page = parseInt(req.query.page)+1 || 1;
+     const limit = req.query.limit || 10;
+     const search = req.query.search;
+     const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
+     const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
+     const order = [[sortBy, sortOrder]];
+     let ModelReference 
+     let attributes
+     if(type=="document"){
+       ModelReference = CoursDocument
+       attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
+     }
+     if(type=="interactive"){
+       ModelReference = CoursInteractive
+       attributes = Object.keys(CoursInteractive.sequelize.models.CoursInteractive.rawAttributes);
+     }
+     if(type=="video"){
+       ModelReference = CoursVideo
+       attributes = Object.keys(CoursVideo.sequelize.models.CoursVideo.rawAttributes);
+     }
+     
+     let where = search
+     ? {
+       [Sequelize.Op.or]: attributes.map((attribute) => ({
+         [attribute]: {
+           [Sequelize.Op.like]: '%'+search+'%',
+         },
+       })),
+     }
+     : {};
+     where.parent = req.params.id
+     const {count,rows} = await ModelReference.findAndCountAll({
+         where,
+         order,
+         limit: parseInt(limit, 10),
+         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+     });
+     return DataHandlor(req,{
+       success: true,
+       data: rows,
+       page: parseInt(page, 10),
+       limit: parseInt(limit, 10),
+       totalCount: count,
+       totalPages: Math.ceil(count / parseInt(limit, 10)),
+     },res);
+   
+    }
+    else{
+     
+       return ErrorHandlor(req,new recordNotfFoundErr(),res)
+    }
+     
+       
+     
+   } catch (err) {
+     console.log(err)
+       return ErrorHandlor(req,new SqlError(err),res)
+   }
+
+  
+},
+
+  
 };

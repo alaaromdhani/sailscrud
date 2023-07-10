@@ -34,10 +34,11 @@ module.exports.policies = {
   },
   TestController:{
     upload:['lang','passport','role','bulkUpload'],
-    accessCourse:['lang','passport','role']
+    '*':['lang','passport','role']
   },
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'findOneCourse':['lang','passport','role','tokenVerifier','canseecourse']
   },
   CoursDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],

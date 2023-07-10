@@ -27,6 +27,7 @@ module.exports.routes = {
   'post /api/v1/rate_interactive_course/:id':'CoursInteractiveController.rateCourse',
   'post /api/v1/rate_document_course/:id':'CoursDocumentController.rateCourse',
   'post /api/v1/rate_video_course/:id':'CoursVideoController.rateCourse',
+  'GET /api/v1/find_children/:id':'CourseController.findOneCourse',
   'get /cours/:id':'CoursInteractiveController.accessCourse',
   'GET /lrs/activities/state':'LrsController.getActivityState',
   'PUT /lrs/activities/state':'LrsController.putState',
@@ -36,7 +37,8 @@ module.exports.routes = {
   'POST /api/v1/comment_video_cours/:id':'CoursVideoController.commentCourse',
   'POST /api/v1/comment_document_cours/:id':'CoursDocumentController.commentCourse',
   'DELETE /api/v1/attemp/:id':'CoursInteractiveController.clearHistory',
- 
+  
+  
 
 
 
