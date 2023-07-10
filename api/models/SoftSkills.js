@@ -1,37 +1,34 @@
 const { DataTypes } = require("sequelize");
 
 /**
- * @module SoftSkillsDocument
+ * @module SoftSkills
  *
  * @description
- *   a child of a course (subcourse) that requires an upload of a document( pdf,word ..... )
+ *   the parent of all soft skills 
  */
 module.exports = {
   datastore: 'default',
   options: {
-    tableName: 'sk_documents',
+    tableName: 'soft_skills',
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
     hooks: {
       beforeCreate: async (course,options)=>{
         if(course.isNewRecord){
-          course.active = false,
-          course.validity = false,
-          course.status = "private"
-          course.rating =0
+          course.active = false
         }
-        console.log('adding a course')
+        console.log('adding a parent soft skills')
       },
        beforeDestroy: async(course,options)=>{
         await SoftSkillsRate.destroy({
-          where:{sk_document_id:course.id}
+          where:{parent_sk:course.id}
         })}
 
     },
 
   },
-  tableName: 'sk_documents',
+  tableName: 'soft_skills',
   attributes: {
     id:{
       type:DataTypes.INTEGER,
@@ -49,20 +46,11 @@ module.exports = {
       allowNull: true
     },
     
-    status:{
-      type:DataTypes.ENUM(['public','private']),
-      defaultValue:'private',    
-      allowNull:false
-    },
     rating:{
       type:DataTypes.FLOAT,
       allowNull: true,
     },
-    validity:{
-      type:DataTypes.BOOLEAN,
-      defaultValue:false,
-      allowNull:false
-    },
+    
     active: {
       type: DataTypes.BOOLEAN,
       allowNull:false,  
@@ -71,17 +59,24 @@ module.exports = {
 
   },
   associations:()=>{
-    SoftSkillsDocument.belongsTo(SoftSkills,{
+    SoftSkills.belongsTo(SoftSkillsTheme,{
+      foreignKey:'theme_id'
+    })
+    SoftSkills.belongsToMany(NiveauScolaire,{
+        through:'soft_skills_ns'
+    })
+    SoftSkills.hasMany(SoftSkillsDocument,{
       foreignKey:'parent'
     })
-    SoftSkillsDocument.belongsTo(User,{
-      foreignKey:'addedBy'
+    
+    SoftSkills.hasMany(SoftSkillsRate,{
+        foreignKey:'parent_sk'
     })
-    SoftSkillsDocument.belongsTo(Upload,{
-      foreignKey:'document'
+    SoftSkills.hasMany(SoftSkillsVideo,{
+      foreignKey:'parent'
     })
-    SoftSkillsDocument.hasMany(SoftSkillsRate,{
-      foreignKey:'sk_document_id'
+    SoftSkills.hasMany(SoftSkillsInteractive,{
+      foreignKey:'parent'
     })
 
     

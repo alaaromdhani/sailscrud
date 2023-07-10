@@ -77,13 +77,13 @@ module.exports = {
 
   },
   associations:()=>{
-    SoftSkillsVideo.belongsTo(SoftSkillsTheme,{
-      foreignKey:'theme_id'
+    SoftSkillsInteractive.belongsTo(SoftSkills,{
+        foreignKey:'parent'
     })
-    SoftSkillsVideo.belongsTo(User,{
+    SoftSkillsInteractive.belongsTo(User,{
       foreignKey:'addedBy'
     })
-    SoftSkillsVideo.hasMany(SoftSkillsRate,{
+    SoftSkillsInteractive.hasMany(SoftSkillsRate,{
       foreignKey:'sk_interactive_id'
     })
     

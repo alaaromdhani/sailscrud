@@ -56,6 +56,9 @@ module.exports = {
     NiveauScolaire.belongsToMany(Matiere,{
         through:MatiereNiveau
     })
+    NiveauScolaire.belongsToMany(SoftSkills,{
+      through:'soft_skills_ns'
+    })
     NiveauScolaire.hasMany(Course,{
       foreignKey:'niveau_scolaire_id'
     })

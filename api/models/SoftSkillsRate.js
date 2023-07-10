@@ -32,6 +32,9 @@ module.exports = {
     SoftSkillsRate.belongsTo(User,{
         foreignKey:'ratedBy'
     })
+    SoftSkillsRate.belongsTo(SoftSkills,{
+        foreignKey:'parent_sk'
+    })
     SoftSkillsRate.belongsTo(SoftSkillsInteractive,{
         foreignKey:'sk_interactive_id'
     })

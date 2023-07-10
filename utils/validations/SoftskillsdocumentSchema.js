@@ -3,14 +3,14 @@ const SoftskillsdocumentShema = joi.object({
     
     name: joi.string().required(),
     description: joi.string(),
-    theme_id: joi.number().required(),
+    parent: joi.number().required(),
     
 })
 const SoftskillsdocumentShemaWithDocument = joi.object({
     
     name: joi.string().required(),
     description: joi.string(),
-    theme_id: joi.number().required(),
+    parent: joi.number().required(),
     document: joi.number().required(),
     
 })

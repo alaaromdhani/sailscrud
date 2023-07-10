@@ -3,7 +3,7 @@ const SoftskillsinteractiveShema = joi.object({
     
     name: joi.string().required(),
     description: joi.string(), 
-    theme_id: joi.number().required(),
+    parent:joi.number().required(),
     
    
     
@@ -12,7 +12,7 @@ const UpdateSoftskillsinteractiveShema = joi.object({
     
     name: joi.string(),
     description: joi.string(), 
-    theme_id: joi.number(),
+    parent:joi.number(),
     
    
     
