@@ -10,6 +10,7 @@ const SqlError = require("../../utils/errors/sqlErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 const schemaValidation = require("../../utils/validations");
 const RateShema = require("../../utils/validations/RateSchema");
+const Sequelize = require('sequelize')
 
 
 
@@ -51,18 +52,42 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
+      let whereNs ={}
+      let allowedParents
+      if(req.role.name===sails.config.custom.roles.teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
+         allowedParents = (await Course.findAll({include:{
+          model:MatiereNiveau,
+          where:{
+            [Sequelize.Op.or]:[
+              {
+               intern_teacher:req.user.id 
 
+              },
+              {
+                inspector:req.user.id 
+ 
+               }
+            ]
+          }
 
+      }})).map(c=>c.id)
+       }
+         
+       let where = {}
       // Create the filter conditions based on the search query
-      const where = search
-        ? {
-          [Sequelize.Op.or]: attributes.map((attribute) => ({
-            [attribute]: {
-              [Sequelize.Op.like]: '%'+search+'%',
-            },
-          })),
+      if(search){
+        where.name= {
+          [Sequelize.Op.like]: '%'+search+'%',
+          
+        }   
+      }
+      if(allowedParents){
+        where.parent= {
+          [Sequelize.Op.in]: '%'+allowedParents+'%',
+          
         }
-        : {};
+      }
+          
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];

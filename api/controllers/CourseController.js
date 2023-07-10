@@ -95,7 +95,7 @@ module.exports = {
           model:MatiereNiveau,
           foreignKey:'matiere_niveau_id',
           attributes:['name'],
-          where:whereNs
+          
           
         }
           ],
@@ -175,6 +175,7 @@ module.exports = {
      const order = [[sortBy, sortOrder]];
      let ModelReference 
      let attributes
+
      if(type=="document"){
        ModelReference = CoursDocument
        attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
@@ -200,6 +201,15 @@ module.exports = {
      where.parent = req.params.id
      const {count,rows} = await ModelReference.findAndCountAll({
          where,
+         include:{
+          model:CoursComment,
+          
+          include:{
+             model:User,
+             foreignKey:'addedBy',
+             attributes:['username','lastName','firstName','email','profilePicture'] 
+          }
+        },
          order,
          limit: parseInt(limit, 10),
          offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
