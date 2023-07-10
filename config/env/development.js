@@ -102,7 +102,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-    migrate: 'safe',
+    migrate: 'alter',
 
     /***************************************************************************
       *                                                                          *
@@ -430,8 +430,8 @@ module.exports = {
         }
     },
     dafault_user_image:{
-      file_name:'default_user',
-      extension:'jpg',
+      file_name:'default',
+      extension:'png',
       path: 'default',
 
     },

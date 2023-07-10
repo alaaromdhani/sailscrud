@@ -42,7 +42,7 @@ module.exports = {
       }
       else{
         if(data.token){ //be sure that login is successfull
-          console.log(data);
+          
           res.cookie('token',data.token);
           req.logIn(data.user, (err) => {
 

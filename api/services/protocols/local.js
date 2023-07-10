@@ -63,7 +63,7 @@ exports.register = function (user,callback){
     }
 }
 exports.login = function (req, identifier, password, next) {
-    console.log()
+    
     var isEmail = validateEmail(identifier)
       , query   = {isDeleted:false};
   
@@ -81,7 +81,7 @@ exports.login = function (req, identifier, password, next) {
 
 
     }}).then(function ( user) { 
-      console.log(user)
+      
       if (!user || user.isDeleted) {
         next(err=new BadCredentialsError(),user=null,info='Bad Credentials');
       }
@@ -111,7 +111,7 @@ exports.login = function (req, identifier, password, next) {
                       }).then(t=>{
                         next(null,{user,token},info='user authentificated');
                       }).catch(err=>{
-                        console.log(err)
+                       
                         next(err,null,info=err)
                       })
                       

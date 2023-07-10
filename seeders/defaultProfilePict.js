@@ -1,7 +1,7 @@
 module.exports=async()=>{
 
     const defaultUpload = {
-        file_original_name:'default.jpg',
+        file_original_name:'default.png',
         isPublic:true,
         file_name:sails.config.custom.dafault_user_image.file_name,
         path:sails.config.custom.dafault_user_image.path,

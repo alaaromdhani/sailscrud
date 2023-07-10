@@ -24,7 +24,7 @@ module.exports = {
         console.log('adding a course')
       },
       beforeDestroy:async(course,options)=>{
-        await SoftSkillsVideo.destroy({
+        await SoftSkillsRate.destroy({
           where:{sk_video_id:course.id}
       })}
 
