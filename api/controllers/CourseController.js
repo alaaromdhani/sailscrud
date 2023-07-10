@@ -188,7 +188,7 @@ module.exports = {
        ModelReference = CoursVideo
        attributes = Object.keys(CoursVideo.sequelize.models.CoursVideo.rawAttributes);
      }
-     
+     //let allowed
      let where = search
      ? {
        [Sequelize.Op.or]: attributes.map((attribute) => ({
@@ -207,7 +207,12 @@ module.exports = {
           include:{
              model:User,
              foreignKey:'addedBy',
-             attributes:['username','lastName','firstName','email','profilePicture'] 
+             attributes:['username','lastName','firstName','email','profilePicture'],
+             include:{
+                model:Role,
+                foreignKey:'role_id'
+
+             } 
           }
         },
          order,
