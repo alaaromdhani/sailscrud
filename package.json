@@ -42,7 +42,8 @@
     "yauzl": "^2.10.0"
   },
   "devDependencies": {
-    "eslint": "5.16.0"
+    "eslint": "5.16.0",
+    "nodemon": "^3.0.1"
   },
   "scripts": {
     "dev": "NODE_ENV=development nodemon -w sails lift --verbose",

@@ -2,3 +2,5 @@ views/*
 .tmp/*
 .git/*
 .idea/*
+static/*
+assets/*
