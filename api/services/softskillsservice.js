@@ -10,6 +10,7 @@ const { UpdateSoftskillsthemeShema } = require("../../utils/validations/Softskil
 const { UpdateSoftskillsvideoShema } = require("../../utils/validations/SoftskillsvideoSchema");
 
 const { ErrorHandlor } = require("../../utils/translateResponseMessage");
+const RateShema = require("../../utils/validations/RateSchema");
 
 
 module.exports={
@@ -530,7 +531,7 @@ module.exports={
                         return callback(new ValidationError({message:'valid xapi course is required'}))
     
                     }
-                    let course = req.operation.data
+                    let course = req.body
                     course.rating = 0
                     course.id = data.courseId
                      course.url  = req.upload.path
@@ -545,7 +546,124 @@ module.exports={
         },'../../static/softskills/',type="softskills")
 
 
+    },
+    rateSoftSkills:(req,type,callback)=>{
+        let ModelReference
+        let key
+        
+        if(type==="interactive"){
+            ModelReference = SoftSkillsInteractive
+            key = 'sk_interactive_id'    
+        }
+        if(type==="document"){
+            ModelReference = SoftSkillsDocument
+            key="sk_document_id"
+        }
+        if(type=="video"){
+            ModelReference = SoftSkillsVideo
+            key="sk_video_id"
+        }
+        if(!ModelReference){
+            return callback(new ValidationError({message:'a valid type is required'}))
+        }
+        let softskill
+        let parentSoftSkill
+        new Promise((resolve,reject)=>{
+            const rateValidation = schemaValidation(RateShema)(req.body)
+            if(rateValidation.isValid){
+                return resolve(req.body)
+            }
+            else{
+                return reject(new ValidationError({message:rateValidation.message}))
+            }
+        }).then(rate=>{
+            //finding the record to rate
+            return ModelReference.findByPk(req.params.id,{include:{
+                        model:SoftSkills,
+                        foreignKey:'parent'
+            }})
+        }).then(ss=>{
+            console.log(Object.keys(ss))
+            return new Promise((resolve,reject)=>{
+                if(ss){
+                    if(!ss.SoftSkill){
+                        return reject(new RecordNotFoundErr())    
+                    }
+                    else{
+                        return resolve(ss)
+                    }
+                }
+                else{
+                    return reject(new RecordNotFoundErr())
+                }
+            })
+
+
+        }).then(ss=>{
+            console.log(Object.keys(ss))
+            softskill =ss
+            parentSoftSkill = ss.SoftSkill
+           //findinfg the rate created by that user to this softSkill
+            return SoftSkillsRate.findOrCreate({where:{
+             ratedBy:req.user.id,
+             [key]:req.params.id,
+             parent_sk: ss.parent  
+            },defaults:{
+                ratedBy:req.user.id,
+                [key]:req.params.id,
+                parent_sk: ss.parent,
+                rating:req.body.rating  
+            }})
+        }).then(([ss,created])=>{
+            if(created){
+                return ss
+            }
+            else{
+                ss.rating = req.body.rating       
+                return ss.save()
+            }
+        }).then(ss=>{
+          return   Promise.all([SoftSkillsRate.findAll({
+                where: {
+                  parent_sk: softskill.parent
+                },
+                attributes: [
+                  [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                ]
+              }),SoftSkillsRate.findAll({
+                where: {
+                  [key]: softskill.id
+                },
+                attributes: [
+                  [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                ]
+              })])
+        }).then(([parentRate,childRate])=>{
+            const parentRating = parentRate[0].dataValues.avgRating
+            const childRating = childRate[0].dataValues.avgRating
+            parentSoftSkill.rating = parentRating
+            softskill.rating =childRating    
+            return Promise.all([
+                parentSoftSkill.save(),
+                softskill.save()
+            ])    
+
+        }).then(([p,c])=>{
+            callback(null,c)
+        }).catch(e=>{
+            console.log(e)
+            if(e instanceof RecordNotFoundErr || e instanceof UnauthorizedError || e instanceof ValidationError){
+                callback(e,null)
+            }
+            else{
+                callback(new SqlError(e),null)
+            }
+        })
+
+
     }
+    
+
     
 
       

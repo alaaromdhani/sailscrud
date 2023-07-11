@@ -110,4 +110,14 @@ module.exports = {
       }
     })
   },
+  rateSoftSkill:(req,res)=>{
+    sails.services.softskillsservice.rateSoftSkills(req,"video",(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+    })
+  }
 };

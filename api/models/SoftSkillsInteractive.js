@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
-
+const fs =require('fs');
+const path = require("path");
 /**
  * @module SoftSkillsInteractive
  *
@@ -26,7 +27,25 @@ module.exports = {
       beforeDestroy:async(course,options)=>{
         await SoftSkillsRate.destroy({
           where:{sk_interactive_id:course.id}
-      })}
+      })
+        await new Promise((resolve,reject)=>{
+          fs.rmdir(path.join(__dirname,'../../static/softskills/'+course.url),{recursive:true},(err)=>{
+
+            if(err){
+              reject(err)
+            }
+            else{
+              resolve()
+
+            }
+          })
+
+
+        })
+    
+    
+      }
+        
 
     },
 

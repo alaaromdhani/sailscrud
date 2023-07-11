@@ -39,6 +39,11 @@ module.exports.routes = {
   'DELETE /api/v1/attemp/:id':'CoursInteractiveController.clearHistory',
   'GET /api/v1/softskills/children/:id':'SoftSkillsController.findAllChildren',
   'GET /softskills/:id':'SoftSkillsInteractiveController.accessSoftSkills',
+  'POST /api/v1/softskillsinteractives/rate/:id':'SoftSkillsInteractiveController.rateSoftSkill',
+  'POST /api/v1/softskillsdocuments/rate/:id':'SoftSkillsDocumentController.rateSoftSkill',
+  'POST /api/v1/softskillsvideos/rate/:id':'SoftSkillsVideosController.rateSoftSkill',
+
+
   
   
 

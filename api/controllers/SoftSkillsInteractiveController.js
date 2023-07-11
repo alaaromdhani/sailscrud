@@ -12,19 +12,27 @@ const UnkownError = require('../../utils/errors/UnknownError');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 module.exports = {
   async create(req, res) {
-    sails.services.softskillsservice.createInteractiveSoftSkills(req,(err,data)=>{
+    sails.services.softskillsservice.createInteractiveSoftSkills(req,async (err,data)=>{
       if(err){
         if(req.upload){
-          fs.rmdir(path.join(__dirname,'../../static/softskills/'+req.upload.path),{recursive:true},(error)=>{
-            if(!error){
-              return ErrorHandlor(req,err,res)
-            }
-            else{
-              console.log(err)
-              return ErrorHandlor(req,err,res)
-            }
-  
-          }) 
+              const existingUpload = await SoftSkillsInteractive.findOne({
+                where:{url:req.upload.path}
+              })
+              if(!existingUpload){
+                fs.rmdir(path.join(__dirname,'../../static/softskills/'+req.upload.path),{recursive:true},(error)=>{
+                  if(!error){
+                    return ErrorHandlor(req,err,res)
+                  }
+                  else{
+                    console.log(err)
+                    return ErrorHandlor(req,err,res)
+                  }
+        
+                }) 
+              }
+              else{
+                return ErrorHandlor(req,err,res)
+              }
         }
         else{
           return ErrorHandlor(req,err,res)
@@ -167,5 +175,16 @@ module.exports = {
 
 
 
+  },
+  rateSoftSkill:(req,res)=>{
+    sails.services.softskillsservice.rateSoftSkills(req,"interactive",(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+    })
   }
+
 };

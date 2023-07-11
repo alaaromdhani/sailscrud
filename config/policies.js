@@ -64,8 +64,12 @@ module.exports.policies = {
   SoftSkillsDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','skDocument'],
+    'rateSoftSkill':['lang','passport','role','tokenVerifier']
     
-    
+  },
+  SoftSkillsVideoController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'rateSoftSkill':['lang','passport','role','tokenVerifier']
   },
   LrsController:{
     '*':[]
@@ -77,7 +81,8 @@ module.exports.policies = {
   SoftSkillsInteractiveController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzipsoftskill'],
-    'accessSoftSkills':['lang','passport','role','tokenVerifier','cours-feature']
+    'accessSoftSkills':['lang','passport','role','tokenVerifier','cours-feature'],
+    'rateSoftSkill':['lang','passport','role','tokenVerifier']
     
   },
 
