@@ -38,7 +38,9 @@ module.exports.bootstrap = async function() {
 
    await featureSeeders()
   }*/
-
+  for(let i=0;i<10;i++){
+    console.log("port : "+sails.config.port)
+  }
 
   await default_user_image()
   await modelSeasers()
