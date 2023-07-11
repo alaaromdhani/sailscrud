@@ -24,8 +24,9 @@ const optionsVerifier= async (req,file,cb)=>{
            coursDocument[k] = req.body[k]
        })
        try{
-            if(coursDocument.theme_id){
-                coursDocument.theme_id = parseInt(coursDocument.theme_id)     
+        console.log(req.body)
+            if(coursDocument.parent){
+                coursDocument.parent = parseInt(coursDocument.parent)     
             }
            const createDocCoursValidation = schemaValidation(SoftskillsdocumentShema)(coursDocument)
            if(createDocCoursValidation.isValid){

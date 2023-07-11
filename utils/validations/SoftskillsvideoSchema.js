@@ -14,9 +14,11 @@ const UpdateSoftskillsvideoShema = joi.object({
     name: joi.string(),
     description: joi.string(),
     parent:joi.number(),
-    theme_id: joi.number(),
     source: joi.string().valid('youtube','vimeo').required(),
-    url: joi.string(),
+    url:joi.string().uri(),
+    status: joi.string().valid('public','private'),
+    validity:joi.boolean(),
+    active:joi.boolean()
     
 })
 module.exports = {SoftskillsvideoShema,UpdateSoftskillsvideoShema}

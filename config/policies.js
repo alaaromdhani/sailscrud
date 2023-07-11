@@ -69,6 +69,13 @@ module.exports.policies = {
   },
   LrsController:{
     '*':[]
+  },
+  SoftSkillsController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'findAllChildren':['lang','passport','role','tokenVerifier','childrenPermissions'],
+   
+    
+
   }
 
 

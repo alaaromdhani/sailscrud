@@ -6,9 +6,10 @@ const SoftskillsShema = joi.object({
     ns:joi.array().items(joi.number())
 })
 const UpdateSoftskillsShema = joi.object({
-    name: joi.string().required(),
+    name: joi.string(),
     description: joi.string(),
-    theme_id:joi.number().required(),
+    theme_id:joi.number(),
+    active:joi.boolean(),
     ns:joi.array().items(joi.number())
 })
 module.exports = {SoftskillsShema,UpdateSoftskillsShema}

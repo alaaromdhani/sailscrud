@@ -1,14 +1,190 @@
+const  Sequelize  = require("sequelize");
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
 const schemaValidation = require("../../utils/validations");
+const { SoftskillsShema, UpdateSoftskillsShema } = require("../../utils/validations/SoftskillsSchema");
 const { SoftskillsdocumentShemaWithDocument, UpdateSoftskillsdocumentShema } = require("../../utils/validations/SoftskillsdocumentSchema");
 const { UpdateSoftskillsthemeShema } = require("../../utils/validations/SoftskillsthemeSchema");
 const { UpdateSoftskillsvideoShema } = require("../../utils/validations/SoftskillsvideoSchema");
 
+const { ErrorHandlor } = require("../../utils/translateResponseMessage");
+
 
 module.exports={
+    createSoftSkills:(req,callback)=>{
+        let relatedNs
+        let createdSS
+            new Promise((resolve,reject)=>{
+                 const createSoftSkillsSchema = schemaValidation(SoftskillsShema)(req.body)
+                 if(createSoftSkillsSchema.isValid){
+                        return resolve(req.body) 
+                 }  
+                 else{
+                    return reject(new ValidationError({message:createSoftSkillsSchema.message})) 
+                } 
+            }).then(ss=>{
+                if(ss.ns){
+                   return NiveauScolaire.findAll({
+                    where:{
+                        id:{
+                            [Sequelize.Op.in]:ss.ns
+                        }
+                    }
+                   }) 
+                }  
+                else{
+                       return [] 
+                }  
+            }).then(ns=>{
+                if(ns.length){
+                    relatedNs = ns
+                }
+                let data = {}
+                Object.keys(req.body).filter(k=>k!='ns').forEach(k=>{
+                    data[k] = req.body[k]
+                })
+                data.addedBy = req.user.id
+                return SoftSkills.create(data)
+            }).then(data=>{
+                    createdSS = data
+                    if(relatedNs){
+                        return data.addNiveauScolaires(relatedNs)
+                    }
+                    return[]                            
+            }).then(data=>{
+                callback(null,createdSS)
+            }).catch(e=>{
+                console.log(e)
+                if(e instanceof ValidationError){
+                    callback(e,null)
+                }
+                else{
+                    callback(new SqlError(e),null)
+                }
+
+            })
+
+    },
+    updateSoftSkills:(req,callback)=>{
+        let relatedNs
+        let foundRecord
+            new Promise((resolve,reject)=>{
+                 const createSoftSkillsSchema = schemaValidation(UpdateSoftskillsShema)(req.body)
+                 if(createSoftSkillsSchema.isValid){
+                        return resolve(req.body) 
+                 }  
+                 else{
+                    return reject(new ValidationError({message:createSoftSkillsSchema.message})) 
+                } 
+            }).then(ss=>{
+                return SoftSkills.findByPk(req.params.id,{
+                        include:{
+                            model:User,
+                            foreignKey:'addedBy',
+                            include:{
+                                model:Role,
+                                foreignKey:'role_id'
+                            }
+                        }
+
+
+                })
+            }).then(ss=>{
+                  return new Promise((resolve,reject)=>{
+                    if(ss &&ss.User&& ss.User.Role.weight<=req.role.weight&&ss.User.id!=req.user.id ){
+                        return reject(new UnauthorizedError({
+                            specific:'you cannot update a softskills record made by heigher user'
+                        }))
+                    }    
+                    if(ss){
+
+                        foundRecord = ss
+                        return resolve(ss)
+                    }
+                    else{
+                        return reject(new RecordNotFoundErr())
+                    }
+                })
+            }).then(ss=>{
+                if(req.body.ns){
+                   return NiveauScolaire.findAll({
+                    where:{
+                        id:{
+                            [Sequelize.Op.in]:req.body.ns
+                        }
+                    }
+                   }) 
+                }  
+                else{
+                       return [] 
+                }  
+            }).then(ns=>{
+                if(ns.length){
+                    relatedNs = ns
+                }
+                Object.keys(req.body).filter(k=>k!='ns').forEach(k=>{
+                    foundRecord[k] = req.body[k]
+                })                
+                return foundRecord.save()
+            }).then(data=>{
+                    
+                    if(relatedNs){
+                        return data.setNiveauScolaires(relatedNs)
+                    }
+                    return[]                            
+            }).then(sd=>{
+                callback(null,foundRecord)
+            }).catch(e=>{
+                console.log(e)
+                if(e instanceof ValidationError || e instanceof RecordNotFoundErr || e instanceof UnauthorizedError ){
+                    callback(e,null)
+                }
+                else{
+                    callback(new SqlError(e),null)
+                }
+
+            })
+
+    },
+    deleteSoftSkills:(req,callback)=>{
+        SoftSkills.findOne({where:{id:req.params.id},include:[{
+            model:User,
+            foreignKey:'addedBy',
+            include:{
+              model:Role,
+              foreignKey:'role_id'
+            }
+          } 
+        ]}).then(theme=>{
+          return new Promise((resolve,reject)=>{
+            if(!theme){
+              return reject(new RecordNotFoundErr());
+            }
+            if(req.role.weight>=theme.User.Role.weight && theme.addedBy!==req.user.id){
+              return reject(new UnauthorizedError({specific:'you cannot delete a soft skills unless it is created from a lower user or yourself'}));
+            }
+         
+            resolve(theme);
+          });
+        }).then(theme=>{
+          return theme.destroy();
+    
+        }).then(somedata=>{
+          callback(null,{});
+    
+        }).catch(err=>{
+          if (err instanceof ValidationError || err instanceof UnauthorizedError ||err instanceof UnauthorizedError) {
+            callback(err, null)
+          } else {
+            callback(new SqlError(err), null)
+          }
+        });
+    
+   
+
+    },
     updateTheme:(req,callback)=> {
         SoftSkillsTheme.findOne({
           where: {id: req.params.id}, include: {
@@ -185,9 +361,10 @@ module.exports={
 
       },
       createDocumentSK:(req,callback)=>{
+       console.log(req.body)
         console.log('adding without file')
-        if(req.body.theme_id){
-            req.body.parent = parseInt(req.body.theme_id)     
+        if(req.body.parent){
+            req.body.parent = parseInt(req.body.parent)     
         }
         if(req.body.document){
             req.body.document = parseInt(req.body.document)     
@@ -340,7 +517,9 @@ module.exports={
                   }
             })
 
-    }
+    },
+    
+
       
 
 

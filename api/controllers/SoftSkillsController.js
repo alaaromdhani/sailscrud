@@ -7,12 +7,13 @@
 
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
+const ValidationError = require("../../utils/errors/validationErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 
 
 module.exports = {
   async create(req, res) {
-    sails.services.softskillsservice.createSoftSkill(req,(err,data)=>{
+    sails.services.softskillsservice.createSoftSkills(req,(err,data)=>{
       if(err){
           return ErrorHandlor(req,err,res)
       }
@@ -50,6 +51,11 @@ module.exports = {
       const { count, rows } = await SoftSkills.findAndCountAll({
         where,
         order,
+        include:{ 
+          model:NiveauScolaire,
+          through:'soft_skills_ns'
+
+        },
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
@@ -71,16 +77,16 @@ module.exports = {
     try {
       const data = await SoftSkills.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'SoftSkills not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
-      return res.json(data);
+      return DataHandlor(req,data,res);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 
   async update(req, res) {
-    sails.services.softskillsservice.updateSofSkills(req,(err,data)=>{
+    sails.services.softskillsservice.updateSoftSkills(req,(err,data)=>{
       if(err){
           return ErrorHandlor(req,err,res)
       }
@@ -91,7 +97,7 @@ module.exports = {
   },
 
   async destroy(req, res) {
-    sails.services.softskillsservice.updateSofSkills(req,(err,data)=>{
+    sails.services.softskillsservice.deleteSoftSkills(req,(err,data)=>{
       if(err){
           return ErrorHandlor(req,err,res)
       }
@@ -100,4 +106,76 @@ module.exports = {
       }
      })
   },
+  async findAllChildren(req,res){
+    console.log(req.params.id)
+    try {
+      let data =await SoftSkills.findByPk(req.params.id)
+      if(data){
+       const type = req.query.type || "interactive"
+       if(type!="interactive" && type!="document" && type!=="video"){
+             return ErrorHandlor(req,new ValidationError({message:'type is required'}),res)
+       }
+       const page = parseInt(req.query.page)+1 || 1;
+       const limit = req.query.limit || 10;
+       const search = req.query.search;
+       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
+       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
+       const order = [[sortBy, sortOrder]];
+       let ModelReference 
+       let attributes
+  
+       if(type=="document"){
+         ModelReference = SoftSkillsDocument
+         attributes = Object.keys(SoftSkillsDocument.sequelize.models.SoftSkillsDocument.rawAttributes);
+       }
+       if(type=="interactive"){
+         ModelReference = SoftSkillsInteractive
+         attributes = Object.keys(SoftSkillsInteractive.sequelize.models.SoftSkillsInteractive.rawAttributes);
+       }
+       if(type=="video"){
+         ModelReference = SoftSkillsVideo
+         attributes = Object.keys(SoftSkillsVideo.sequelize.models.SoftSkillsVideo.rawAttributes);
+       }
+       //let allowed
+       let where = search
+       ? {
+         [Sequelize.Op.or]: attributes.map((attribute) => ({
+           [attribute]: {
+             [Sequelize.Op.like]: '%'+search+'%',
+           },
+         })),
+       }
+       : {};
+       where.parent = req.params.id
+       const {count,rows} = await ModelReference.findAndCountAll({
+           where,
+           order,
+           limit: parseInt(limit, 10),
+           offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+       });
+       return DataHandlor(req,{
+         success: true,
+         data: rows,
+         page: parseInt(page, 10),
+         limit: parseInt(limit, 10),
+         totalCount: count,
+         totalPages: Math.ceil(count / parseInt(limit, 10)),
+       },res);
+     
+      }
+      else{
+       
+         return ErrorHandlor(req,new RecordNotFoundErr(),res)
+      }
+       
+         
+       
+     } catch (err) {
+       console.log(err)
+         return ErrorHandlor(req,new SqlError(err),res)
+     }
+  
+
+
+  }
 };

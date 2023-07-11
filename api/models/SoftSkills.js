@@ -16,6 +16,7 @@ module.exports = {
     hooks: {
       beforeCreate: async (course,options)=>{
         if(course.isNewRecord){
+          course.rating=0
           course.active = false
         }
         console.log('adding a parent soft skills')
@@ -23,7 +24,11 @@ module.exports = {
        beforeDestroy: async(course,options)=>{
         await SoftSkillsRate.destroy({
           where:{parent_sk:course.id}
-        })}
+        })
+        await SoftSkills.sequelize.query(`DELETE FROM soft_skills_ns WHERE SoftSkillsId =${course.id}`);
+    
+        }
+        
 
     },
 
@@ -78,6 +83,10 @@ module.exports = {
     SoftSkills.hasMany(SoftSkillsInteractive,{
       foreignKey:'parent'
     })
+    SoftSkills.belongsTo(User,{
+      foreignKey:'addedBy'
+    })
+
 
     
   }
