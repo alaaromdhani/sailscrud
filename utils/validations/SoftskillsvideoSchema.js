@@ -14,7 +14,7 @@ const UpdateSoftskillsvideoShema = joi.object({
     name: joi.string(),
     description: joi.string(),
     parent:joi.number(),
-    source: joi.string().valid('youtube','vimeo').required(),
+    source: joi.string().valid('youtube','vimeo'),
     url:joi.string().uri(),
     status: joi.string().valid('public','private'),
     validity:joi.boolean(),

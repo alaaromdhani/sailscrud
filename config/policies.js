@@ -73,10 +73,12 @@ module.exports.policies = {
   SoftSkillsController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'findAllChildren':['lang','passport','role','tokenVerifier','childrenPermissions'],
-   
+  },
+  SoftSkillsInteractiveController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'create':['lang','passport','role','tokenVerifier','permissions','unzipsoftskill'],
     
-
-  }
+  },
 
 
 

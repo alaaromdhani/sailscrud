@@ -234,8 +234,14 @@ module.exports = {
       }
       options.file_original_name = file.originalname;
      // options.isPublic=typeof (parameter.isPublic)==='boolean'?options.isPublic=parameter.isPublic:false;
+     if(!parameter.path){
       options.path=parameter.destination.split('courses/').pop();
-     options.file_name=uuidv4();
+     }
+     else{
+      options.path  =parameter.path
+     } 
+      
+      options.file_name=uuidv4();
       options.type = type;
       options.file_size = file.size?file.size:1234;
       options.extension = extention;
@@ -249,9 +255,12 @@ module.exports = {
       })
     });
   },
-  zipFileUploader:(req,callback)=>{
+  zipFileUploader:(req,callback,homePath,type)=>{
       if(req.operation){
-          if(req.operation.error){
+          if(!type){
+            type="interactive"
+          }       
+         if(req.operation.error){
               console.log("error operation ")  
             callback(req.operation.error,null)
           } 
@@ -259,8 +268,11 @@ module.exports = {
             let objs = []
             let courseId
             const upload = req.operation.data
-            const uploadBasePath = path.join(__dirname,'../../static/courses/'+upload.path)
-                    yauzl.open(path.join(__dirname,"../../static/courses/",upload.path+"/"+upload.file_name+"."+upload.extension),{lazyEntries:true},(err,zipFile)=>{
+            if(!homePath){
+                  homePath = '../../static/courses/' 
+            }
+            const uploadBasePath = path.join(__dirname,homePath+upload.path)
+                    yauzl.open(path.join(__dirname,homePath+upload.path+"/"+upload.file_name+"."+upload.extension),{lazyEntries:true},(err,zipFile)=>{
                    if(err){
                     console.log(err)
                     return  callback(new SqlError(err),null)
@@ -270,7 +282,12 @@ module.exports = {
                     zipFile.readEntry()
                     zipFile.once("end",()=>{
                       console.log('ended unzipping the file successfully')
-                      return sails.services.uploadservice.saveCourse(req,objs,courseId,callback)
+                     if(type=="interactive"){
+                       return sails.services.uploadservice.saveCourse(req,objs,courseId,callback)
+                     }
+                     else{
+                      return callback(null,{courseId})
+                     }
                     })
                     zipFile.on("entry",async (entry)=>{
                       

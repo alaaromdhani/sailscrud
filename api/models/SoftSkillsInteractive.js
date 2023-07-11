@@ -34,9 +34,8 @@ module.exports = {
   tableName: 'soft_skills_interactives',
   attributes: {
     id:{
-      type:DataTypes.INTEGER,
+      type:DataTypes.STRING,
       primaryKey:true,
-      autoIncrement:true
     },
     name: {
       type: DataTypes.STRING,

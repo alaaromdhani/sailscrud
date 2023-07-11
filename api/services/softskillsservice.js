@@ -518,6 +518,33 @@ module.exports={
             })
 
     },
+    createInteractiveSoftSkills:(req,callback)=>{
+        sails.services.uploadservice.zipFileUploader(req,async (err,data)=>{
+                
+                if(err){
+                        callback(err,null)   
+                        
+                }
+                else{
+                    if(!data.courseId){
+                        return callback(new ValidationError({message:'valid xapi course is required'}))
+    
+                    }
+                    let course = req.operation.data
+                    course.id = data.courseId
+                     course.url  = req.upload.path
+                    try{
+                     return     callback(null,await SoftSkillsInteractive.create(course)) 
+                    }
+                    catch(e){
+                        return callback(new SqlError(e),null)
+                    }
+
+                }
+        },'../../static/softskills/',type="softskills")
+
+
+    }
     
 
       
