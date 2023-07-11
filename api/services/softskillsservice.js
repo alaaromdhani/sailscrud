@@ -600,7 +600,6 @@ module.exports={
 
 
         }).then(ss=>{
-            console.log(Object.keys(ss))
             softskill =ss
             parentSoftSkill = ss.SoftSkill
            //findinfg the rate created by that user to this softSkill

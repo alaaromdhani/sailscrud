@@ -141,7 +141,7 @@ module.exports = {
       where.status = "public"
     }
     SoftSkillsInteractive.findOne({where}).then(ci=>{
-      if(!si){
+      if(!ci){
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
       else{
@@ -150,17 +150,12 @@ module.exports = {
                           return ErrorHandlor(req,err,res)
                     }
                     else{
-                      const tincanActor = JSON.stringify({
-                        name: agent.account_name,
-                        account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                        objectType:'Agent'
-                      })
-                      let endpoint = sails.config.custom.lrsEndPoint
-                      console.log(ci.url)
+                    
+                      //console.log(ci.url)
                       let fullUrl =  sails.config.custom.baseUrl+'softskills/'+ci.url+"/"+'index_lms.html'
                       return res.view("pages/player.ejs",{
                             url:fullUrl,
-                            username:req.user.username,
+                            username:req.user.firstName +' '+req.user.firstName,
                             sex:req.user.sex.toLowerCase()
                       })
                     }
