@@ -59,33 +59,34 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
     default: {
+      user:'uyjbcm8ddyx2txf8',
+      password:'pC00ea32hCybFQWjsg6m',
+  
+      options:{
+        port:'3306',
+        dialect:'mysql',
+        host:'bssxral1uw8cnncfwhkg-mysql.services.clever-cloud.com',
+      },
+      database:'bssxral1uw8cnncfwhkg'
+  
+      /***************************************************************************
+      *                                                                          *
+      * Want to use a different database during development?                     *
+      *                                                                          *
+      * 1. Choose an adapter:                                                    *
+      *    https://sailsjs.com/plugins/databases                                 *
+      *                                                                          *
+      * 2. Install it as a dependency of your Sails app.                         *
+      *    (For example:  npm install sails-mysql --save)                        *
+      *                                                                          *
+      * 3. Then pass it in, along with a connection URL.                         *
+      *    (See https://sailsjs.com/config/datastores for help.)                 *
+      *                                                                          *
+      ***************************************************************************/
       // adapter: 'sails-mysql',
       // url: 'mysql://user:password@host:port/database',
-      //--------------------------------------------------------------------------
-      //  /\   To avoid checking it in to version control, you might opt to set
-      //  ||   sensitive credentials like `url` using an environment variable.
-      //
-      //  For example:
-      //  ```
-      //  sails_datastores__default__url=mysql://admin:myc00lpAssw2D@db.example.com:3306/my_prod_db
-      //  ```
-      //--------------------------------------------------------------------------
-
-      /****************************************************************************
-        *                                                                           *
-        * More adapter-specific options                                             *
-        *                                                                           *
-        * > For example, for some hosted PostgreSQL providers (like Heroku), the    *
-        * > extra `ssl` object with a `rejectUnauthorized` option must be provided. *
-        *                                                                           *
-        * More info:                                                                *
-        * https://sailsjs.com/config/datastores                                     *
-        *                                                                           *
-        ****************************************************************************/
-      // ssl: { rejectUnauthorized: true },
-
+  
     },
-
   },
 
 
@@ -385,7 +386,7 @@ module.exports = {
     * this, just try deploying without setting it and see if it works.)       *
     *                                                                         *
     ***************************************************************************/
-  // port: 80,
+  port: 8080,
 
 
 
