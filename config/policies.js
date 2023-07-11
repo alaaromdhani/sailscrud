@@ -77,6 +77,7 @@ module.exports.policies = {
   SoftSkillsInteractiveController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzipsoftskill'],
+    'accessSoftSkills':['lang','passport','role','tokenVerifier','cours-feature']
     
   },
 

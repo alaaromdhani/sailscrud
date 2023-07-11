@@ -2,6 +2,7 @@ const multer = require('multer');
 const schemaValidation = require('../../utils/validations');
 const {SoftskillsinteractiveShema} = require('../../utils/validations/SoftskillsinteractiveSchema');
 const ValidationError = require('../../utils/errors/validationErrors');
+const path = require('path');
 
 
 const optionsGenerator=async (req,file,cb)=>{
@@ -9,17 +10,23 @@ const optionsGenerator=async (req,file,cb)=>{
         req.operation = {}
     }
     try{
+        let today = new Date()
         const destination = '../../static/softskills/'+today.getFullYear()+'-'+today.getMonth()+"/"+(file.originalname.split(".").shift())
         const path  = destination.split('softskills/').pop();
-        let fileOptions = sails.services.uploadservice.zipFileOptions(file,{type:"zipfiles",destination,path})
+        let fileOptions = await sails.services.uploadservice.zipFileOptions(file,{type:"zipfiles",destination,path})
         let ss = {}
-        Object.keys(req.body).forEach(k=>{
+        Object.keys(req.body).filter(k=>k!="zipFile").forEach(k=>{
             ss[k] = req.body[k]
         })
+        if(ss.parent){
+            ss.parent = parseInt(ss.parent)
+
+        }
         const createSoftSkillsValidation =schemaValidation(SoftskillsinteractiveShema)(ss)
         if(createSoftSkillsValidation.isValid){
-                req.operation.ss = ss
-                req.operation.upload =fileOptions
+                req.upload =fileOptions
+                console.log(req.upload)
+                req.operation.data = fileOptions
                 return cb(null,true)
         }
         else{
@@ -38,9 +45,12 @@ const optionsGenerator=async (req,file,cb)=>{
 }
 const storage = multer.diskStorage({
     destination:(req,filename,cb)=>{
+       console.log(req.upload)
+        
         cb(null, path.join(__dirname,'../../static/softskills/'+req.upload.path));
     },
     filename: (req, file, cb) => {
+        console.log('reached')
         cb(null,req.upload.file_name+'.'+req.upload.extension);
     },
 })

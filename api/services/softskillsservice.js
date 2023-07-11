@@ -531,6 +531,7 @@ module.exports={
     
                     }
                     let course = req.operation.data
+                    course.rating = 0
                     course.id = data.courseId
                      course.url  = req.upload.path
                     try{

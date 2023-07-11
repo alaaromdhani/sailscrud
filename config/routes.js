@@ -38,6 +38,7 @@ module.exports.routes = {
   'POST /api/v1/comment_document_cours/:id':'CoursDocumentController.commentCourse',
   'DELETE /api/v1/attemp/:id':'CoursInteractiveController.clearHistory',
   'GET /api/v1/softskills/children/:id':'SoftSkillsController.findAllChildren',
+  'GET /softskills/:id':'SoftSkillsInteractiveController.accessSoftSkills',
   
   
 

@@ -153,7 +153,7 @@ module.exports = {
     })
   },
   async accessCourse(req,res){
-      let where={id:req.params.id,validity:true} 
+      let where={id:req.params.id,validity:true,active:true} 
       console.log('private courses',req.courses.private)
       if(!req.courses.private){
         where.status = "public"

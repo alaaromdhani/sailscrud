@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { ErrorHandlor, DataHandlor } = require('../../utils/translateResponseMessage');
 const UnkownError = require('../../utils/errors/UnknownError');
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 module.exports = {
   async create(req, res) {
     sails.services.softskillsservice.createInteractiveSoftSkills(req,(err,data)=>{
@@ -42,7 +43,7 @@ module.exports = {
       }
     })
   },
-
+  
   async find(req, res) {
     try {
       const page = parseInt(req.query.page)+1 || 1;
@@ -125,4 +126,46 @@ module.exports = {
       return res.status(500).json({ error: err.message });
     }
   },
+  accessSoftSkills:(req,res)=>{
+    let where={id:req.params.id,validity:true,active:true} 
+    console.log('private courses',req.courses.private)
+    if(!req.courses.private){
+      where.status = "public"
+    }
+    SoftSkillsInteractive.findOne({where}).then(ci=>{
+      if(!si){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+      }
+      else{
+          sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                    if(err){
+                          return ErrorHandlor(req,err,res)
+                    }
+                    else{
+                      const tincanActor = JSON.stringify({
+                        name: agent.account_name,
+                        account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                        objectType:'Agent'
+                      })
+                      let endpoint = sails.config.custom.lrsEndPoint
+                      console.log(ci.url)
+                      let fullUrl =  sails.config.custom.baseUrl+'softskills/'+ci.url+"/"+'index_lms.html'
+                      return res.view("pages/player.ejs",{
+                            url:fullUrl,
+                            username:req.user.username,
+                            sex:req.user.sex.toLowerCase()
+                      })
+                    }
+
+
+          })
+      }
+    }).catch(e=>{
+
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
+    })  
+
+
+
+  }
 };

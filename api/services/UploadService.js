@@ -246,6 +246,7 @@ module.exports = {
       options.file_size = file.size?file.size:1234;
       options.extension = extention;
       fs.mkdir(path.join(__dirname,parameter.destination),{recursive:true},err => {
+        
         if(err){
             return reject(new UnkownError())
         }
@@ -261,8 +262,9 @@ module.exports = {
             type="interactive"
           }       
          if(req.operation.error){
+
               console.log("error operation ")  
-            callback(req.operation.error,null)
+            return callback(req.operation.error,null)
           } 
           else{
             let objs = []
