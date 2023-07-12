@@ -59,15 +59,15 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
     default: {
-      user:'uyjbcm8ddyx2txf8',
-      password:'pC00ea32hCybFQWjsg6m',
+      user:'root',
+      password:'',
   
       options:{
         port:'3306',
         dialect:'mysql',
-        host:'bssxral1uw8cnncfwhkg-mysql.services.clever-cloud.com',
+        host:'localhost',
       },
-      database:'bssxral1uw8cnncfwhkg'
+      database:'madar'
   
       /***************************************************************************
       *                                                                          *
@@ -457,6 +457,15 @@ module.exports = {
     ratings:{
         maxValue:5,
         minValue:0
+    },
+    database:{
+        credentials:{
+          username:'',
+          password:'',
+          host:'',
+          port:''
+
+        }
     },
     files:{
       extensions:{
