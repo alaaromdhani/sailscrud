@@ -196,7 +196,7 @@ module.exports= {
     let moduleRecordsToCreate = []
     let modules = []
     try{
-        const inputs =req.body.ns.map(o=>{return {MatiereId:req.params.id,NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector,nb_modules:o.nb_modules}}) 
+        const inputs =req.body.ns.map(o=>{return {MatiereId:parseInt(req.params.id),NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector,nb_modules:o.nb_modules}}) 
         const grouping =_.groupBy(inputs,'NiveauScolaireId')
     //
           let groupedNiveauModules = {}
@@ -266,7 +266,7 @@ module.exports= {
             }
 
             if(recordsToCreate.length){
-              
+              console.log(recordsToCreate)
               let mns = await MatiereNiveau.bulkCreate(recordsToCreate)
               mns.forEach(m=>{
                 for(let i=1;i<=m.nb_modules;i++){
