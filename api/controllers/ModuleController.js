@@ -31,6 +31,7 @@ module.exports = {
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(Module.sequelize.models.Module.rawAttributes);
       let matiere_niveau_id
+      let chapterName 
       if(MatiereId&&NiveauScolaireId){
 
         const matiereNiveau = await MatiereNiveau.findOne({
@@ -41,6 +42,7 @@ module.exports = {
         })
         if(matiereNiveau){
           matiere_niveau_id = matiereNiveau.id
+          chapterName = matiereNiveau.name
         }
       }
       
@@ -73,9 +75,13 @@ module.exports = {
         findOptions.offset= (parseInt(page, 10) - 1) * parseInt(limit, 10)
        }
       const { count, rows } = await Module.findAndCountAll(findOptions);
+      let givenData = {rows}
+      if(chapterName){
+        givenData.chapterName = chapterName
+      }
       let dataOptions = {
         success: true,
-        data: rows,
+        data: givenData,
       } 
       if(typeof(limit)==='number'){
         dataOptions.page= parseInt(page, 10)
