@@ -57,6 +57,10 @@ module.exports = {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
+    order:{
+      type:DataTypes.INTEGER,
+      required:true
+    }
 
 
   },
@@ -64,8 +68,8 @@ module.exports = {
     Course.belongsTo(NiveauScolaire, {
       foreignKey:'niveau_scolaire_id'
     });
-    Course.belongsTo(Chapitre, {
-      foreignKey:'chapitre_id'
+    Course.belongsTo(Module, {
+      foreignKey:'module_id'
     });
     Course.belongsTo(Matiere, {
       foreignKey:'matiere_id'

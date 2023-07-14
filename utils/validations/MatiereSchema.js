@@ -8,7 +8,9 @@ const MatiereShema = joi.object({
          name:joi.string().required(),
          NiveauScolaireId:joi.number().required(),  
          intern_teacher:joi.number().required(),
-         inspector:joi.number().required()
+         nb_modules:joi.number().less(sails.config.custom.nb_chapitres+1).required(),
+         inspector:joi.number().required(),
+         
     }))
 })
 const UpdateMatiereShema = joi.object({
@@ -20,6 +22,7 @@ const UpdateMatiereShema = joi.object({
   ns:joi.array().items(joi.object({
     name:joi.string().required(),
     NiveauScolaireId:joi.number().required(),  
+    nb_modules:joi.number().less(sails.config.custom.nb_chapitres+1),
     intern_teacher:joi.number().required(),
     inspector:joi.number().required()
   }))

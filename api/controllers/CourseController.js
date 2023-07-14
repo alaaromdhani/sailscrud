@@ -57,10 +57,16 @@ module.exports = {
         if(niveau_scolaire_id){
           where.niveau_scolaire_id = niveau_scolaire_id
         }
-        if(chapitre_id){
-          where.chapitre_id = chapitre_id
-        }
+      
       // Create the sorting order based on the sortBy and sortOrder parameters
+        let whereChapitre = {
+
+        }
+        if(chapitre_id){
+          whereChapitre = {
+            chapitre_id
+          }
+        }
       const order = [[sortBy, sortOrder]];
        let whereNs = {}
        if(req.role.name===sails.config.custom.roles.teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
@@ -86,26 +92,19 @@ module.exports = {
           foreignKey:'niveau_scolaire_id',
           attributes:['name_fr','name_ar']
         },{
-          model:Chapitre,
+          model:Module,
           foreignKey:'chapitre_id',
           attributes:['name'],
+          where:whereChapitre
 
         },
-        {
-          model:MatiereNiveau,
-          foreignKey:'matiere_niveau_id',
-          attributes:['name'],
-          
-          
-        }
+        
           ],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
-      rows.forEach(element => {
-          element.Chapitre.name = element.Chapitre.name.replace("chapter",element.MatiereNiveau.name)
-      });
+      
 
       return DataHandlor(req,{
         success: true,

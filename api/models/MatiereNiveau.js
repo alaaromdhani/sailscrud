@@ -35,6 +35,11 @@ module.exports = {
       required: true,
       
     },
+    nb_modules:{
+      type:DataTypes.INTEGER,
+      required:true
+
+    }
   },
   associations:()=>{
       MatiereNiveau.belongsTo(Matiere,{
@@ -52,6 +57,9 @@ module.exports = {
         as:'Inspector'
       })
       MatiereNiveau.hasMany(Course,{
+        foreignKey:'matiere_niveau_id'
+      })
+      MatiereNiveau.hasMany(Module,{
         foreignKey:'matiere_niveau_id'
       })
 

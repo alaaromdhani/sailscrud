@@ -62,16 +62,37 @@ module.exports= {
             if(relatedNs){
             createdMatiere = data    
             const ns = req.body.ns
-                let matiere_niveau_scolaire=  ns.map(d=>{
-                    return {     
-                      MatiereId:data.id,
-                      name:d.name,
-                      NiveauScolaireId:d.NiveauScolaireId,
-                      inspector:d.inspector,
-                      intern_teacher:d.intern_teacher
+                let matiere_niveau_scolaire = []
+                let groupedNiveauModules= {}
+                ns.forEach(d=>{
+                  matiere_niveau_scolaire.push({     
+                    MatiereId:data.id,
+                    name:d.name,
+                    NiveauScolaireId:d.NiveauScolaireId,
+                    inspector:d.inspector,
+                    nb_modules:d.nb_modules,
+                    intern_teacher:d.intern_teacher
+                    })
+                    groupedNiveauModules[d.NiveauScolaireId] =d.nb_modules 
+                 })
+                
+
+                let matiereNiveau  = await MatiereNiveau.bulkCreate(matiere_niveau_scolaire)
+                 const groupedRecords = _.groupBy(matiereNiveau,'NiveauScolaireId')
+                 let recordsToCreate = []
+                 Object.keys(groupedNiveauModules).forEach(niveau_scolaires=>{
+                      for(let i =0;i<groupedNiveauModules[niveau_scolaires];i++){
+                        recordsToCreate.push({
+                          chapitre_id:i+1,
+                          name:'NOT_ASSIGNED',
+                          matiere_niveau_id:groupedRecords[niveau_scolaires].at(0).id
+                        })
                       }
                 })
-                await MatiereNiveau.bulkCreate(matiere_niveau_scolaire)
+                 if(recordsToCreate.length){
+                  await Module.bulkCreate(recordsToCreate)
+
+                 }
                 callback(null,createdMatiere)
               }
               else{
@@ -172,21 +193,47 @@ module.exports= {
   },
   handleNs:(req,matiere,callback)=>{
     let groupedRecords
+    let moduleRecordsToCreate = []
+    let modules = []
     try{
-        const inputs =req.body.ns.map(o=>{return {MatiereId:req.params.id,NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector}}) 
+        const inputs =req.body.ns.map(o=>{return {MatiereId:req.params.id,NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector,nb_modules:o.nb_modules}}) 
         const grouping =_.groupBy(inputs,'NiveauScolaireId')
     //
+          let groupedNiveauModules = {}
           let recordsToUpdate=[]
           let recordsToCreate=[]
           let recordsToDelete=[]
-        MatiereNiveau.findAll({where:{MatiereId:req.params.id},include:{
+        MatiereNiveau.findAll({where:{MatiereId:req.params.id},include:[
+          {
             model:Course,
+            
             foreignKey:'matiere_niveau_id'
-        }}).then(async matieres_niveaux=>{
-          try{
+        }, {
+          model:Module,
+          
+          foreignKey:'matiere_niveau_id',
+          include:{model:Course,
+            foreignKey:'module_id'
 
+          }
+          }
+
+        ]}).then(async matieres_niveaux=>{
+          try{
+            //getting the modules
+            modules = matieres_niveaux.reduce((prev,curr)=>{
+                prev= prev.concat(curr.Modules)
+                return prev
+            },  [])
+            //grouping the modules by chapitre_id to facilate looking for records
+            let groupedModules = _.groupBy(modules,'chapitre_id')
+            let groupedRecordsOnlyNb={} 
             groupedRecords =_.groupBy(matieres_niveaux,'NiveauScolaireId')   
+            Object.keys(groupedRecords).forEach(k=>{
+              groupedRecordsOnlyNb[k] = groupedRecords[k].at(0).nb_modules
+            })
             inputs.filter(i=>groupedRecords[i.NiveauScolaireId]?false:true).forEach(i=>{
+              
               recordsToCreate.push(i)
             })
             matieres_niveaux.forEach(mn=>{
@@ -194,26 +241,48 @@ module.exports= {
               if(!grouping[mn.NiveauScolaireId]){
                   recordsToDelete.push(mn)
               }
-               else if(mn.name!=grouping[mn.NiveauScolaireId].at(0).name ||mn.inspector!=grouping[mn.NiveauScolaireId].at(0).inspector||mn.intern_teacher!=grouping[mn.NiveauScolaireId].at(0).intern_teacher ){
-                console.log(mn.name)
-                   mn.name = grouping[mn.NiveauScolaireId].at(0).name
+               else if(mn.name!=grouping[mn.NiveauScolaireId].at(0).name ||mn.inspector!=grouping[mn.NiveauScolaireId].at(0).inspector||mn.intern_teacher!=grouping[mn.NiveauScolaireId].at(0).intern_teacher||mn.nb_modules!=grouping[mn.NiveauScolaireId].at(0).nb_modules ){
+                  mn.name = grouping[mn.NiveauScolaireId].at(0).name
                   mn.inspector = grouping[mn.NiveauScolaireId].at(0).inspector
                   mn.intern_teacher = grouping[mn.NiveauScolaireId].at(0).intern_teacher
-                 
+                  mn.nb_modules = grouping[mn.NiveauScolaireId].at(0).nb_modules
+                
+                  //grouping nbModules by niveauscolaire
+                  groupedNiveauModules[mn.NiveauScolaireId] = grouping[mn.NiveauScolaireId].at(0).nb_modules
                   recordsToUpdate.push(mn)
               }
               console.log(grouping[mn.NiveauScolaireId])
 
             })
+           
+            
+            await sails.services.matiereservice.handleModules(groupedNiveauModules,groupedRecords,groupedRecordsOnlyNb,groupedModules)
+           
+
             if(recordsToDelete.length){
-             await Promise.all(recordsToDelete.filter(mn=>!mn.Courses.length).map(mn=>{
+             await Promise.all(recordsToDelete.filter(mn=>!mn.Courses.length&&!mn.Modules.length).map(mn=>{
                 return mn.destroy()
              }))
             }
+
             if(recordsToCreate.length){
-              await MatiereNiveau.bulkCreate(recordsToCreate)
+              
+              let mns = await MatiereNiveau.bulkCreate(recordsToCreate)
+              mns.forEach(m=>{
+                for(let i=1;i<=m.nb_modules;i++){
+                  moduleRecordsToCreate.push({
+                    chapitre_id:i,
+                    name:'NOT_ASSIGNED',
+                    matiere_niveau_id:m.id
+                  })
+                }
+              })
+              if(moduleRecordsToCreate.length){
+                await Module.bulkCreate(moduleRecordsToCreate)
+              }
             }
             if(recordsToUpdate.length){
+             
               await Promise.all(recordsToUpdate.map(r=>{
                 return r.save()
               }))
@@ -221,9 +290,13 @@ module.exports= {
             return callback(null,{recordsToCreate,recordsToDelete,recordsToUpdate})
           }
           catch(e){
+            console.log(e)
               return callback(new SqlError(e),null)
           }
         
+        }).catch(e=>{
+           callback(new SqlError(e),null)
+
         })
 
 
@@ -242,6 +315,51 @@ module.exports= {
 
 
   },
+  handleModules:async (groupedNiveauModules,groupedRecords,groupedRecordsOnlyNb,groupedModules)=>{
+      try{
+        console.log('grouped Niveau Modules :',groupedRecordsOnlyNb)
+        
+       // console.log('grouped records :',groupedRecords['6'].map(i=>i.nb_modules))
+        let recordsToDelete = []
+      let recordsToCreate = []
+      Object.keys(groupedNiveauModules).forEach(k=>{
+          if(groupedNiveauModules[k]<groupedRecordsOnlyNb[k]){
+
+            for(let i=groupedNiveauModules[k]+1;i<=groupedRecordsOnlyNb[k];i++){
+              recordsToDelete.push(groupedModules[i].filter(m=>m.matiere_niveau_id==groupedRecords[k].at(0).id).at(0))
+             }
+          }
+          else if(groupedNiveauModules[k]>groupedRecordsOnlyNb[k]){
+            for(let i=groupedRecordsOnlyNb[k];i<=groupedNiveauModules[k];i++){
+              recordsToCreate.push({
+                chapitre_id:i,
+                name:'NOT_ASSIGNED',
+                matiere_niveau_id:groupedRecords[k].at(0).id 
+              })
+             }
+          }
+
+
+      })
+      if(recordsToCreate.length){
+          await Module.bulkCreate(recordsToCreate)
+      }
+      if(recordsToDelete.length){
+       // console.log('module records to delete ',recordsToDelete)
+          await Module.destroy({
+            where:{
+              id:{
+                [Op.in]:recordsToDelete.filter(r=>r.Courses.length==0).map(r=>r.id)
+              }
+            }
+          })
+      }
+      }
+      catch(e){
+        throw e
+      }
+ 
+   },
   deleteMatiere:(req,callback)=>{
     let subject 
     Matiere.findByPk(req.params.id,{

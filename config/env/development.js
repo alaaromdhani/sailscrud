@@ -103,7 +103,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-    migrate: 'alter',
+    migrate: 'safe',
 
     /***************************************************************************
       *                                                                          *
@@ -386,7 +386,7 @@ module.exports = {
     * this, just try deploying without setting it and see if it works.)       *
     *                                                                         *
     ***************************************************************************/
-  port: 8080,
+  
 
 
 
@@ -420,6 +420,7 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
   custom: {
+    nb_chapitres:30,
     roles:{
         teacher:{
           name:'MadarTeacher',

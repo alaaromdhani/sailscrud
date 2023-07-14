@@ -20,14 +20,21 @@ module.exports = {
                   return MatiereNiveau.findOne({where:{
                       MatiereId:course.matiere_id,
                       NiveauScolaireId:course.niveau_scolaire_id
-                    }})
+                    },include:{
+                        model:Module,
+                        foreignKey:'module_id',
+                        attributes:['id']
+                      }})
                   
               }).then(matiere_niveau=>{
                 return new Promise((resolve,reject)=>{
                   if(matiere_niveau){
-                      let course = req.body 
-                      course.matiere_niveau_id =matiere_niveau.id 
-                      return resolve(course)
+                      if(matiere_niveau.Modules.map(m=>m.id).includes(req.module_id)){
+                        resolve(req.body)
+                      }
+                      else{
+                        reject(new ValidationError('the module is not related to the subject and the level'))
+                      }
                   }
                   else{
                       return reject(new ValidationError({message:'the relation between the subject and the level  must be done'})) 

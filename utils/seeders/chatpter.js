@@ -3,7 +3,8 @@ const verify = async ()=>{
 }
 const createChapitres = async ()=>{
      let chapters = []
-    for(let i=1;i<31;i++){
+     const nb_chapitres = sails.config.custom.nb_chapitres
+    for(let i=1;i<nb_chapitres;i++){
         chapters.push({
             name:`chapter ${i}`,
             order:i
