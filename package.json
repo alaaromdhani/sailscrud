@@ -13,6 +13,7 @@
     "dayjs": "^1.11.7",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "express-session-sequelize": "^2.3.0",
     "fs": "^0.0.1-security",
     "grunt": "1.0.4",
     "joi": "^17.9.2",
@@ -46,7 +47,7 @@
     "nodemon": "^3.0.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon -w sails lift --verbose",
+    "dev": "NODE_ENV=production nodemon -w sails lift --verbose",
     "start": "nodemon app.js",
     "test": "npm run lint && npm run custom-tests && echo 'Done.'",
     "lint": "./node_modules/eslint/bin/eslint.js . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",

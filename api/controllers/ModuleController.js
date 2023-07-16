@@ -61,6 +61,10 @@ module.exports = {
       if(matiere_niveau_id){
         where.matiere_niveau_id = matiere_niveau_id 
       }
+      if(!matiere_niveau_id && (MatiereId && NiveauScolaireId)) {
+        return DataHandlor(req,{success:true,data:{chapterName:"",rows:[]}},res)
+      }
+
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
 
       // Perform the database query with pagination, filtering, sorting, and ordering

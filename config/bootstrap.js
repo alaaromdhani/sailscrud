@@ -38,7 +38,7 @@ module.exports.bootstrap = async function() {
 
    await featureSeeders()
   }*/
-  console.log(Object.keys(sails))
+  console.log(Object.keys(sails.config))
 
   await default_user_image()
   await modelSeasers()

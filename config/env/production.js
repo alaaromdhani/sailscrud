@@ -59,15 +59,15 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
     default: {
-      user:'uyjbcm8ddyx2txf8',
-      password:'pC00ea32hCybFQWjsg6m',
+      user:'root',
+      password:'',
   
       options:{
         port:'3306',
         dialect:'mysql',
-        host:'bssxral1uw8cnncfwhkg-mysql.services.clever-cloud.com',
+        host:'localhost',
       },
-      database:'bssxral1uw8cnncfwhkg'
+      database:'madar'
   
       /***************************************************************************
       *                                                                          *
@@ -87,7 +87,6 @@ module.exports = {
       // url: 'mysql://user:password@host:port/database',
   
     },
-
   },
 
 
@@ -104,7 +103,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-    migrate: 'alter',
+    migrate: 'safe',
 
     /***************************************************************************
       *                                                                          *
@@ -186,6 +185,9 @@ module.exports = {
   session: {
     name:'__session.id__',
     secret: '7c9b93a38b567fe0836335056ccb3bb8',
+    resave: false,
+    saveUninitialized: true,
+   
 
     /***************************************************************************
       *                                                                          *
@@ -387,7 +389,7 @@ module.exports = {
     * this, just try deploying without setting it and see if it works.)       *
     *                                                                         *
     ***************************************************************************/
-  port: 8080,
+  
 
 
 
@@ -421,6 +423,7 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
   custom: {
+    nb_chapitres:30,
     roles:{
         teacher:{
           name:'MadarTeacher',
@@ -458,6 +461,15 @@ module.exports = {
     ratings:{
         maxValue:5,
         minValue:0
+    },
+    database:{
+        credentials:{
+          username:'',
+          password:'',
+          host:'',
+          port:''
+
+        }
     },
     files:{
       extensions:{

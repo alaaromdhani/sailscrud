@@ -185,6 +185,10 @@ module.exports = {
   session: {
     name:'__session.id__',
     secret: '7c9b93a38b567fe0836335056ccb3bb8',
+    resave: false,
+    saveUninitialized: true,
+    
+    
 
     /***************************************************************************
       *                                                                          *

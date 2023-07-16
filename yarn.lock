@@ -2165,6 +2165,11 @@
   "resolved" "https://registry.npmjs.org/exit/-/exit-0.1.2.tgz"
   "version" "0.1.2"
 
+"express-session-sequelize@^2.3.0":
+  "integrity" "sha512-jwYfB5XueswXKXPstN+vNdU+lbu0oztcrPW5NVV0hgtB0GMm6AQPzrpWLAshvzSBnttXqfkiW1ur8W67k0FMdg=="
+  "resolved" "https://registry.npmjs.org/express-session-sequelize/-/express-session-sequelize-2.3.0.tgz"
+  "version" "2.3.0"
+
 "express-session@^1.17.3":
   "integrity" "sha512-4+otWXlShYlG1Ma+2Jnn+xgKUZTMJ5QD3YvfilX3AcocOAbIkVylSWEklzALe/+Pu4qV6TYBj5GwOBFfdKqLBw=="
   "resolved" "https://registry.npmjs.org/express-session/-/express-session-1.17.3.tgz"

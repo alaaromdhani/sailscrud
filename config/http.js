@@ -10,9 +10,21 @@
  */
 const bodyParser = require('body-parser')
 const express = require('express');
-const path = require('path');
-module.exports.http = {
 
+const path = require('path');
+const Sequelize = require('sequelize')
+const expressSession = require('../node_modules/sails/node_modules/express-session')
+const sessionStore = require('express-session-sequelize')(expressSession.Store)
+const connection = new Sequelize('madar', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+});
+let sequelizeSessionStore = new sessionStore({
+  db:connection
+
+})
+module.exports.http = {
+    
   /****************************************************************************
   *                                                                           *
   * Sails/Express middleware to run for every HTTP request.                   *
@@ -57,6 +69,25 @@ module.exports.http = {
         }
 
     })(),
+    ex_session:(()=>{
+      console.log('the session hook for sails have been disaibled ...')
+      return function(req,res,next){
+          console.log('req usest is ')
+        return expressSession({
+          secret: 'hhh try-hack-me',
+          resave: false,
+          saveUninitialized: true,
+          store:sequelizeSessionStore,
+          cookie:{
+            secure:sails.config.environment==="production"
+          }
+          
+        })(req,res,next)
+      }
+
+
+
+    })(),
 
     /***************************************************************************
     *                                                                          *
@@ -67,7 +98,7 @@ module.exports.http = {
 
      order: [
        'cookieParser',
-       'session',
+       'ex_session',
         'statics',
        'bodyParser',
     //   'compress',
