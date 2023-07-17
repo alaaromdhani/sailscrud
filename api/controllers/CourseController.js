@@ -57,6 +57,7 @@ module.exports = {
         
         : {};
         where.type = type
+    
         if(matiere_id){
           where.matiere_id = matiere_id
         } 
@@ -73,6 +74,32 @@ module.exports = {
             chapitre_id
           }
         }
+        let includeOptions = [{
+          model:Matiere,
+          foreignKey:'matiere_id',
+          attributes:['name']
+        },{
+          model:NiveauScolaire,
+          foreignKey:'niveau_scolaire_id',
+          attributes:['name_fr','name_ar']
+        },
+        
+       ]
+       if(type==="cours"){
+        includeOptions.push({
+          model:Module,
+          foreignKey:'module_id',
+          attributes:['name'],
+          where:whereChapitre
+
+        })
+       }
+       if(type==="exam"){
+        includeOptions.push({
+          model:Trimestre,
+          foreignKey:'trimestre_id'
+        })
+       }
       const order = [[sortBy, sortOrder]];
        let whereNs = {}
        if(req.role.name===sails.config.custom.roles.teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
@@ -86,30 +113,11 @@ module.exports = {
        } 
       // Perform the database query with pagination, filtering, sorting, and ordering
       console.log(whereNs)
-      let { count, rows } = await Course.findAndCountAll({
+      console.log(where) 
+           let { count, rows } = await Course.findAndCountAll({
       
         where,
-        include:[{
-          model:Matiere,
-          foreignKey:'matiere_id',
-          attributes:['name']
-        },{
-          model:NiveauScolaire,
-          foreignKey:'niveau_scolaire_id',
-          attributes:['name_fr','name_ar']
-        },{
-          model:Module,
-          foreignKey:'module_id',
-          attributes:['name'],
-          where:whereChapitre
-
-        },
-        {
-          model:Trimestre,
-          foreignKey:'trimestre_id'
-        }
-        
-          ],
+        include:includeOptions,
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
