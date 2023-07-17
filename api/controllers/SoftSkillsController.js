@@ -146,13 +146,23 @@ module.exports = {
          })),
        }
        : {};
+       let findOptions = {
+        where,
+        order,
+        limit: parseInt(limit, 10),
+        offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+      }
+      
+       if(type=="document"){
+        findOptions.include = {
+          model:Upload,
+          foreignKey:'document',
+          attributes:['file_name'],
+          
+       }
+       }
        where.parent = req.params.id
-       const {count,rows} = await ModelReference.findAndCountAll({
-           where,
-           order,
-           limit: parseInt(limit, 10),
-           offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
-       });
+       const {count,rows} = await ModelReference.findAndCountAll(findOptions);
        return DataHandlor(req,{
          success: true,
          data: rows,

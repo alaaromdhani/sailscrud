@@ -198,22 +198,31 @@ module.exports = {
      }
      : {};
      where.parent = req.params.id
+     let includeOptions = [{
+      model:CoursComment,
+      
+      include:{
+         model:User,
+         foreignKey:'addedBy',
+         attributes:['username','lastName','firstName','email','profilePicture'],
+         include:{
+            model:Role,
+            foreignKey:'role_id'
+
+         } 
+      }
+    }]
+      if(type==="document"){
+        includeOptions.push({
+          model:Upload,
+          foreignKey:'document',
+          attributes:['file_name'],
+          
+       })
+      }
      const {count,rows} = await ModelReference.findAndCountAll({
          where,
-         include:{
-          model:CoursComment,
-          
-          include:{
-             model:User,
-             foreignKey:'addedBy',
-             attributes:['username','lastName','firstName','email','profilePicture'],
-             include:{
-                model:Role,
-                foreignKey:'role_id'
-
-             } 
-          }
-        },
+         include:includeOptions,
          order,
          limit: parseInt(limit, 10),
          offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),

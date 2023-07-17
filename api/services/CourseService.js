@@ -29,7 +29,7 @@ module.exports = {
               }).then(matiere_niveau=>{
                 return new Promise((resolve,reject)=>{
                   if(matiere_niveau){
-                      if(matiere_niveau.Modules.map(m=>m.id).includes(req.module_id)){
+                      if(matiere_niveau.Modules.map(m=>m.id).includes(req.body.module_id)){
                         resolve(req.body)
                       }
                       else{
