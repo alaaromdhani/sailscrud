@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+
 const { ErrorHandlor, DataHandlor} = require('../../utils/translateResponseMessage');
 const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const UnkownError = require('../../utils/errors/UnknownError');
@@ -41,16 +41,19 @@ module.exports = {
         }
       }
       else{
-        if(data.token){ //be sure that login is successfull
+        if(data.authetication){ //be sure that login is successfull
           
-          res.cookie('token',data.token);
-          req.logIn(data.user, (err) => {
+          
+          req.logIn(data.user,async (err) => {
 
             if (err) {
               ErrorHandlor(req,new UnkownError(),res);
             }
             else{
               req.session.authenticated = true;
+              const activeSession = "'"+req.sessionID+"'"
+              const userSessionData = '%\"passport\":{\"user\":'+data.user.id+'}%'
+              await User.sequelize.query(`delete  FROM sessions WHERE data like '${userSessionData}' and session_id!=${activeSession} `);
               DataHandlor(req,data.user,res,'login successful');
             }
 
@@ -75,9 +78,12 @@ module.exports = {
     req.logout(async (err) => {
       if (err) {  return ErrorHandlor(req,new UnkownError(),res); }
       else{
+        const currentSession = req.sessionID
         req.session.authenticated = false;
         delete req.user;
-        await UserToken.update({isTokenExpired:true},{where:{token:req.cookies.token}});
+        
+        await User.sequelize.query(`delete  FROM sessions WHERE session_id ='${currentSession}'`);
+      
         return DataHandlor(req,{},res,'logged out successfully');
       }
     });
@@ -232,6 +238,17 @@ module.exports = {
 
 
   },
+  getActiveSessions:async (req,res)=>{
+    if(req.user){
+        const data = '%\"passport\":{\"user\":'+req.user.id+'}%'
+        const openedSessions = await User.sequelize.query(`delete  FROM sessions WHERE data like '${data}' `);
+       
+        return DataHandlor(req,openedSessions,res)
+    }
+    else{
+      return ErrorHandlor(req,new UnauthorizedError(),res)
+    }
+  }
 
 
 

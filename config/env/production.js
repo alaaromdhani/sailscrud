@@ -58,6 +58,8 @@ module.exports = {
       *    (See https://sailsjs.com/config/datastores for help.)                 *
       *                                                                          *
       ***************************************************************************/
+ //   sails-crud.czipie0umpys.eu-west-2.rds.amazonaws.com
+ //faroukallani
     default: {
       user:'root',
       password:'',

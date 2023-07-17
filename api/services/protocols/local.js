@@ -103,17 +103,9 @@ exports.login = function (req, identifier, password, next) {
                   
                     if(authenticated){
                   
-                      const token = await generateToken(user)
                       
-                      UserToken.create({
-                        token,user_id:user.id
+                      next(null,{user,authetication:true},info='user authentificated');
 
-                      }).then(t=>{
-                        next(null,{user,token},info='user authentificated');
-                      }).catch(err=>{
-                       
-                        next(err,null,info=err)
-                      })
                       
                   }
                   else{
