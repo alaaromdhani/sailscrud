@@ -6,8 +6,9 @@ const UnauthorizedErr = require('../../utils/errors/UnauthorizedError')
 const recordNotFoundErr = require('../../utils/errors/recordNotFound');
 const SqlError = require('../../utils/errors/sqlErrors');
 module.exports = {
+
     createCourse:(req,callback)=>{
-          
+          let mn        
           new Promise((resolve,reject)=>{
               const createCourseValidation = schemaValidation(CourseShema)(req.body)
               if(createCourseValidation.isValid){
@@ -20,21 +21,13 @@ module.exports = {
                   return MatiereNiveau.findOne({where:{
                       MatiereId:course.matiere_id,
                       NiveauScolaireId:course.niveau_scolaire_id
-                    },include:{
-                        model:Module,
-                        foreignKey:'module_id',
-                        attributes:['id']
-                      }})
+                    }})
                   
               }).then(matiere_niveau=>{
                 return new Promise((resolve,reject)=>{
                   if(matiere_niveau){
-                      if(matiere_niveau.Modules.map(m=>m.id).includes(req.body.module_id)){
-                        resolve(req.body)
-                      }
-                      else{
-                        reject(new ValidationError('the module is not related to the subject and the level'))
-                      }
+                    mn = matiere_niveau
+                    return resolve(req.body)
                   }
                   else{
                       return reject(new ValidationError({message:'the relation between the subject and the level  must be done'})) 
@@ -43,6 +36,7 @@ module.exports = {
               }).then(c=>{
                 c.addedBy = req.user.id
                 c.rating = 0
+                c.matiere_niveau_id= mn.id
                 return Course.create(c)
               }).then(c=>{
                   callback(null,c)

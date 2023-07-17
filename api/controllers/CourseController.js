@@ -31,6 +31,10 @@ module.exports = {
   async find(req, res) {
     try {
       const matiere_id = req.query.matiere
+      const type = req.query.type?req.query.type:"cours"
+       if(type!="exam" && type!="cours" ){
+        return ErrorHandlor(req,new ValidationError({message:'a valid type is required'}),res)
+      } 
       const niveau_scolaire_id =   req.query.ns
       const chapitre_id = req.query.chapitre
       const page = parseInt(req.query.page)+1 || 1;
@@ -50,7 +54,9 @@ module.exports = {
             },
           })),
         }
+        
         : {};
+        where.type = type
         if(matiere_id){
           where.matiere_id = matiere_id
         } 
@@ -93,11 +99,15 @@ module.exports = {
           attributes:['name_fr','name_ar']
         },{
           model:Module,
-          foreignKey:'chapitre_id',
+          foreignKey:'module_id',
           attributes:['name'],
           where:whereChapitre
 
         },
+        {
+          model:Trimestre,
+          foreignKey:'trimestre_id'
+        }
         
           ],
         order,
@@ -115,6 +125,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res)
     } catch (error) {
+      console.log(error)
       return ErrorHandlor(req,new SqlError(error),res)
     }
   },

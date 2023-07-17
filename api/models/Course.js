@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const ValidationError = require("../../utils/errors/validationErrors");
 
 
 /**
@@ -15,10 +16,20 @@ module.exports = {
     hooks: {
       beforeSave:(course,options)=>{
         if(course.isNewRecord){
-          course.active = true
-          course.rating =0
+          course.rating=0
+          course.active = false
         }
-        console.log('adding a course')
+        if (course.order && course.module_id&& !course.trimestre_id){
+         course.type ="cours"
+        }
+        else if (!course.order && !course.module_id&& course.trimestre_id){
+          course.type ="exam"
+        }
+        else{
+          throw new ValidationError({message:'valid configuration is required'})
+        }
+
+        
       },
       beforeDestroy:async (course,options)=>{
         await Rate.destroy({
@@ -59,8 +70,14 @@ module.exports = {
     },
     order:{
       type:DataTypes.INTEGER,
-      required:true
+      allowNull:true
+    },
+    type:{
+      type:DataTypes.STRING,
+      allowNull:true
     }
+
+
 
 
   },
@@ -77,8 +94,8 @@ module.exports = {
     Course.belongsTo(User,{
       foreignKey:'addedBy'
     })
-    Course.belongsToMany(Trimestre,{
-      through:'trimestres_cours'
+    Course.belongsTo(Trimestre,{
+      foreignKey:'trimestre_id'
     })
     Course.belongsTo(MatiereNiveau,{
       foreignKey:'matiere_niveau_id'

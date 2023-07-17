@@ -70,7 +70,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res);
     } catch (error) {
-      return ErrorHandlor(req,new SQLError(error),res);
+      return ErrorHandlor(req,new SqlError(error),res);
     }
   },
   async findOne(req, res) {
