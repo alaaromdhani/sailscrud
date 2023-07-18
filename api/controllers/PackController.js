@@ -111,7 +111,12 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await Pack.findByPk(req.params.id);
+      const data = await Pack.findByPk(req.params.id,{
+        include:{
+          model:Upload,
+          foreignKey:'photo'
+        }
+      });
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }

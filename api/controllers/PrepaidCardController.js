@@ -115,7 +115,10 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await PrepaidCard.findByPk(req.params.id);
+      const data = await PrepaidCard.findByPk(req.params.id,{include:{
+        model:Upload,
+        foreignKey:'photo'
+      }});
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
