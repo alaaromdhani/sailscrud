@@ -18,7 +18,7 @@
  * For more best practices and tips, see:
  * https://sailsjs.com/docs/concepts/deployment
  */
-
+const databaseCredentials = require('../../utils/constants')
 module.exports = {
   //cron : {
   //  login: {
@@ -59,15 +59,11 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
     default: {
-      user:'root',
-      password:'',
+      user:databaseCredentials.user,
+      password:databaseCredentials.password,
   
-      options:{
-        port:'3306',
-        dialect:'mysql',
-        host:'localhost',
-      },
-      database:'madar'
+      options:databaseCredentials.options,
+      database:databaseCredentials.database
   
       /***************************************************************************
       *                                                                          *
@@ -103,7 +99,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-    migrate: 'alter',
+    migrate: 'safe',
 
     /***************************************************************************
       *                                                                          *
@@ -465,10 +461,12 @@ module.exports = {
     },
     database:{
         credentials:{
-          username:'',
-          password:'',
-          host:'',
-          port:''
+          username:databaseCredentials.user,
+          password:databaseCredentials.password,
+          host:databaseCredentials.options.host,
+          port:databaseCredentials.options.port,
+          dialect:databaseCredentials.options.dialect,      
+          database:databaseCredentials.database
 
         }
     },

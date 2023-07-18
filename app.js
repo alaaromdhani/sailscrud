@@ -20,6 +20,8 @@
  *   https://sailsjs.com/anatomy/app.js
  */
 
+const databaseCredentials = require('./utils/constants');
+
 //const { Sequelize } = require('sequelize');
 
 
@@ -31,7 +33,7 @@
 (async()=>{
        const mysql = require('mysql2')
       try{
-        const connection = await mysql.createConnection({ host: 'localhost', port: '3306', user: 'root', password: '',charset:'utf8mb4' });
+        const connection = await mysql.createConnection({ host: databaseCredentials.options.host, port: databaseCredentials.options.port, user: databaseCredentials.user, password: databaseCredentials.password });
         await connection.query("CREATE DATABASE IF NOT EXISTS madar COLLATE ='utf8_general_ci'");
       }
       catch(e){

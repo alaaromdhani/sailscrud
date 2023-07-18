@@ -28,7 +28,8 @@ module.exports={
 
                       res.sendFile(filename, options,err=>{
                                 if(err){
-                                  ErrorHandlor(req,new RecordNotFoundErr(),res)
+                                  //console.log(err)
+                                  res.status(404).end()
                                 }
                                 else{
                                     console.log(filename)
@@ -63,14 +64,14 @@ module.exports={
                 }
             })
         }).then(upload=>{
-                let options={
-                    root:path.join(__dirname,'../../assets/'+upload.path)
-                }
+               
 
-                const filename = upload.file_name+'.'+upload.extension
-                res.sendFile(filename, options,err=>{
+                const filename = path.join(__dirname,'../../assets/'+upload.path+'/'+upload.file_name+'.'+upload.extension)
+                res.sendFile(filename,err=>{
                     if(err){
-                        ErrorHandlor(req,new RecordNotFoundErr(),res)
+                      console.log(err)
+                      res.status(404).end()
+                    
                     }
                     else{
                         console.log(filename)

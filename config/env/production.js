@@ -18,7 +18,21 @@
  * For more best practices and tips, see:
  * https://sailsjs.com/docs/concepts/deployment
  */
+const bodyParser = require('body-parser')
+const express = require('../../node_modules/sails/node_modules/express');
+const path = require('path');
+const Sequelize = require('sequelize')
+const expressSession = require('../node_modules/sails/node_modules/express-session');
+const databaseCredentials = require('../../utils/constants');
+const sessionStore = require('express-session-sequelize')(expressSession.Store)
+const connection = new Sequelize(databaseCredentials.database, databaseCredentials.user, databaseCredentials.password, {
+  host: databaseCredentials.options.host,
+  dialect: databaseCredentials.options.dialect,
+});
+let sequelizeSessionStore = new sessionStore({
+  db:connection
 
+})
 module.exports = {
   //cron : {
   //  login: {
@@ -61,15 +75,11 @@ module.exports = {
  //   sails-crud.czipie0umpys.eu-west-2.rds.amazonaws.com
  //faroukallani
     default: {
-      user:'root',
-      password:'',
+      user:databaseCredentials.user,
+      password:databaseCredentials.password,
   
-      options:{
-        port:'3306',
-        dialect:'mysql',
-        host:'localhost',
-      },
-      database:'madar'
+      options:databaseCredentials.options,
+      database:databaseCredentials.database
   
       /***************************************************************************
       *                                                                          *
@@ -165,7 +175,7 @@ module.exports = {
     cors: {
       allRoutes: true,
       allowCredentials: true, // Allows cookies and session through CORS from here
-      allowOrigins: ['http://localhost:3000','http://localhost:4200', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
+      allowOrigins: databaseCredentials.allowedUrlOnCors, // Allows these origins through CORS
       allowResponseHeaders: 'set-cookie',
       allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
     },
@@ -360,6 +370,91 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
     cache: 365.25 * 24 * 60 * 60 * 1000, // One year
+    middleware: {
+      bodyParser:(()=>{
+        const octetStreamOptions  ={
+          inflate: true,
+          limit: '100kb',
+          type: 'application/octet-stream'
+      } 
+    
+
+    return (req,res,next)=>{
+        if(req.headers['content-type']=='application/octet-stream'){
+          const octetStreamBodyParser = bodyParser.raw(octetStreamOptions)
+            console.log('octet stream body')
+            return octetStreamBodyParser(req,res,next)
+        }
+        else{
+          console.log('json content')
+          return bodyParser()(req,res,next)
+        }
+    }
+
+
+    })(),
+    statics:(()=>{
+        console.log('setting static files')
+        return function(req,res,next){
+          return express.static(path.join(__dirname, '../static'))(req,res,next);
+        }
+
+    })(),
+    ex_session:(()=>{
+      console.log('the session hook for sails have been disaibled ...')
+      return function(req,res,next){
+          console.log('req usest is ')
+        return expressSession({
+          secret: 'hhh try-hack-me',
+          resave: false,
+          saveUninitialized: true,
+          store:sequelizeSessionStore,
+          cookie:{
+            secure:sails.config.environment==="production"
+          }
+          
+        })(req,res,next)
+      }
+
+
+
+    })(),
+
+/***************************************************************************
+*                                                                          *
+* The order in which middleware should be run for HTTP requests.           *
+* (This Sails app's routes are handled by the "router" middleware below.)  *
+*                                                                          *
+***************************************************************************/
+
+    order: [
+      'cookieParser',
+      'ex_session',
+        'statics',
+      'bodyParser',
+    //   'compress',
+    //   'poweredBy',
+    //   'router',
+
+    //   'favicon',
+    ],
+
+
+/***************************************************************************
+*                                                                          *
+* The body parser that will handle incoming multipart HTTP requests.       *
+*                                                                          *
+* https://sailsjs.com/config/http#?customizing-the-body-parser             *
+*                                                                          *
+***************************************************************************/
+
+// bodyParser: (function _configureBodyParser(){
+//   var skipper = require('skipper');
+//   var middlewareFn = skipper({ strict: true });
+//   return middlewareFn;
+// })(),
+
+   },
 
     /***************************************************************************
       *                                                                          *
@@ -376,7 +471,11 @@ module.exports = {
       * (https://sailsjs.com/config/http)                                        *
       *                                                                          *
       ***************************************************************************/
-    // trustProxy: true,
+    trustProxy: true,
+    customMiddleware: function(app) {
+                 app.set('trust proxy', true)
+     },
+
 
   },
 
@@ -442,9 +541,9 @@ module.exports = {
       path: 'default',
 
     },
-    lrsEndPoint:'http://localhost:1337/lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a',
-    baseUrl: 'http://localhost:1337/',
-    internalEmailAddress: 'support@example.com',
+    lrsEndPoint:databaseCredentials.lrsEndPoint,
+    baseUrl: databaseCredentials.baseUrl,
+    internalEmailAddress: databaseCredentials.internalEmailAddress,
 
     jwt:{
       jwt_secret:'super-secret-key',
@@ -465,13 +564,15 @@ module.exports = {
         minValue:0
     },
     database:{
-        credentials:{
-          username:'',
-          password:'',
-          host:'',
-          port:''
+      credentials:{
+        username:databaseCredentials.user,
+        password:databaseCredentials.password,
+        host:databaseCredentials.options.host,
+        port:databaseCredentials.options.port,
+        dialect:databaseCredentials.options.dialect,      
+        database:databaseCredentials.database
 
-        }
+      }
     },
     files:{
       extensions:{
