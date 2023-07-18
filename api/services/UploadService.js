@@ -8,7 +8,9 @@ const {DataTypes} = require('sequelize');
 const yauzl = require("yauzl")
 const xml2js = require('xml2js')
 const CoursInteractiveShema = require('../../utils/validations/CoursInteractiveSchema')
-const SchemaValidation = require('../../utils/validations')
+const SchemaValidation = require('../../utils/validations');
+const schemaValidation = require('../../utils/validations');
+const sqlError = require('../../utils/errors/sqlErrors')
 const parser = xml2js.Parser()
 
 module.exports = {
@@ -397,6 +399,31 @@ module.exports = {
                   return callback(new SqlError(e),null)
                 }           
           }
+      },
+      uploadFileSchema:async (req,converter)=>{
+             let  {key,validation} = converter[req.options.model] 
+            const ModelReference = sails.models[req.options.model]
+            if(!key){
+              key = "upload"
+            }
+            let uploadModel = {}
+            Object.keys(req.body).filter(k=>k!=key).forEach(k=>{
+                uploadModel[k] =req.body[k] 
+            })
+            const FileCreationSchema = schemaValidation(validation)(req.body)
+            if(FileCreationSchema.isValid){
+                try{
+                  return await ModelReference.create(uploadModel)
+                }
+                catch(e){
+                  throw new sqlError(e)
+                }
+            }
+            else{
+                throw new ValidationError({message:FileCreationSchema.message})     
+            }
+
+
       }
       
 

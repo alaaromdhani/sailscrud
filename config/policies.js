@@ -85,6 +85,15 @@ module.exports.policies = {
     'rateSoftSkill':['lang','passport','role','tokenVerifier']
     
   },
+  PrepaidCardController:{
+    'create':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+  },
+  PackController:{
+    'create':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+  },
+ 
 
 
 
