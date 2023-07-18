@@ -18,11 +18,12 @@
  * For more best practices and tips, see:
  * https://sailsjs.com/docs/concepts/deployment
  */
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
 const express = require('../../node_modules/sails/node_modules/express');
 const path = require('path');
 const Sequelize = require('sequelize')
-const expressSession = require('../node_modules/sails/node_modules/express-session');
+const expressSession = require('../../node_modules/sails/node_modules/express-session');
 const databaseCredentials = require('../../utils/constants');
 const sessionStore = require('express-session-sequelize')(expressSession.Store)
 const connection = new Sequelize(databaseCredentials.database, databaseCredentials.user, databaseCredentials.password, {
