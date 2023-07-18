@@ -79,7 +79,15 @@ module.exports = {
       user:databaseCredentials.user,
       password:databaseCredentials.password,
   
-      options:databaseCredentials.options,
+      options:{
+        
+          port:databaseCredentials.options.port,
+          dialect:databaseCredentials.options.dialect,
+          host:databaseCredentials.options.host,
+        
+
+
+      },
       database:databaseCredentials.database
   
       /***************************************************************************
