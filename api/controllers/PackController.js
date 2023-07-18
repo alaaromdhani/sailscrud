@@ -86,9 +86,14 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Pack.findAndCountAll({
         where,
+        include:{
+          model:Upload,
+          foreignKey:'photo'
+        },
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+        
       });
 
       return DataHandlor(req,{

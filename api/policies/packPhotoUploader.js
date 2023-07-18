@@ -32,6 +32,9 @@ const fileFilerOptions = async (req,file,cb)=>{
     if(req.body.photo){
       req.body.photo = parseInt(req.body.photo)
     }
+    if(req.body.nbre_cards){
+        req.body.nbre_cards = parseInt(req.body.nbre_cards)
+      }
     let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
       let model = await sails.services.uploadservice.uploadFileSchema(req,modelToValidationConverter);
       req.operation.data = model

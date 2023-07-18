@@ -71,7 +71,7 @@ module.exports = {
     },
     deleteModel:(req,callback)=>{
         const ModelReference = sails.models[req.options.model]
-        ModelReference.findByPk(req.params.id,{ 
+        return ModelReference.findByPk(req.params.id,{ 
             include:{
                     model:User,
                     foreignKey:'addedBy',
@@ -95,11 +95,12 @@ module.exports = {
 
 
         }).then(m=>{
-            return m.destory()
+            return m.destroy()
         }).then(s=>{
-            callback({},null)
+            callback(null,{})
 
         }).catch(e=>{
+            console.log(e)
             if(e instanceof RecordNotFoundErr || e instanceof ValidationError|| e instanceof UnauthorizedError){
                 callback(e,null)
             }

@@ -36,12 +36,15 @@ module.exports = {
   else{
     try{
      
-    if(req.body.pack_id){
-      req.body.pack_id = parseInt(req.body.pack_id)
-    }
-    if(req.body.photo){
-      req.body.photo = parseInt(req.body.photo)
-    }
+        if(req.body.pack_id){
+          req.body.pack_id = parseInt(req.body.pack_id)
+        }
+        if(req.body.photo){
+          req.body.photo = parseInt(req.body.photo)
+        }
+        if(req.body.nbre_cards){
+          req.body.nbre_cards = parseInt(req.body.nbre_cards)
+        }
         const prepaidCardValidation = schemaValidation(PrepaidcardShemaWithoutFile)(req.body)
           let pack = req.body 
           pack.addedBy = req.user.id 
@@ -87,6 +90,10 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await sails.models['prepaidcard'].findAndCountAll({
         where,
+        include:{
+          model:Upload,
+          foreignKey:'photo'
+        },
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
