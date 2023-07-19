@@ -90,10 +90,18 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await sails.models['prepaidcard'].findAndCountAll({
         where,
-        include:{
+        include:[{
           model:Upload,
           foreignKey:'photo'
         },
+        {
+          model:Pack,
+          foreignKey:'pack_id',
+          attributes:['name']
+
+
+        }
+      ],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
