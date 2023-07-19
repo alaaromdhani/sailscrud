@@ -9,15 +9,21 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage");
 const { SellerShema } = require("../../utils/validations/SellerSchema");
-
+const schemaValidation = require('../../utils/validations')
 
 module.exports = {
   async create(req, res) {
+    
     const PackValidation = schemaValidation(SellerShema)(req.body)
     let pack = req.body 
     pack.addedBy = req.user.id 
     if(PackValidation.isValid){
+         try{
           return DataHandlor(req,await Seller.create(pack),res) 
+         }
+         catch(e){
+          return ErrorHandlor(req,new SqlError(e),res)
+         }
     }
     else{
       return ErrorHandlor(req,new ValidationError({message:PackValidation.message}),res)
@@ -52,6 +58,17 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Seller.findAndCountAll({
         where,
+        include:{
+            model:State,
+            foreignKey:'state_id',
+            attributes:['name'],
+            include:{
+                model:Country,
+                foreignKey:'country_id',
+                attributes:['name']
+            }
+
+        },
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
