@@ -9,7 +9,8 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage");
 const { SellerShema } = require("../../utils/validations/SellerSchema");
-const schemaValidation = require('../../utils/validations')
+const schemaValidation = require('../../utils/validations');
+const ValidationError = require("../../utils/errors/validationErrors");
 
 module.exports = {
   async create(req, res) {
