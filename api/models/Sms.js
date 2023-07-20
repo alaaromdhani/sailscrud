@@ -37,7 +37,7 @@ const UnkownError = require('../../utils/errors/UnknownError');
         },
         content: {
             type: DataTypes.STRING,
-            unique:true,
+           
             allowNull:false
             
         },

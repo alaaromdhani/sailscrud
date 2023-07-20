@@ -21,6 +21,7 @@ module.exports = {
             course.validity = false,
             course.status = "private"
             course.rating =0
+            course.thumbnail = sails.config.custom.baseUrl+'softskills/'+course.url+'/'+'story_content/thumbnail.jpg'
         }
         console.log('adding a course')
       },
@@ -55,6 +56,10 @@ module.exports = {
     id:{
       type:DataTypes.STRING,
       primaryKey:true,
+    },
+    thumbnail:{
+      type:DataTypes.STRING,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
