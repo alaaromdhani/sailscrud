@@ -54,7 +54,7 @@ module.exports = {
         order,
       }
 
-      if(typeof limit=='number'){
+      if(typeof limit=='number' || parseInt(limit)){
           queryOptions.limit = parseInt(limit, 10)
           queryOptions.offset = (parseInt(page, 10) - 1) * parseInt(limit, 10)
       }
@@ -69,7 +69,7 @@ module.exports = {
         data: rows,
         totalCount: count,
       }
-      if(typeof limit=='number'){
+      if(typeof limit=='number' || parseInt(limit)){
         dataOptions.page= parseInt(page, 10)
         dataOptions.limit= parseInt(limit, 10)
         dataOptions.totalPages= Math.ceil(count / parseInt(limit, 10))

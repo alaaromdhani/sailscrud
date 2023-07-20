@@ -287,7 +287,8 @@ module.exports = {
                     zipFile.once("end",()=>{
                       console.log('ended unzipping the file successfully')
                      if(type=="interactive"){
-                       return sails.services.uploadservice.saveCourse(req,objs,courseId,callback)
+                         console.log(entries)
+                       return sails.services.uploadservice.handlexmlFile(req,objs,courseId,callback,uploadBasePath)
                      }
                      else{
                       return callback(null,{courseId})
@@ -324,19 +325,24 @@ module.exports = {
                                          readStream.on('data',async chunk=>{
                                            await parser.parseString(chunk,(err,result)=>{
                                                if(!err){
-                                                 result.tincan.activities[0].activity.forEach(element => {
-                                                         objs.push({
-                                                             id:element.$.id,
-                                                             type:element.$.type,
-                                                             name:element.name[0]._,
-                                                             description:element.name[0]._,
-                                                             course_id:null
-                                                         })
-                                                 
-                                                         if(element.launch){
-                                                         courseId =element.$.id
-                                                         }
-                                                 });
+                                               try{
+                                                result.tincan.activities[0].activity.forEach(element => {
+                                                  objs.push({
+                                                      id:element.$.id,
+                                                      type:element.$.type,
+                                                      name:element.name[0]._,
+                                                      description:element.name[0]._,
+                                                      course_id:null
+                                                  })
+                                          
+                                                  if(element.launch){
+                                                  courseId =element.$.id
+                                                  }
+                                                });
+                                               }
+                                               catch(e){
+                                                console.log(e)
+                                               }
                                                }
                                                else{
                                                  console.log(err)
@@ -399,6 +405,61 @@ module.exports = {
                   return callback(new SqlError(e),null)
                 }           
           }
+      },
+      handlexmlFile:async (req,objs,courseId,callback,fileDirectory)=>{
+       
+        if(courseId&&objs.length){
+          return sails.services.uploadservice.saveCourse(req,objs,courseId,callback)
+         }
+        else{
+          
+          fs.readFile(path.join(fileDirectory,"tincan.xml"),async (err,chunk)=>{
+            console.log('reading tincan.xml file')
+            if(err){
+              
+              return callback(new ValidationError({message:'valid xapi course is required'}))
+            }
+            else{
+              try{
+                
+              await parser.parseString(chunk,(err,result)=>{
+                if(err){
+                  return callback(new ValidationError({message:'valid xapi course is required'}))    
+                }
+                else{
+                  console.log(Object.keys(result))
+                    result.tincan.activities[0].activity.forEach(element => {
+                    objs.push({
+                        id:element.$.id,
+                        type:element.$.type,
+                        name:element.name[0]._,
+                        description:element.name[0]._,
+                        course_id:null
+                    })
+            
+                    if(element.launch){
+                    courseId =element.$.id
+                    }
+                  });
+                  return sails.services.uploadservice.saveCourse(req,objs,courseId,callback)
+                
+                }
+              })
+                
+              }
+              catch(e){
+                return callback(new ValidationError({message:'valid xapi course is required'}))
+              }
+             }
+             
+            })
+          
+
+
+          
+        }
+
+
       },
       uploadFileSchema:async (req,converter)=>{
              let  {key,validation} = converter[req.options.model] 
