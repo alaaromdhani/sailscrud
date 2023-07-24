@@ -177,6 +177,7 @@ module.exports = {
                         console.log(ci.url)
                         let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
                         return res.view("pages/player.ejs",{
+                              ci:ci,
                               url:fullUrl,
                               username:req.user.username,
                               sex:req.user.sex.toLowerCase()

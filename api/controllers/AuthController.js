@@ -24,7 +24,13 @@ module.exports = {
    * @param {Object} res
    */
   callback: function (req, res) {
+    if(req.user){
 
+
+      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res);
+
+
+    }
     sails.services.passport.callback(req, res, (err, data, info, status) => {
       // sails.log.warn(data, err, info, status);
       if (err || !data) {
@@ -54,6 +60,8 @@ module.exports = {
               const activeSession = "'"+req.sessionID+"'"
               const userSessionData = '%\"passport\":{\"user\":'+data.user.id+'}%'
               await User.sequelize.query(`delete  FROM sessions WHERE data like '${userSessionData}' and session_id!=${activeSession} `);
+              
+              
               DataHandlor(req,data.user,res,'login successful');
             }
 

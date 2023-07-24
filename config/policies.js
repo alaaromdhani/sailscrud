@@ -72,7 +72,7 @@ module.exports.policies = {
     'rateSoftSkill':['lang','passport','role','tokenVerifier']
   },
   LrsController:{
-    '*':[]
+    '*':['lang','passport','role','tokenVerifier']
   },
   SoftSkillsController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
@@ -93,6 +93,12 @@ module.exports.policies = {
     'create':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
     '*':['lang','passport','role','tokenVerifier','permissions']
   },
+  MatiereController:{
+    'create':['lang','passport','role','tokenVerifier','permissions','matiereImageUploader'],
+    'update':['lang','passport','role','tokenVerifier','permissions','matiereImageUploader'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+    
+  }
  
 
 

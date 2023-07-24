@@ -224,7 +224,7 @@ module.exports = {
       }
       let today = new Date()
       if(!parameter.destination){
-        parameter.destination = '../../static/courses/'+today.getFullYear()+'-'+today.getMonth()+"/"+(file.originalname.split(".").shift())
+        parameter.destination = '../../static/courses/'+today.getFullYear()+'-'+today.getMonth()+"/"+uuidv4()
       }
       const type = Object.keys(sails.config.custom.files.extensions).filter(ext=>sails.config.custom.files.extensions[ext].map(item=>item.toLowerCase()).includes(extention.toLowerCase())).at(0);
       if(!type){

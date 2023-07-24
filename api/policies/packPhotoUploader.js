@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const { PackShema } = require('../../utils/validations/PackSchema');
 const { PrepaidcardShema } = require('../../utils/validations/PrepaidcardSchema');
+const ValidationError = require('../../utils/errors/validationErrors');
 const modelToValidationConverter = {
         pack:{
             validation:PackShema,

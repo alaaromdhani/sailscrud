@@ -1,5 +1,5 @@
 const schemaValidation = require('../../utils/validations');
-const {MatiereShema, UpdateMatiereShema} = require('../../utils/validations/MatiereSchema');
+const {MatiereShema, UpdateMatiereShema, MatiereShemaWithUpload, UpdateMatiereShemaWithUpload} = require('../../utils/validations/MatiereSchema');
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
 const SqlError = require('../../utils/errors/sqlErrors');
 const ValidationError = require('../../utils/errors/validationErrors');
@@ -13,13 +13,25 @@ const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 
 
 module.exports= {
-    createMatiere: (req,callback)=>{
+    createMatiere: (req,bodyData,callback,upload)=>{
+       /* if(bodyData){
+          return ErrorHandlor(req,{message:'mana3rech chnia is required'},res)
+        }*/
+     
+        let schema 
+        if(upload){
+          schema = MatiereShemaWithUpload
+        }
+        else{
+          schema = MatiereShema
+        }
         let createdMatiere
         let relatedNs //saving the the value of relatedNs le tdhi3 ba3d fi west then hhhhhhhh 
+       
         new Promise((resolve, reject) => {
-          const createMatiereSchema =schemaValidation(MatiereShema)(req.body)
+          const createMatiereSchema =schemaValidation(schema)(bodyData)
           if(createMatiereSchema.isValid){
-            return   resolve(req.body)
+            return   resolve(bodyData)
           }
           else{
             return  reject(new ValidationError({message:createMatiereSchema.message}))
@@ -38,7 +50,7 @@ module.exports= {
             return []
         }).then(ns=>{
             return new Promise((resolve,reject)=>{
-              if(req.body.ns && req.body.ns.length!=ns.length){
+              if(bodyData.ns && bodyData.ns.length!=ns.length){
                   return reject(new ValidationError({message:'valid niveau scolaire is reaquired'}))
               }
               else{
@@ -46,9 +58,9 @@ module.exports= {
                   relatedNs = ns
                 }
                 let data={} // we have to delete the value of ns from the data we create to avoid the error of attribute not found
-                Object.keys(req.body).forEach(key=>{
+                Object.keys(bodyData).forEach(key=>{
                     if(key!=='ns'){
-                      data[key] = req.body[key]
+                      data[key] = bodyData[key]
                     }
                 })
                 return resolve(data)              
@@ -61,7 +73,7 @@ module.exports= {
         }).then(async data=>{
             if(relatedNs){
             createdMatiere = data    
-            const ns = req.body.ns
+            const ns = bodyData.ns
                 let matiere_niveau_scolaire = []
                 let groupedNiveauModules= {}
                 ns.forEach(d=>{
@@ -109,20 +121,27 @@ module.exports= {
         })
 
     },
-  updateMatiere:(req,callback)=>{
+  updateMatiere:(req,bodyData,callback,upload)=>{
     let relatedNs
 
     let subject
+    let schema
+    if(upload){
+        schema =UpdateMatiereShemaWithUpload     
+    }
+    else{
+        schema = UpdateMatiereShema
+    }
     new Promise((resolve, reject) => {
-      const updateMatiereSchema =schemaValidation(UpdateMatiereShema)(req.body)
+      const updateMatiereSchema =schemaValidation(schema)(bodyData)
       if(updateMatiereSchema.isValid){
-        return resolve(req.body)
+        return resolve(bodyData)
       }
       else{
          return  reject(new ValidationError({message:updateMatiereSchema.message}))
       }
     }).then(matiere=>{
-         if(typeof (req.body.active)==='boolean' && !req.body.active){
+         if(typeof (bodyData.active)==='boolean' && !bodyData.active){
            return Matiere.findByPk(req.params.id,{
              include:{
                model:Course,
@@ -143,7 +162,7 @@ module.exports= {
             }
             else{
               subject = matiere
-              return resolve(req.body)
+              return resolve(bodyData)
             }
         })
     }).then(matiere=>{
@@ -166,15 +185,15 @@ module.exports= {
         relatedNs = ns
 
       }
-      Object.keys(req.body).forEach(key=>{
+      Object.keys(bodyData).forEach(key=>{
         if(key!=='ns'){
-         subject[key] = req.body[key]
+         subject[key] = bodyData[key]
         }
       })
       return subject.save()
     }).then(async data=>{
       if(relatedNs){
-          sails.services.matiereservice.handleNs(req,data,callback)
+          sails.services.matiereservice.handleNs(req,bodyData,callback)
       }
       else{
         callback(null,data)
@@ -191,12 +210,13 @@ module.exports= {
 
 
   },
-  handleNs:(req,matiere,callback)=>{
+  handleNs:(req,bodyData,callback)=>{
+    
     let groupedRecords
     let moduleRecordsToCreate = []
     let modules = []
     try{
-        const inputs =req.body.ns.map(o=>{return {MatiereId:parseInt(req.params.id),NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector,nb_modules:o.nb_modules}}) 
+        const inputs =bodyData.ns.map(o=>{return {MatiereId:parseInt(req.params.id),NiveauScolaireId:o.NiveauScolaireId,name:o.name,intern_teacher:o.intern_teacher,inspector:o.inspector,nb_modules:o.nb_modules}}) 
         const grouping =_.groupBy(inputs,'NiveauScolaireId')
     //
           let groupedNiveauModules = {}

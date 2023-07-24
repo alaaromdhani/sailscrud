@@ -592,7 +592,7 @@ module.exports = {
         presentation:['ppt', 'pptx'],
         zipfiles:['zip']
       },
-      maxSize:100000000,
+      maxSize:500000000,
       routes:{ //after assets
         public:'v/public/',
         private:'v/uploads/'

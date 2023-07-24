@@ -11,14 +11,48 @@ const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessag
 const SqlError = require('../../utils/errors/sqlErrors');
 module.exports = {
   async create(req, res) {
-    sails.services.matiereservice.createMatiere(req,(err,data)=>{
-          if(err){
-            return ErrorHandlor(req,err,res)
+    if(req.operation){
+        if(req.operation.error){
+          return ErrorHandlor(req,req.operation.error,res)
+        }
+        else{
+          try{
+            const m = req.operation.model
+            m.image = (await Upload.create(req.upload)).id
+            return DataHandlor(req,await m.save(),res)
+
           }
-          else{
-              return DataHandlor(req,data,res)
+          catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
           }
-    })
+        }
+    }
+    else{
+      let bodyData= {}
+      Object.keys(req.body).forEach(k=>{
+          bodyData[k] = req.body[k]
+
+      })
+      if(bodyData.image){
+        bodyData.image = parseInt(bodyData.image)
+      }
+      if(bodyData.domaine_id){
+        bodyData.domaine_id = parseInt(bodyData.domaine_id)
+      }
+      if(bodyData.ns){
+        bodyData.ns= JSON.parse(bodyData.ns)
+      }
+      
+
+      sails.services.matiereservice.createMatiere(req,bodyData,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+            return DataHandlor(req,data,res)
+        }
+      })
+    }
   },
   async find(req, res) {
     try {
@@ -47,11 +81,16 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Matiere.findAndCountAll({
         where,
-        include:{
+        include:[{
+
             model:NiveauScolaire,
             through:'matieres_niveau_scolaires',
             attributes:['id','name_ar','name_fr']
-        },
+        },{
+          model:Upload,
+          foreignKey:'image',
+          attributes:['link']
+        } ],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
@@ -78,7 +117,12 @@ module.exports = {
         },
         include:[{
           model:Matiere,
-          foreignKey:'MatiereId'  
+          foreignKey:'MatiereId',
+          include:{
+            model:Upload,
+            foreignKey:'image',
+            attributes:['link']
+          }  
         },
         {
           model:NiveauScolaire,
@@ -148,14 +192,48 @@ module.exports = {
   },
 
   async update(req, res) {
-    sails.services.matiereservice.updateMatiere(req,(err,data)=>{
-      if(err){
-        return ErrorHandlor(req,err,res)
+    if(req.operation){
+      if(req.operation.error){
+        return ErrorHandlor(req,req.operation.error,res)
       }
       else{
-        return DataHandlor(req,data,res)
+        try{
+          const m = req.operation.model
+          m.image = (await Upload.create(req.upload)).id
+          return DataHandlor(req,await m.save(),res)
+
+        }
+        catch(e){
+          return ErrorHandlor(req,new SqlError(e),res)
+        }
       }
-    })
+    }
+    else{
+      let bodyData= {}
+      Object.keys(req.body).forEach(k=>{
+          bodyData[k] = req.body[k]
+
+      })
+      if(bodyData.image){
+        bodyData.image = parseInt(bodyData.image)
+      }
+      if(bodyData.domaine_id){
+        bodyData.domaine_id = parseInt(bodyData.domaine_id)
+      }
+      if(bodyData.ns){
+        bodyData.ns= JSON.parse(bodyData.ns)
+      }
+      
+      sails.services.matiereservice.updateMatiere(req,bodyData,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+      })
+    }
+    
   },
 
   async destroy(req, res) {

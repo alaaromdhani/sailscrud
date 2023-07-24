@@ -53,9 +53,17 @@ module.exports = {
     active: {
       type: DataTypes.BOOLEAN,
       required: true,
+    },
+    rtl:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:true
+
     }
   },
   associations:()=>{
+      Matiere.belongsTo(Upload,{
+        foreignKey:'image'
+      })
       Matiere.belongsToMany(NiveauScolaire,{
         through:MatiereNiveau
       })
