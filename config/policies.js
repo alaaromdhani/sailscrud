@@ -38,6 +38,7 @@ module.exports.policies = {
   },
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'treeView':['lang','passport','role','tokenVerifier'],
     'findOneCourse':['lang','passport','role','tokenVerifier','canseecourse']
   },
   CoursDocumentController:{

@@ -270,6 +270,49 @@ module.exports = {
 
   
 },
+  treeView:async (req,res)=>{
+      const {MatiereId,NiveauScolaireId} = req.query
+      if(MatiereId && NiveauScolaireId){
+          
+          const matiere_niveau = await MatiereNiveau.findOne({where:{
+              MatiereId,
+              NiveauScolaireId
+          }}) 
+          if(matiere_niveau){
+              return DataHandlor(req,await Module.findAll({
+                where:{
+                    matiere_niveau_id:matiere_niveau.id
+                },
+                include:{
+                    model:Course,
+                    include:[{
+                        model:CoursInteractive,
+                        foreignKey:'parent'
+                    },
+                    {
+                      model:CoursVideo,
+                      foreignKey:'parent'
+                  },{
+                    model:CoursDocument,
+                    foreignKey:'parent'
+                }]
+
+                }
+
+              }),res)
+
+          }
+          else{
+            return DataHandlor(req,[],res)
+          }
+
+      }
+      else{
+        return ErrorHandlor(req,new ValidationError('the subject level combination is required'),res)
+      }
+
+
+  }
 
   
 };

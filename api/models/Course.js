@@ -100,6 +100,16 @@ module.exports = {
     Course.belongsTo(MatiereNiveau,{
       foreignKey:'matiere_niveau_id'
     })
+    Course.hasMany(CoursInteractive,{
+      foreignKey:'parent'
+    })
+    Course.hasMany(CoursDocument,{
+      foreignKey:'parent'
+    })
+    Course.hasMany(CoursVideo,{
+      foreignKey:'parent'
+    })
+    
   }
 
 };
