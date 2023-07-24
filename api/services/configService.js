@@ -7,6 +7,7 @@ const { ModuleShema, UpdateModuleShema } = require('../../utils/validations/Modu
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 
 const { Op } = require('sequelize');
+
 module.exports = {
       deleteNiveauScolaire:(req,callback)=>{
         NiveauScolaire.findByPk(req.params.id,{
@@ -122,7 +123,9 @@ module.exports = {
   },
   updateModule:(req,callback)=>{
         let groupedValues={}
-        let groupedRecords  
+        let groupedBytrimestres  ={}
+        let allModules
+        let allTrimestres
       new Promise((resolve,reject)=>{
         const updateModuleValidation = schemaValidation(UpdateModuleShema)(req.body)
         if(updateModuleValidation.isValid){
@@ -137,7 +140,11 @@ module.exports = {
         modules.modules.forEach(m=>{
           modules_ids.push(m.id)
           groupedValues[m.id] = m  
-
+          if(m.trimestres && m.trimestres.length){
+            groupedBytrimestres[m.id] = m.trimestres
+          }
+          
+          
         })
         return modules_ids
 
@@ -147,12 +154,16 @@ module.exports = {
                 id:{
                   [Op.in]:ids_array
                 }
+            },
+            include:{
+              model:Trimestre,
+              through:'trimestres_modules'
             }
           })
       }).then(modules=>{
          return new Promise((resolve,reject)=>{
           if(!modules.length){
-            return reject(new ValidationError('modules are required')) 
+            return reject(new ValidationError('valid modules are required')) 
           }
           else{
            return resolve(modules)
@@ -161,23 +172,49 @@ module.exports = {
 
       }).then(modules=>{
         let recordsToUpdate = []
+        allModules = modules
         modules.forEach(element => {
           const newModuleNameValue = groupedValues[element.id].name
           const newModuleChapterValue =groupedValues[element.id].chapitre_id
           if(element.chapitre_id!=newModuleChapterValue || element.name!=newModuleNameValue ){
             element.chapitre_id = newModuleChapterValue
             element.name = newModuleNameValue
-            recordsToUpdate.push(element)
+            
+
           }
+
 
         });
         return recordsToUpdate
       
       }).then(recordsToUpdate=>{
         return Promise.all(recordsToUpdate.map(r=>r.save()))
-      }).then(rs=>{
-          callback(null,rs)
-       }).catch(e=>{
+      }).then(updatedRecords=>{
+          return Trimestre.findAll()
+      }).then(ts=>{
+        if(Object.keys(groupedBytrimestres).length){
+          let trimestresRecordsToAdd = {}
+          allModules.forEach(m=>{
+            const asasignedTrimestres = groupedBytrimestres[m.id]
+            
+              if(asasignedTrimestres.length!=m.Trimestres.length || m.Trimestres.map(t=>t.id).filter(t=>!asasignedTrimestres.includes(t)).length){
+                trimestresRecordsToAdd[m.id]=ts.filter(t=>asasignedTrimestres.includes(t.id))
+
+              }
+          })
+          return Promise.all(allModules.filter(m=>trimestresRecordsToAdd[m.id]!=undefined).map(m=>{
+            return m.setTrimestres(trimestresRecordsToAdd[m.id])
+
+          }))
+        }
+        else{
+          return []
+        }
+
+        }).then(m=>{
+          callback(null,m)
+
+        }).catch(e=>{
         console.log(e)
         if(e instanceof ValidationError || e instanceof recordNotFoundErr || e instanceof SqlError || e instanceof unauthorizedErr){
           callback(e,null)

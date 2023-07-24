@@ -11,7 +11,8 @@ const UpdateModuleShema = joi.object({
     modules:joi.array().items(joi.object({
         id:joi.number().required(),
         name:joi.string().required(),
-        chapitre_id:joi.number().required()
+        chapitre_id:joi.number().required(),
+        trimestres:joi.array().items(joi.number().integer())
     }))
 
 })

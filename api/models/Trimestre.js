@@ -39,8 +39,8 @@ module.exports = {
     }
   },
   associations:()=>{
-    Trimestre.belongsToMany(Course,{
-      through:'trimestres_cours'
+    Trimestre.belongsToMany(Module,{
+      through:'trimestres_modules'
     })
   }
 

@@ -277,9 +277,12 @@ module.exports = {
           const matiere_niveau = await MatiereNiveau.findOne({where:{
               MatiereId,
               NiveauScolaireId
+          },include:{
+            model:Matiere,
+            foreignKey:'MatiereId'
           }}) 
           if(matiere_niveau){
-              return DataHandlor(req,await Module.findAll({
+              return DataHandlor(req,{rows:await Module.findAll({
                 where:{
                     matiere_niveau_id:matiere_niveau.id
                 },
@@ -299,7 +302,7 @@ module.exports = {
 
                 }
 
-              }),res)
+              }),rtl:matiere_niveau.Matiere.rtl},res)
 
           }
           else{

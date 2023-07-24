@@ -54,7 +54,7 @@ module.exports = {
         foreignKey:'module_id'
     })
     Module.belongsToMany(Trimestre,{
-      through:'trimestres_cours'
+      through:'trimestres_modules'
     })
   }
 
