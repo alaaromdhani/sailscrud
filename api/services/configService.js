@@ -179,7 +179,7 @@ module.exports = {
           if(element.chapitre_id!=newModuleChapterValue || element.name!=newModuleNameValue ){
             element.chapitre_id = newModuleChapterValue
             element.name = newModuleNameValue
-            
+            recordsToUpdate.push(element)
 
           }
 

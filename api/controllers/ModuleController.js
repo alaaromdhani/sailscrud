@@ -69,6 +69,12 @@ module.exports = {
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       let findOptions = {
+        include:{
+          model:Trimestre,
+          through:'trimestres_modules',
+          attributes:['name_fr','name_ar']
+          
+        }, 
         where,
         order,
       }
