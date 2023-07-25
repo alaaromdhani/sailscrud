@@ -197,7 +197,7 @@ module.exports = {
           allModules.forEach(m=>{
             const asasignedTrimestres = groupedBytrimestres[m.id]
             
-              if(asasignedTrimestres.length!=m.Trimestres.length || m.Trimestres.map(t=>t.id).filter(t=>!asasignedTrimestres.includes(t)).length){
+              if( asasignedTrimestres && asasignedTrimestres.length!=m.Trimestres.length || m.Trimestres.map(t=>t.id).filter(t=>!asasignedTrimestres.includes(t)).length){
                 trimestresRecordsToAdd[m.id]=ts.filter(t=>asasignedTrimestres.includes(t.id))
 
               }
