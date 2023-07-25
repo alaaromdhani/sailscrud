@@ -35,6 +35,7 @@ const UpdateMatiereShema = joi.object({
   color: joi.string(),
   domaine_id:joi.number(),
   active:joi.boolean(),
+  rtl:joi.boolean(),
   ns:joi.array().items(joi.object({
     name:joi.string().required(),
     NiveauScolaireId:joi.number().required(),  
