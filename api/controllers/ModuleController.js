@@ -72,7 +72,7 @@ module.exports = {
         include:{
           model:Trimestre,
           through:'trimestres_modules',
-          attributes:['name_fr','name_ar']
+          attributes:['id','name_fr','name_ar']
           
         }, 
         where,
