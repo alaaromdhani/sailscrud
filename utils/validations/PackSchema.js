@@ -18,11 +18,19 @@ const PackShemaWithoutFile = joi.object({
 })
 const UpdatePackShema = joi.object({
     
-    name: joi.string().required(),
-    price: joi.number().required(),
-    duration:joi.number().required(),
+    name: joi.string(),
+    price: joi.number(),
+    duration:joi.number(),
    
-    photo:joi.number().required()
+    
     
 })
-module.exports = {PackShema,PackShemaWithoutFile,UpdatePackShema}
+const UpdatePackShemaWithoutFile = joi.object({
+    
+    name: joi.string(),
+    price: joi.number(),
+    duration:joi.number(),
+  photo:joi.number()
+    
+})
+module.exports = {PackShema,PackShemaWithoutFile,UpdatePackShema,UpdatePackShemaWithoutFile}

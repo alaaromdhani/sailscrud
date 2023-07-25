@@ -10,7 +10,8 @@ const xml2js = require('xml2js')
 const CoursInteractiveShema = require('../../utils/validations/CoursInteractiveSchema')
 const SchemaValidation = require('../../utils/validations');
 const schemaValidation = require('../../utils/validations');
-const sqlError = require('../../utils/errors/sqlErrors')
+const sqlError = require('../../utils/errors/sqlErrors');
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 const parser = xml2js.Parser()
 
 module.exports = {
@@ -471,7 +472,7 @@ module.exports = {
             Object.keys(req.body).filter(k=>k!=key).forEach(k=>{
                 uploadModel[k] =req.body[k] 
             })
-            const FileCreationSchema = schemaValidation(validation)(req.body)
+            const FileCreationSchema = schemaValidation(validation.create)(req.body)
             if(FileCreationSchema.isValid){
                 try{
                   return await ModelReference.create(uploadModel)
@@ -485,7 +486,40 @@ module.exports = {
             }
 
 
+      },
+      updateModelWithFileUpload:async (req,converter)=>{
+        let  {key,validation} = converter[req.options.model] 
+        const ModelReference = sails.models[req.options.model]
+        if(!key){
+          key = "upload"
+        }
+
+        try{
+          const model = await ModelReference.findByPk(req.params.id)
+         
+          let uploadModel = {}
+          Object.keys(req.body).filter(k=>k!=key).forEach(k=>{
+              uploadModel[k] =req.body[k] 
+          })
+          if(model){
+            const FileUpdateSchema = schemaValidation(validation.update)(req.body)           
+             if(FileUpdateSchema.isValid){
+                return await model.update(uploadModel)
+             }
+             else{
+                  throw new ValidationError({message:FileUpdateSchema.message})
+             } 
+          }
+          else{
+            throw new RecordNotFoundErr()
+          }
+        }
+        catch(e){
+            throw e
+        }
+
       }
+
       
 
 

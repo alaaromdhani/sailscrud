@@ -3,21 +3,43 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
-const { UpdatePackShema } = require("../../utils/validations/PackSchema")
-const { UpdatePrepaidcardShema } = require("../../utils/validations/PrepaidcardSchema")
+const { UpdatePackShema, UpdatePackShemaWithoutFile } = require("../../utils/validations/PackSchema")
+const { UpdatePrepaidcardShema, UpdatePrepaidcardShemaWithFile } = require("../../utils/validations/PrepaidcardSchema")
 const { UpdateSellerShema } = require("../../utils/validations/SellerSchema")
 const converter= {
-    pack:{validation:UpdatePackShema},
-    prepaidcard:{validation:UpdatePrepaidcardShema},
+    pack:{validation:{withFile:UpdatePackShema,withoutFile:UpdatePackShemaWithoutFile},hasUpload:true,uploadKey:"image"},
+    prepaidcard:{validation:{withFile:UpdatePrepaidcardShema,withoutFile:UpdatePrepaidcardShemaWithFile},hasUpload:false,uploadKey:"image"},
     seller:{validation:UpdateSellerShema}
 
 }
 module.exports = {
-    updatemodel:(req,callback)=>{
-            const {validation} = converter[req.options.model]
+    updatemodel:(req,callback,withUpload)=>{
+            const {validation,hasUpload,uploadKey} = converter[req.options.model]
             const ModelReference = sails.models[req.options.model]
+            let bodyData 
             new Promise((resolve,reject)=>{
-                const modelValidation  = schemaValidation(validation)(req.body)
+                let  modelValidation
+                if(hasUpload){
+                        if(withUpload){
+                            console.log('with file')
+                            bodyData = {}
+                            if(!uploadKey){uploadKey ="upload"
+                            }
+                            Object.keys(req.body).filter(k=>k!=uploadKey).forEach(k=>{
+                                bodyData[k] = req.body[k]
+                            })
+                            modelValidation = schemaValidation(validation.withFile)(bodyData)
+                        }
+                        else{
+                            console.log('without file')
+
+                            modelValidation = schemaValidation(validation.withoutFile)(req.body)
+                        }
+                }
+                else{
+                    modelValidation = schemaValidation(validation)(req.body)
+                }
+
                 if(modelValidation.isValid){
                     resolve()
                 }
@@ -47,15 +69,13 @@ module.exports = {
                         return reject(new RecordNotFoundErr())
                     }
                 })
-
-
-
             }).then(m=>{
-                Object.keys(req.body).forEach(k=>{
-                    m[k]=req.body[k]
-                })
-                return m.save()
-
+                if(!bodyData){
+                    return m.update(req.body)
+                }
+                else{
+                    return m.update(bodyData)
+                }
             }).then(m=>{
                 callback(null,m)
 

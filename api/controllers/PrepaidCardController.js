@@ -137,14 +137,44 @@ module.exports = {
   },
 
   async update(req, res) {
-    sails.services.payementservice.updatemodel(req,(err,data)=>{
-      if(err){
+    if(req.operation){
+      if(req.operation.error){
+          return ErrorHandlor(req,req.operation.error,res)
+      }
+      else{ 
+          try{
+            let data = req.operation.data
+            data.photo = (await Upload.create(req.upload)).id
+            return DataHandlor(req,await data.save(),res)
+          }
+          catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+          }
+      }
+    }
+    else{
+      if(req.body.price){
+        req.body.price = parseFloat(req.body.price)
+     }
+     if(req.body.duration){
+        req.body.duration = parseInt(req.body.duration)
+    }
+    
+    if(req.body.pack_id){
+      req.body.pack_id = parseInt(req.body.pack_id)
+    }
+    if(req.body.photo){
+      req.body.photo = parseInt(req.body.photo)
+    }
+      sails.services.payementservice.updatemodel(req,(err,data)=>{
+        if(err){
           return ErrorHandlor(req,err,res)
-      }
-      else{
+        }
+        else{
           return DataHandlor(req,data,res)
-      }
-  })
+        }
+      })
+    }
   },
 
   async destroy(req, res) {

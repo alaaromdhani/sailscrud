@@ -1,16 +1,17 @@
 const multer = require('multer');
 const path = require('path');
-const { PackShema } = require('../../utils/validations/PackSchema');
-const { PrepaidcardShema } = require('../../utils/validations/PrepaidcardSchema');
+const { PackShema, UpdatePackShema } = require('../../utils/validations/PackSchema');
+const { PrepaidcardShema, UpdatePrepaidcardShema } = require('../../utils/validations/PrepaidcardSchema');
 const ValidationError = require('../../utils/errors/validationErrors');
+const { ErrorHandlor } = require('../../utils/translateResponseMessage');
 const modelToValidationConverter = {
         pack:{
-            validation:PackShema,
+            validation:{create:PackShema,update:UpdatePackShema},
             key:'image',
             maxCount : 1
         },
         prepaidcard:{
-            validation:PrepaidcardShema,
+            validation:{create:PrepaidcardShema,update:UpdatePrepaidcardShema},
             key:'image',
             maxCount : 1
         }
@@ -21,7 +22,7 @@ const fileFilerOptions = async (req,file,cb)=>{
    }
    try{
     if(req.body.price){
-        req.body.price = parseInt(req.body.price)
+        req.body.price = parseFloat(req.body.price)
      }
      if(req.body.duration){
         req.body.duration = parseInt(req.body.duration)
@@ -37,10 +38,29 @@ const fileFilerOptions = async (req,file,cb)=>{
         req.body.nbre_cards = parseInt(req.body.nbre_cards)
       }
     let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
-      let model = await sails.services.uploadservice.uploadFileSchema(req,modelToValidationConverter);
-      req.operation.data = model
-      req.upload = fileOptions
-      return cb(null,true)
+      let model
+      if(req.method=="PATCH"){
+        return sails.services.payementservice.updatemodel(req,(err,data)=>{
+          if(err){
+            req.operation.error = err
+            
+            return cb(null,false)
+          }
+          else{
+            req.operation.data = data
+            req.upload = fileOptions
+            return cb(null,true)
+          }
+        },true) 
+        
+      }
+      else{
+        model =  await sails.services.uploadservice.uploadFileSchema(req,modelToValidationConverter);
+        req.operation.data = model
+        req.upload = fileOptions
+        return cb(null,true)
+      }
+     
    
 
    }

@@ -88,10 +88,13 @@ module.exports.policies = {
   },
   PrepaidCardController:{
     'create':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
+    'update':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
+  
     '*':['lang','passport','role','tokenVerifier','permissions']
   },
   PackController:{
     'create':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
+    'update':['lang','passport','role','tokenVerifier','permissions','packPhotoUploader'],
     '*':['lang','passport','role','tokenVerifier','permissions']
   },
   MatiereController:{
