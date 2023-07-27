@@ -20,9 +20,14 @@ module.exports = {
     hooks:{
       beforeSave: async (user, options) => {
         if (user.changed('password') || user.isNewRecord) {
-            if(user.isNewRecord){
-              user.isDeleted =false
-            }
+          if(user.isNewRecord){
+              if(!user.isDeleted){
+                user.isDeleted =false
+              }
+              else{
+                user.isDeleted = true
+              } 
+          }
           user.password = await bcrypt.hash(user.password, 10);
         }
       },
@@ -76,6 +81,11 @@ module.exports = {
       type:DataTypes.ENUM({values:['M','F']}),
         allowNull:false,  
        defaultValue:'M',   
+    },
+    active:{
+      type:DataTypes.BOOLEAN,
+        allowNull:false,  
+       defaultValue:true,   
     },
     username:{ type:DataTypes.STRING,allowNull:false,
       unique:true },

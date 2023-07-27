@@ -24,7 +24,7 @@ module.exports = async ()=>{
             ],
             
         },
-        [sails.config.custom.roles.teacher.name]:{
+        [sails.config.custom.roles.intern_teacher.name]:{
             models:['coursinteractive','coursvideo','coursdocument','courscomment','course','niveauscolaire'],
             actions:['*'],
             features:['*'],

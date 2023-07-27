@@ -5,7 +5,9 @@ const schemaValidation = require("../../../utils/validations");
 const {UserShema, registerSchema} = require("../../../utils/validations/UserSchema");
 const SqlError = require("../../../utils/errors/sqlErrors");
 const ValidationError = require("../../../utils/errors/validationErrors");
-
+const {Op} = require('sequelize');
+const dayjs = require("dayjs");
+const generateCode = require("../../../utils/generateCode");
 
 
 
@@ -33,30 +35,83 @@ function validateEmail (str) {
   return EMAIL_REGEX.test(str);
 }
 
+
 exports.register = function (user,callback){
     const  createUserValidation = schemaValidation(registerSchema)
     const validationRequest = createUserValidation(user)
     if(validationRequest.isValid){
-        Role.findOne({where:{name:'registred'},include:{
+        let createdUser
+        let generatedNumber
+        let permissions
+        let {name} = sails.config.custom.roles.parent
+        //countryvalidation must come first 
+        State.findByPk(user.state_id,{include:{
+            model:Country,
+            foreignKey:'country_id'
+        }}).then(s=>{
+          return new Promise((resolve,reject)=>{
+            //validating the country and the state 
+              if(s && s.active && s.Country && s.country_id==user.country_id  && s.Country.active){
+                //validating the phonenumber is related to the country 
+                const countryPhoneCode = s.Country.tel_code.startsWith('+')?s.Country.tel_code:'+'+s.Country.tel_code
+                  if(user.phonenumber.startsWith(countryPhoneCode)){
+                      return resolve()
+                  }
+                  else{
+                      return reject(new ValidationError({message:'the phone number must match the country you belong'}))
+                  }
+              }
+              else{
+                  return reject(new ValidationError({message:' a valid state and country is required'}))
+              }
+
+           })
+
+        }).then(()=>{
+          return Role.findOne({where:{name},include:{
             model:Permission,
             through:'roles_permissions'
+          }})
+        }).then(role=>{
 
-        }}).then(role=>{
+          permissions = role.Permissions
           user.role_id = role.id
-          return Promise.all([User.create(user),role.Permissions])
+          user.active =false
+          return User.create(user)
+        }).then(u=>{
+          createdUser =u
+          return  u.setPermissions(permissions)
 
-        }).then(results=>{
-            const permissions = results[1]
-            const user = results[0]
-            return Promise.all([user,user.addPermissions(permissions)])  
+        }).then(ps=>{
+            //once the user is created 
+            generatedNumber =generateCode() 
+            return Sms.create({
+              content:'your validation code is '+generatedNumber,
+              reciever_type:'single',
+              reciever_id:createdUser.id,
+              type:'ACCOUNT_ACTIVATION'
+            })
+        }).then(sms=>{
+          let {expires} = sails.config.custom.otpconf
+             return AuthCode.create({
+              value:generatedNumber,
+              expiredDate:dayjs().add(expires.value,expires.unit).toISOString(),
+              user_id:createdUser.id,
+              type:'ACCOUNT_ACTIVATION'
+             })
 
-        }).then(([createdUser,permissions])=>{
-          callback(null,{user,createdUser})
-
+        }).then(sms=>{
+            callback(null,{message:'an sms was sent to your phonenumber'})
 
         }).catch(e=>{
-          callback(new SqlError(e),null)
+          if(e instanceof ValidationError){
+              callback(e,null)
+          }
+          else{
+            callback(new SqlError(e),null)
+          }
         })
+      
     }
     else{
       callback(new ValidationError(validationRequest),null)
@@ -64,25 +119,19 @@ exports.register = function (user,callback){
 }
 exports.login = function (req, identifier, password, next) {
     
-    var isEmail = validateEmail(identifier)
-      , query   = {isDeleted:false};
-  
-    if (isEmail) {
-      query.email = identifier;
-    }
-    else {
-      query.username = identifier;
-    }
-  
-    User.findOne({where:query,include:{
-      model:Role,
-      foreignKey:'role_id',
-      attributes:['name']
-
-
-    }}).then(function ( user) { 
-      
-      if (!user || user.isDeleted) {
+      let query   = {isDeleted:false,phonenumber:identifier};
+       User.findOne({where:query,
+      include:{
+        model:Role,
+        foreignKey:'role_id',
+        where:{
+          name:{
+            [Op.in]:req.dash_login?Object.values(sails.config.custom.roles).filter(r=>r.dashboardUser).map(r=>r.name):Object.values(sails.config.custom.roles).filter(r=>!r.dashboardUser).map(r=>r.name)
+          }
+        }
+      }}).then(function ( user) { 
+        
+      if (!user) {
         next(err=new BadCredentialsError(),user=null,info='Bad Credentials');
       }
       else{
@@ -90,65 +139,23 @@ exports.login = function (req, identifier, password, next) {
               user_id:user.id
           },defaults:{
             user_id:user.id
-
           }}).then(([settings,created])=>{
-            
-            UserAuthSettings.validatePassword(settings,password,user.password,async (err,authenticated)=>{
+             UserAuthSettings.validatePassword(settings,password,user.password,async (err,authenticated)=>{
                 if(err){
-                  
-                  //this error meaning eather there is an errror in the code or login reactive time is not over yet
                   next(err=err,user=null)
                 }
                 else{
-                  
-                    if(authenticated){
-                  
-                      
-                      next(null,{user,authetication:true},info='user authentificated');
-
-                      
+                  if(authenticated){
+                    next(null,{user,authetication:true},info='user authentificated');
                   }
                   else{
-                    
-                    next(err=new BadCredentialsError());
+                     next(err=new BadCredentialsError());
                   }
-
-                  }
-                  
-                
-                
-
-
+                }
               })
-
-          })
-      
-      
-      }
-      
-  
-      /*sails.models.passport.findOne({
-        protocol : 'local'
-      , user     : user.id
-      }, function (err, passport) {
-        if (passport) {
-          Passport.validatePassword(passport, password, function (err, res) {
-            if (err) {
-              return next(err);
-            }
-  
-            if (!res) {
-              return next(null, false);
-            } else {
-              return next(null, user, passport);
-            }
-          });
-        }
-        else {
-          return next(null, false);
-        }
-      });*/
-    }).catch(err=>{
+            })
+          }
+     }).catch(err=>{
       next(err);
 
     });

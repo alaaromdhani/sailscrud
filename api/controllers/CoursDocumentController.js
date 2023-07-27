@@ -54,7 +54,7 @@ module.exports = {
       const attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
       let whereNs ={}
       let allowedParents
-      if(req.role.name===sails.config.custom.roles.teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
+      if(req.role.name===sails.config.custom.roles.intern_teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
          allowedParents = (await Course.findAll({include:{
           model:MatiereNiveau,
           where:{
@@ -101,7 +101,7 @@ module.exports = {
           include:{
              model:User,
              foreignKey:'addedBy',
-             attributes:['username','lastName','firstName','email','profilePicture'] 
+             attributes:['lastName','firstName','email','profilePicture'] 
           }
         },
         order,

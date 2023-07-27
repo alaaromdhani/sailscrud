@@ -3,15 +3,19 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
+const { UpdateCTypeShemaWithUpload, UpdateCTypeShema, CTypeShemaWithUpload, CTypeShema } = require("../../utils/validations/CTypeSchema")
 const { UpdatePackShema, UpdatePackShemaWithoutFile } = require("../../utils/validations/PackSchema")
 const { UpdatePrepaidcardShema, UpdatePrepaidcardShemaWithFile } = require("../../utils/validations/PrepaidcardSchema")
 const { UpdateSellerShema } = require("../../utils/validations/SellerSchema")
 const converter= {
     pack:{validation:{withFile:UpdatePackShema,withoutFile:UpdatePackShemaWithoutFile},hasUpload:true,uploadKey:"image"},
     prepaidcard:{validation:{withFile:UpdatePrepaidcardShema,withoutFile:UpdatePrepaidcardShemaWithFile},hasUpload:false,uploadKey:"image"},
-    seller:{validation:UpdateSellerShema}
+    seller:{validation:UpdateSellerShema},
+    ctype:{validation:{withFile:UpdateCTypeShemaWithUpload,withoutFile:UpdateCTypeShema},hasUpload:false,uploadKey:"image"},
+ 
 
 }
+
 module.exports = {
     updatemodel:(req,callback,withUpload)=>{
             const {validation,hasUpload,uploadKey} = converter[req.options.model]

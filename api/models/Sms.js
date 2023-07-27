@@ -42,7 +42,7 @@ const UnkownError = require('../../utils/errors/UnknownError');
             
         },
         type:{
-            type: DataTypes.ENUM('FORGETPASS','MARKETING'),
+            type: DataTypes.ENUM('FORGET_PASSWORD','MARKETING','ACCOUNT_ACTIVATION'),
             allowNull:true
         },
         type_reciever: {

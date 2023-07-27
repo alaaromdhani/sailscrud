@@ -74,7 +74,7 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
  //   sails-crud.czipie0umpys.eu-west-2.rds.amazonaws.com
- //faroukallani
+ //
     default: {
       user:databaseCredentials.user,
       password:databaseCredentials.password,
@@ -564,6 +564,14 @@ module.exports = {
 
     },
     otpconf:{
+      activationCode:{
+        maxSend:3,
+        maxRetry:3,
+      },
+      expires:{
+        value:3,
+        unit:'minute'
+      },//m for minutes h for hours D for days W for week 
       authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
       sender:'2160000'
 

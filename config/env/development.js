@@ -422,13 +422,35 @@ module.exports = {
   custom: {
     nb_chapitres:30,
     roles:{
-        teacher:{
+      superadmin:{
+        name:'superadmin',
+        weight:1,
+        dashboardUser:true
+      },
+        intern_teacher:{
           name:'MadarTeacher',
-          weight:10
+          weight:10,
+          dashboardUser:true
         },
         inspector:{
           name:'MadarInspector',
-          weight:5
+          weight:5,
+          dashboardUser:true
+        },
+        teacher:{
+          name:'Teacher',
+          weight:15,
+          dashboardUser:false
+        },
+        student:{
+          name:'Student',
+          weight:30,
+          dashboardUser:false
+        },
+        parent:{
+          name:'Parent',
+          weight:25,
+          dashboardUser:false
         }
     },
     dafault_user_image:{
@@ -451,6 +473,14 @@ module.exports = {
 
     },
     otpconf:{
+      activationCode:{
+        maxSend:3,
+        maxRetry:3,
+      },
+      expires:{
+        value:3,
+        unit:'minute'
+      },//m for minutes h for hours D for days W for week 
       authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
       sender:'2160000'
 

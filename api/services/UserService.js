@@ -14,6 +14,7 @@ const schemaValidation = require('../../utils/validations');
 const { profileUpdate } = require('../../utils/validations/UserSchema');
 const { ErrorHandlor } = require('../../utils/translateResponseMessage');
 const fs = require('fs');
+const generateCode = require('../../utils/generateCode');
 
 
 
@@ -21,7 +22,140 @@ const fs = require('fs');
 var EMAIL_REGEX = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
 let phoneregex = /^(\+|\d{1,3})\s?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 module.exports = {
+  resendSms:(req,callback)=>{
+      let generatedCode
+      AuthCode.findOne({
+        where:{
+          type:'ACCOUNT_ACTIVATION',
+          user_id:req.user.id
+        }
+      }).then(c=>{
+          return new Promise((resolve,reject)=>{
+            if(!c){
+              return reject(new UnauthorizedError({specific:'you cannot access this ressource'}))  
+            }
+            else{
+              if(c.expiredDate>(new Date()).toISOString()){
+                return reject(new UnauthorizedError({specific:'the last sent code is not expired please wait'}))
+              } 
 
+              const { maxSend} = sails.config.custom.otpconf.activationCode
+              if(c.numberAttempsResend>=maxSend){
+                return reject(new UnauthorizedError({specific:'you reached the maximum number of sms sent please contact the administrator to activate your account'}))
+              }
+              let {expires} = sails.config.custom.otpconf
+              c.expiredDate =dayjs().add(expires.value,expires.unit).toISOString()  
+              c.numberAttempsResend++
+              c.numberAttempsRetry=0
+              c.value =generateCode()
+
+              return resolve(c)
+
+            }
+
+          })
+      }).then(c=>{
+          return c.save()
+      }).then(c=>{
+        return Sms.create({
+          content:'your validation code is '+c.value,
+          reciever_type:'single',
+          reciever_id:req.user.id,
+          type:'ACCOUNT_ACTIVATION'
+        })
+      }).then(s=>{
+          callback(null,{message:'an sms was sent to you phonenumber'})
+      }).catch(e=>{
+        if(e instanceof UnauthorizedError){
+          callback(e,null)
+        }
+        else{
+          console.log(e)
+          callback(new SqlError(e),null)
+        }
+
+      })
+
+
+
+  },
+  activateAccount:(req,callback)=>{
+        const {validationCode} =req.body 
+        new Promise((resolve,reject)=>{
+          if(validationCode && typeof(validationCode)==='string' && validationCode.length==6){
+                  return resolve() 
+          }
+          else{
+                  return reject(new ValidationError({message:'validation code is required'}))
+          }
+        }).then(()=>{
+          return AuthCode.findOne({where:{
+            type:'ACCOUNT_ACTIVATION',
+            user_id:req.user.id   
+          }})
+        }).then(code=>{
+          return new Promise((resolve,reject)=>{
+            if(!code){
+                reject(new UnauthorizedError({specific:'you cannot access this ressource'}))
+            }
+            else{
+              const { maxSend} = sails.config.custom.otpconf.activationCode
+                if(code.numberAttempsResend>maxSend){
+                    return reject(new UnauthorizedError({specific:'you reached the maximum number of sms sent please contact the administrator to activate your account'}))
+                }
+            
+                if(code.expiredDate<(new Date().toISOString())){
+                  return reject(new UnauthorizedError({specific:'code time expired hit resend'}))
+                }
+                return resolve(code)
+            }
+          })
+        }).then(async code=>{
+
+            if(code.value!==validationCode){
+              const {maxRetry} =sails.config.custom.otpconf.activationCode
+              code.numberAttempsRetry++
+              if(code.numberAttempsRetry>maxRetry){
+                code.numberAttempsResend++
+                code.numberAttempsRetry=0
+                code.value=generateCode()
+                let {expires} = sails.config.custom.otpconf
+                code.expiredDate =dayjs().add(expires.value,expires.unit).toISOString()  
+                await Sms.create({
+                  content:'your validation code is '+code.value,
+                  reciever_type:'single',
+                  reciever_id:req.user.id,
+                  type:'ACCOUNT_ACTIVATION'
+                })
+              }
+              await code.save()
+              callback(new UnauthorizedError({specific:'the provided code is wrong'}),null)
+            }
+            else{
+              let u =req.user
+              u.active = true
+              if(!u.hasOwnProperty('save')){
+                  u = await User.findByPk(u.id)
+                  u.active=true
+              }
+              await u.save()  
+              await AuthCode.destroy({
+                where:{
+                  type:'ACCOUNT_ACTIVATION',
+                  user_id:req.user.id   
+                }
+              })
+              callback(null,u)
+            }
+        }).catch(e=>{
+          if(e instanceof ValidationError || e instanceof UnauthorizedError ){
+            callback(e,null)
+          }
+          else{
+            callback(new SqlError(e),null)
+          }
+        })
+  },
   create: (req, user, callback) => {
     const where = user.role_id ? { id: user.role_id } : { name: 'registred' };
     Role.findOne({
@@ -583,6 +717,27 @@ module.exports = {
       callback(err,null);
 
     });
+
+  },
+  activateAccount:(req,callback)=>{
+    new Promise((resolve,reject)=>{
+        const validationCode = req.body
+          if(validationCode){
+            return resolve(validationCode)
+        }
+        else{
+          return reject(new ValidationError({message:'the validation code is required'}))
+        }
+    }).then(vc=>{
+      return AuthCode.findOne({where:{
+        value:vc,
+        user
+        
+      }})
+
+
+    })
+
 
   }
 

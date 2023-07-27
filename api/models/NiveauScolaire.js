@@ -62,6 +62,9 @@ module.exports = {
     NiveauScolaire.hasMany(Course,{
       foreignKey:'niveau_scolaire_id'
     })
+    NiveauScolaire.belongsToMany(CType,{
+      through:'types_ns'
+    })
   }
 
 

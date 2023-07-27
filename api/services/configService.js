@@ -6,9 +6,200 @@ const schemaValidation = require('../../utils/validations');
 const { ModuleShema, UpdateModuleShema } = require('../../utils/validations/ModuleSchema');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 
-const { Op } = require('sequelize');
-
+const { Op, QueryError } = require('sequelize');
+const { UpdateCTypeShemaWithUpload, UpdateCTypeShema, CTypeShemaWithUpload, CTypeShema } = require('../../utils/validations/CTypeSchema');
+const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
+const { OthercourseShema, UpdateOthercourseShema } = require('../../utils/validations/OthercourseSchema');
+const converter = {
+  ctype:{validation:{withFile:{create:CTypeShemaWithUpload,update:UpdateCTypeShemaWithUpload},withoutFile:{create:CTypeShema,update:CTypeShemaWithUpload}},hasUpload:true,uploadKey:"image"},
+  othercourse:{validation:{create:OthercourseShema,update:UpdateOthercourseShema},hasUpload:false}
+}
 module.exports = {
+  
+  deleteCType:(req,callback)=>{
+          CType.findByPk(req.params.id,{include:{
+              model:OtherCourse,
+              foreignKey:'type'
+
+
+          }}).then(t=>{ 
+            return new Promise((resolve,reject)=>{
+              if(t){
+                if(t.OtherCourses && t.OtherCourses.length){
+                  return reject(new UnauthorizedError({specific:'you cannot delete this type because it is related to some courses'}))
+                } 
+                else{
+                  return resolve(t)
+                }
+                 
+              }else{
+                return reject(new RecordNotFoundErr())} 
+              }) 
+         }).then(t=>{ 
+          return t.destroy()
+          }).then(d=>{
+              callback(null,{})
+          }).catch(e=>{
+            if(e instanceof UnauthorizedError || e instanceof ValidationError){
+              callback(e,null)
+            }
+            else{
+              callback(new SqlError(e),null)
+            }
+          })       
+  },
+  updateCType:(req,callback,withUpload)=>{
+    if(req.body.ns){
+      req.body.ns = JSON.parse(req.body.ns)
+    }
+    const {validation,hasUpload,uploadKey} = converter['ctype']
+    let bodyData ={}
+    let relatedNs
+    let type
+    new Promise((resolve,reject)=>{
+      Object.keys(req.body).forEach(k=>{
+        bodyData[k] =req.body[k]
+      })
+      let sValid
+      if(withUpload){
+        delete bodyData[uploadKey]  
+        sValid =validation.withFile.update
+      }
+      else{
+        if(req.body.thumbnail){
+          req.body.thumbnail = parseInt(req.body.thumbnail) 
+        }
+        sValid =validation.withoutFile.update
+      }
+      const createValidation = schemaValidation(sValid)(bodyData)
+      if(createValidation.isValid){
+          return resolve(bodyData)
+      } 
+      else{
+          return reject(new ValidationError({message:createValidation.message}))
+      }
+    }).then(data=>{
+        return CType.findByPk(req.params.id)
+
+    }).then((t)=>{
+      return new Promise((resolve,reject)=>{
+        if(t){
+         return resolve(t)
+        }
+        else{
+          return reject(new RecordNotFoundErr())
+        }
+      })
+    }).then(t=>{
+      type=t
+      if(bodyData.ns){
+          return NiveauScolaire.findAll({
+            where:{
+              id:{
+                [Op.in]:bodyData.ns
+              }
+            }
+          })
+        }
+        else{
+          return []
+        }
+    }).then(ns=>{
+      if(ns.length){
+        relatedNs = ns 
+        
+      }
+      delete bodyData.ns
+      return type.update(bodyData)
+    }).then(type=>{
+      
+      if(relatedNs){
+        return type.setNiveauScolaires(relatedNs)
+      }
+      return []
+    }).then(sd=>{
+        callback(null,type)
+    }).catch(e=>{
+      console.log(e)
+      if(e instanceof ValidationError){
+        callback(e,null)
+      }
+      else{
+        callback(new SqlError(e))
+      }
+    })
+
+  },
+    
+  createCType:(req,callback,withUpload)=>{
+        const {validation,hasUpload,uploadKey} = converter['ctype']
+        let bodyData ={}
+        let relatedNs
+        let createdType
+        if(req.body.ns){
+          req.body.ns = JSON.parse(req.body.ns)
+        }
+        new Promise((resolve,reject)=>{
+          Object.keys(req.body).forEach(k=>{
+            bodyData[k] =req.body[k]
+          })
+          let sValid
+          if(withUpload){
+            delete bodyData[uploadKey]  
+            sValid =validation.withFile.create
+          }
+          else{
+            if(req.body.thumbnail){
+              req.body.thumbnail = parseInt(req.body.thumbnail) 
+            }
+            sValid =validation.withoutFile.create
+          }
+          const createValidation = schemaValidation(sValid)(bodyData)
+          if(createValidation.isValid){
+              return resolve(bodyData)
+          } 
+          else{
+              return reject(new ValidationError({message:createValidation.message}))
+          }
+        }).then(data=>{
+            if(data.ns){
+              return NiveauScolaire.findAll({
+                where:{
+                  id:{
+                    [Op.in]:data.ns
+                  }
+                }
+              })
+            }
+            else{
+              return []
+            }
+        }).then(ns=>{
+          if(ns.length){
+            relatedNs = ns 
+            
+          }
+          delete bodyData.ns
+          bodyData.addedBy = req.body.id
+          return CType.create(bodyData)
+        }).then(type=>{
+          createdType = type
+          if(relatedNs){
+            return type.setNiveauScolaires(relatedNs)
+          }
+          return []
+        }).then(sd=>{
+            callback(null,createdType)
+        }).catch(e=>{
+          if(e instanceof ValidationError){
+            callback(e,null)
+          }
+          else{
+            callback(new SqlError(e),null)
+          }
+        })
+
+      },
       deleteNiveauScolaire:(req,callback)=>{
         NiveauScolaire.findByPk(req.params.id,{
             include:{

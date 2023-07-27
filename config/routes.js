@@ -10,8 +10,7 @@
 
 
 module.exports.routes = {
-  'post /auth/local': 'AuthController.callback',
-  'post /auth/local/:action': 'AuthController.callback',
+  'post /auth/:provider/:action': 'AuthController.callback',
   'get /logout': 'AuthController.logout',
   'post /forgetpass':'AuthController.forgetPassword',
   'get /validate/:user_id/:code':'AuthController.validateResetPasswordLink',

@@ -132,13 +132,13 @@ module.exports = {
           model:User,
           foreignKey:'intern_teacher',
           as:'Teacher',
-          attributes:['username','firstName','lastName','id'] 
+          attributes:['firstName','lastName','id'] 
         },
         {
           model:User,
           foreignKey:'inspector',
           as:'Inspector',
-          attributes:['username','firstName','lastName','id'] 
+          attributes:['firstName','lastName','id'] 
         }
       
       ]

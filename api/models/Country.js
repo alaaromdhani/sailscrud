@@ -36,6 +36,12 @@ module.exports = {
       minLength: 2,
       allowNull: false
     },
+    tel_code:{
+      type: DataTypes.STRING,
+      minLength: 2,
+      defaultValue:"255"
+      
+    },
 
 
     active: {

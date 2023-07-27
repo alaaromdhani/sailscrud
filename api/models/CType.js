@@ -15,6 +15,23 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
+    hooks:{
+      beforeSave:(type,options)=>{
+        if(type.isNewRecord){
+          type.rating = 0
+          type.active = true
+        }
+      },
+      beforeDestroy:async (type,options)=>{
+       await CustomRate.destroy({
+          where:{
+            c_type:type.id
+          }
+        })
+
+      }
+
+    },
     tableName: 'c_types',
 
   },
@@ -32,10 +49,43 @@ module.exports = {
       required: true,
       unique:true
     },
+    description: {
+      type: DataTypes.STRING,
+           
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      required: true,
+      defaultValue:false
+    },
+    free:{
+      type:DataTypes.BOOLEAN,
+      required:true,
+      defaultValue:true
+    },
+    rating:{
+      type:DataTypes.INTEGER,
+      required:true,
+      defaultValue:0
+    },
+
+
+
+
+
 
   },
   associations:()=>{
-
+      CType.belongsToMany(NiveauScolaire,{
+          through:'types_ns'
+      })
+      CType.belongsTo(Upload,{
+        foreignKey:'thumbnail'
+      })
+      CType.hasMany(OtherCourse,{
+        foreignKey:'type'
+      })
+      
   }
 
 

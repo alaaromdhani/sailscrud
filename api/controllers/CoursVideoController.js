@@ -65,7 +65,7 @@ module.exports = {
           include:{
              model:User,
              foreignKey:'addedBy',
-             attributes:['username','lastName','firstName','email','profilePicture'] 
+             attributes:['lastName','firstName','email','profilePicture'] 
           }
         },
         order,

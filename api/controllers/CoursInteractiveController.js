@@ -98,7 +98,7 @@ module.exports = {
           include:{
              model:User,
              foreignKey:'addedBy',
-             attributes:['username','lastName','firstName','email','profilePicture'] 
+             attributes:['lastName','firstName','email','profilePicture'] 
           }
         },
         order,
@@ -179,7 +179,7 @@ module.exports = {
                         return res.view("pages/player.ejs",{
                               ci:ci,
                               url:fullUrl,
-                              username:req.user.username,
+                              username:req.user.firstName+' '+req.user.lastName,
                               sex:req.user.sex.toLowerCase()
                         })
                       }

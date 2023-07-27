@@ -102,6 +102,12 @@ module.exports.policies = {
     'update':['lang','passport','role','tokenVerifier','permissions','matiereImageUploader'],
     '*':['lang','passport','role','tokenVerifier','permissions']
     
+  },
+  CTypeController:{
+    'create':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
+    'update':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+   
   }
  
 

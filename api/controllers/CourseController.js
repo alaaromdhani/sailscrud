@@ -102,7 +102,7 @@ module.exports = {
        }
       const order = [[sortBy, sortOrder]];
        let whereNs = {}
-       if(req.role.name===sails.config.custom.roles.teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
+       if(req.role.name===sails.config.custom.roles.intern_teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
         whereNs ={
           [Sequelize.Op.or]:[{
             intern_teacher:req.user.id
@@ -223,7 +223,7 @@ module.exports = {
       include:{
          model:User,
          foreignKey:'addedBy',
-         attributes:['username','lastName','firstName','email','profilePicture'],
+         attributes:['lastName','firstName','email','profilePicture'],
          include:{
             model:Role,
             foreignKey:'role_id'

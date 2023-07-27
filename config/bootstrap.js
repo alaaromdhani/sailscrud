@@ -40,6 +40,7 @@ module.exports.bootstrap = async function() {
   }*/
   console.log(Object.keys(sails.config))
 
+ try{
   await default_user_image()
   await modelSeasers()
 
@@ -56,6 +57,10 @@ module.exports.bootstrap = async function() {
   await matiereSeeders()
   await trimestresSeeders()
   await chaptersSeeders()
+ }
+ catch(e){
+  console.log(e)
+ }
 
 
 
