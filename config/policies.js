@@ -108,8 +108,12 @@ module.exports.policies = {
     'update':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
     '*':['lang','passport','role','tokenVerifier','permissions']
    
-  }
- 
+  },
+  OtherDocumentController:{
+    'create':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
+    'update':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+   }
 
 
 

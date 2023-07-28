@@ -1,3 +1,4 @@
+const { parse } = require("path")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
@@ -101,7 +102,7 @@ module.exports={
                 return resolve(c)
               }
               else{
-                return reject(new UnauthorizedError())
+                return reject(new UnauthorizedError({specific:'you cannot update a record created by a higher role'}))
               }
             }
             else{
@@ -134,6 +135,7 @@ module.exports={
           }
         }).then(c=>{
             let data = req.body
+            data.rating = 0
             data.addedBy = req.user.id
             return OtherVideo.create(data)
         }).then(c=>{
@@ -174,10 +176,10 @@ module.exports={
           return new Promise((resolve,reject)=>{
             if(c){
               if(c.addedBy && c.User.Role.weight<=req.role.weight && req.user.id!=c.addedBy){
-                return resolve(c)
+                return reject(new UnauthorizedError({specific:'you cannot update a record created by a higher role'}))
               }
               else{
-                return reject(new UnauthorizedError())
+                  return resolve(c)
               }
             }
             else{
@@ -215,10 +217,10 @@ module.exports={
           return new Promise((resolve,reject)=>{
             if(c){
               if(c.addedBy && c.User.Role.weight<=req.role.weight && req.user.id!=c.addedBy){
-                return resolve(c)
+                return reject(new UnauthorizedError({specific:'you cannot update a record created by a higher role'}))
               }
               else{
-                return reject(new UnauthorizedError())
+                return resolve(c)
               }
             }
             else{
@@ -243,6 +245,10 @@ module.exports={
       ,
       createOtherDocument:(req,callback,withUpload)=>{
         let bodyData ={}
+        if(req.body.parent){
+          req.body.parent = parseInt(req.body.parent)
+        }
+        
         new Promise((resolve,reject)=>{
           Object.keys(req.body).forEach(k=>{
             bodyData[k] =req.body[k]
@@ -267,7 +273,7 @@ module.exports={
               return reject(new ValidationError({message:createValidation.message}))
           }
         }).then(data=>{
-          bodyData.addedBy = req.body.id
+          bodyData.addedBy = req.user.id
           return OtherDocument.create(bodyData)
         }).then(data=>{
             callback(null,data)
@@ -285,6 +291,12 @@ module.exports={
       },
       updateOtherDocument:(req,callback,withUpload)=>{
           let bodyData ={}
+          if(req.body.parent){
+            req.body.parent = parseInt(req.body.parent)
+          }
+          if(req.body.active && (req.body.active=="true" || req.body.active=="false")){
+            req.body.active=='true'?req.body.active=true:req.body.active=false
+          }
           new Promise((resolve,reject)=>{
             Object.keys(req.body).forEach(k=>{
               bodyData[k] =req.body[k]

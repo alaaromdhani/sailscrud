@@ -5,6 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const SqlError = require("../../utils/errors/sqlErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 
 
@@ -13,7 +15,6 @@ module.exports = {
    sails.services.otherservice.createOtherCourse(req,(err,data)=>{
     if(err){
       return ErrorHandlor(req,err,res)
-
     }
     else{
       return DataHandlor(req,data,res)
@@ -53,16 +54,16 @@ module.exports = {
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
 
-      return res.json({
+      return DataHandlor(req,{
         success: true,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      });
+      },res)
     } catch (error) {
-      return res.serverError(error);
+      return ErrorHandlor(req,new SqlError(error),res);
     }
   },
 
@@ -70,11 +71,11 @@ module.exports = {
     try {
       const data = await OtherCourse.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'OtherCourse not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
-      return res.json(data);
+      return DataHandlor(req,data,res);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 
@@ -93,11 +94,10 @@ module.exports = {
     sails.services.otherservice.deleteOtherCourse(req,(err,data)=>{
       if(err){
         return ErrorHandlor(req,err,res)
-  
       }
       else{
         return DataHandlor(req,data,res)
       }
-     })    
+    })    
   },
 };

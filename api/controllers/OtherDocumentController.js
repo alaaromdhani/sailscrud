@@ -5,14 +5,36 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+
 
 module.exports = {
   async create(req, res) {
-    try {
-      const data = await OtherDocument.create(req.body);
-      return res.status(201).json(data);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+    if(req.operation){
+      if(req.operation.error){
+        return ErrorHandlor(req,req.operation.error,res)
+      }
+      else{
+          try{
+            let model = req.operation.data
+            model.document  = (await Upload.create(req.upload)).id
+            return DataHandlor(req,await model.save(),res)
+          } 
+          catch(e){
+              return ErrorHandlor(req,new SqlError(e),res)
+          }
+        /**/
+      }
+    }
+    else{
+      sails.services.otherservice.createOtherDocument(req,(err,data)=>{
+        if(err){
+         return ErrorHandlor(req,err,res)
+        } 
+        else{
+         return DataHandlor(req,data,res)
+        }
+     })
     }
   },
 
@@ -74,15 +96,31 @@ module.exports = {
   },
 
   async update(req, res) {
-    try {
-      const data = await OtherDocument.findByPk(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: 'OtherDocument not found' });
+    if(req.operation){
+      if(req.operation.error){
+        return ErrorHandlor(req,req.operation.error,res)
       }
-      const updatedOtherDocument = await data.update(req.body);
-      return res.json(updatedOtherDocument);
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+      else{
+          try{
+            let model = req.operation.data
+            model.document  = (await Upload.create(req.upload)).id
+            return DataHandlor(req,await model.save(),res)
+          } 
+          catch(e){
+              return ErrorHandlor(req,new SqlError(e),res)
+          }
+        /**/
+      }
+    }
+    else{
+      sails.services.otherservice.updateOtherDocument(req,(err,data)=>{
+        if(err){
+         return ErrorHandlor(req,err,res)
+        } 
+        else{
+         return DataHandlor(req,data,res)
+        }
+     })
     }
   },
 

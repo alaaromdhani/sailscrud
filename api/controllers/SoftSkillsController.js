@@ -75,7 +75,12 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await SoftSkills.findByPk(req.params.id);
+      const data = await SoftSkills.findByPk(req.params.id,{
+          include:{ 
+            model:NiveauScolaire,
+            through:'soft_skills_ns'
+          }
+      });
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }

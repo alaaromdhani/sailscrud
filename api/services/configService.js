@@ -52,6 +52,13 @@ module.exports = {
     if(req.body.ns){
       req.body.ns = JSON.parse(req.body.ns)
     }
+    if(req.body.free){
+      req.body.free=="true"?req.body.free=true:req.body.free=false 
+    } 
+    if(req.body.active && (req.body.active=="true" || req.body.active=="false")){
+      req.body.active=="true"?req.body.active=true:req.body.active=false 
+    }
+    
     const {validation,hasUpload,uploadKey} = converter['ctype']
     let bodyData ={}
     let relatedNs

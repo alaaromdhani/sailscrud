@@ -49,7 +49,6 @@ module.exports = {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    
     status:{
       type:DataTypes.ENUM('private','public'),
       defaultValue:'private',    
