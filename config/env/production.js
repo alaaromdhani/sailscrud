@@ -568,6 +568,7 @@ module.exports = {
 
     },
     lrsEndPoint:databaseCredentials.lrsEndPoint,
+    lrsOtherPoint:databaseCredentials.lrsOtherPoint,
     baseUrl: databaseCredentials.baseUrl,
     internalEmailAddress: databaseCredentials.internalEmailAddress,
 
