@@ -46,6 +46,12 @@ module.exports.routes = {
   'POST /api/v1/rateotherdocuments/:id':'OtherDocumentController.rateCourse',
   'POST /api/v1/rateothervideos/:id':'OtherVideoController.rateCourse',
   'POST /api/v1/rateotherinteractive/:id':'OtherInteractiveController.rateCourse',
+  'get /othercourses/:id':'OtherInteractiveController.accessCourse',
+  'GET /api/v1/otherresults/:id':'OtherInteractiveController.getResults',
+  'GET /lrs/other/activities/state':'OtherLrsController.getActivityState',
+  'PUT /lrs/other/activities/state':'OtherLrsController.putState',
+  'PUT /lrs/other/statements':'OtherLrsController.putStatement',
+ 
   
 
 

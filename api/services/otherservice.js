@@ -376,7 +376,7 @@ module.exports={
 
 
       },
-      rateOthers:async (req,callback,type)=>{
+      rateCourse:async (req,callback,type)=>{
         let modelOptions={
         }
         if(type==="interactive"){
@@ -391,6 +391,7 @@ module.exports={
           modelOptions.model = OtherDocument
           modelOptions.fk = 'other_document_id'
         }
+
         try {
           const course = await modelOptions.model.findByPk(req.params.id,{
             include:{
@@ -450,7 +451,7 @@ module.exports={
                             [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
                           ]
                         })
-                          const parentCourse =course.Course 
+                          const parentCourse =course.OtherCourse 
                           let parentType = course.OtherCourse.CType
 
                           parentType.rating = typeCourseratesCount[0].dataValues.avgRating
@@ -462,6 +463,7 @@ module.exports={
                           return callback(null,await course.save())
                           //return DataHandlor(req, await course.save(), res)
                       }catch(e){
+                        console.log(e)
                         return callback(new SqlError(e),null)
                       }
                     

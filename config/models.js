@@ -68,38 +68,7 @@ module.exports.models = {
   *                                                                          *
   ***************************************************************************/
 
-  attributes: {
-    createdAt: { type: 'number', autoCreatedAt: true },
-    updatedAt: { type: 'number', autoUpdatedAt: true, },
-    id: { type: 'number', autoIncrement: true, },
-    //--------------------------------------------------------------------------
-    //  /\   Using MongoDB?
-    //  ||   Replace `id` above with this instead:
-    //
-    // ```
-    // id: { type: 'string', columnName: '_id' },
-    // ```
-    //
-    // Plus, don't forget to configure MongoDB as your default datastore:
-    // https://sailsjs.com/docs/tutorials/using-mongo-db
-    //--------------------------------------------------------------------------
-  },
-
-
-  /******************************************************************************
-  *                                                                             *
-  * The set of DEKs (data encryption keys) for at-rest encryption.              *
-  * i.e. when encrypting/decrypting data for attributes with `encrypt: true`.   *
-  *                                                                             *
-  * > The `default` DEK is used for all new encryptions, but multiple DEKs      *
-  * > can be configured to allow for key rotation.  In production, be sure to   *
-  * > manage these keys like you would any other sensitive credential.          *
-  *                                                                             *
-  * > For more info, see:                                                       *
-  * > https://sailsjs.com/docs/concepts/orm/model-settings#?dataEncryptionKeys  *
-  *                                                                             *
-  ******************************************************************************/
-
+  
   dataEncryptionKeys: {
     default: 'v7xvJ0H3emzBRqiEulf9uzj5LLQr4XsDVOQtQyo0v0E='
   },

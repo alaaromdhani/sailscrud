@@ -437,11 +437,6 @@ module.exports = {
           weight:5,
           dashboardUser:true
         },
-        teacher:{
-          name:'Teacher',
-          weight:15,
-          dashboardUser:false
-        },
         student:{
           name:'Student',
           weight:30,
@@ -459,9 +454,10 @@ module.exports = {
       path: 'default',
 
     },
-    lrsEndPoint:'http://localhost:1337/lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a',
-    baseUrl: 'http://localhost:1337/',
-    internalEmailAddress: 'support@example.com',
+    lrsEndPoint:databaseCredentials.lrsEndPoint,
+    lrsOtherPoint:databaseCredentials.lrsOtherPoint,
+    baseUrl: databaseCredentials.baseUrl,
+    internalEmailAddress: databaseCredentials.internalEmailAddress,
 
     jwt:{
       jwt_secret:'super-secret-key',

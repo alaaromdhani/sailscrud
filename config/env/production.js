@@ -535,13 +535,30 @@ module.exports = {
   custom: {
     nb_chapitres:30,
     roles:{
-        teacher:{
+      superadmin:{
+        name:'superadmin',
+        weight:1,
+        dashboardUser:true
+      },
+        intern_teacher:{
           name:'MadarTeacher',
-          weight:10
+          weight:10,
+          dashboardUser:true
         },
         inspector:{
           name:'MadarInspector',
-          weight:5
+          weight:5,
+          dashboardUser:true
+        },
+        student:{
+          name:'Student',
+          weight:30,
+          dashboardUser:false
+        },
+        parent:{
+          name:'Parent',
+          weight:25,
+          dashboardUser:false
         }
     },
     dafault_user_image:{
@@ -581,15 +598,15 @@ module.exports = {
         minValue:0
     },
     database:{
-      credentials:{
-        username:databaseCredentials.user,
-        password:databaseCredentials.password,
-        host:databaseCredentials.options.host,
-        port:databaseCredentials.options.port,
-        dialect:databaseCredentials.options.dialect,      
-        database:databaseCredentials.database
+        credentials:{
+          username:databaseCredentials.user,
+          password:databaseCredentials.password,
+          host:databaseCredentials.options.host,
+          port:databaseCredentials.options.port,
+          dialect:databaseCredentials.options.dialect,      
+          database:databaseCredentials.database
 
-      }
+        }
     },
     files:{
       extensions:{
@@ -600,7 +617,7 @@ module.exports = {
         presentation:['ppt', 'pptx'],
         zipfiles:['zip']
       },
-      maxSize:500000000,
+      maxSize:300000000,
       routes:{ //after assets
         public:'v/public/',
         private:'v/uploads/'

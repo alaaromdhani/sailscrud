@@ -130,6 +130,44 @@ module.exports = {
       return res.status(500).json({ error: err.message });
     }
   },
+  async accessCourse(req,res){
+    let where={id:req.params.id} 
+  
+    OtherInteractive.findOne({where}).then(ci=>{
+      if(!ci){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+      }
+      else{
+          sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                    if(err){
+                          return ErrorHandlor(req,err,res)
+                    }
+                    else{
+                      const tincanActor = JSON.stringify({
+                        name: agent.account_name,
+                        account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                        objectType:'Agent'
+                      })
+                      let endpoint = sails.config.custom.lrsOtherPoint
+                      
+                      let fullUrl =  sails.config.custom.baseUrl+'other/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
+                      return res.view("pages/player.ejs",{
+                            ci:ci,
+                            url:fullUrl,
+                            username:req.user.firstName+' '+req.user.lastName,
+                            sex:req.user.sex.toLowerCase()
+                      })
+                    }
+
+
+          })
+      }
+    }).catch(e=>{
+
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
+    })      
+
+  },
    rateCourse:(req,res)=>{
     sails.services.otherservice.rateCourse(req,(err,data)=>{
       if(err){
@@ -153,5 +191,98 @@ module.exports = {
     } catch (err) {
       return ErrorHandlor(req,new SqlError(err),res);
     }
+  },
+    getResults : async (req,res)=>{
+      let result = {}
+      sails.services.lrsservice.generateAgent(req.user,(err,data)=>{
+          
+          if(!err){
+              CustomObject.findAll({where:{
+                  agent_id:data.id,
+                  other_interactive_id:req.params.id
+              }
+              }).then(objs=>{
+                  return new Promise((resolve,reject)=>{
+                      if(objs.length==0){
+                          return reject({data:{status:false,message:'user did not open the course because there are no statemnets'}})
+                      }
+                      else{
+                          return resolve(objs)
+                      }
+                  })
+              }).then(objects=>{
+                  
+                return new Promise((resolve,reject)=>{
+                      let results ={}  
+                    let grouped = objects.reduce((pv,cv)=>{
+                                const test = parseInt(cv.description)
+                              pv[cv.name]=test?test:cv.description
+                              return pv
+                      },{})
+                      
+                      if(grouped['QST']){
+                            console.log(grouped)                        
+                          //console.log(Object.keys(grouped))
+                              if(grouped['QST']!==NaN && typeof(grouped['QST'])=='number'){
+                                  results.numberOfQuestion =grouped['QST']
+                                  results.score =grouped['TOTAL_SCORE']
+                                  results.result_slide =(grouped['Results/RESULTS']==="true")?true:false
+                              
+                                  results.questions = []
+                                  for(let i=0;i<grouped['QST'];i++){
+                                      if(grouped[(i+1)+'QS/TA'] &&grouped[(i+1)+'QS/NA']){
+                                          results.questions.push({
+                                              name:(i+1)+'QS',
+                                              experienced:grouped[(i+1)+'QS/QS']=='true'?true:false,
+                                              results: {
+                                                TA:  grouped[(i+1)+'QS/TA'],
+                                                NA:grouped[(i+1)+'QS/NA']
+                                              }
+
+                                          })
+
+                                      }
+                                      else{
+                                          results.questions.push({
+                                              name:(i+1)+'QS',
+                                              experienced:grouped[(i+1)+'QS/TA']=='true'?true:false,
+                                          })
+                                      }     
+                                  }       
+                                  return resolve(results)
+                              }   
+                              else{
+                                  return reject({data:{status:false,message:'input error'}})
+                              } 
+                      }
+                      else{
+                          return reject({data:{status:false,message:'still not opened the course because the total questions is still null'}})
+
+                      }
+                  
+                      
+              
+                })
+
+
+              }).then(d=>{
+                  res.status(200).send({data:d})
+                }).catch(e=>{
+                  res.status(200).send({data:e})
+
+                })
+
+          }
+          else{
+
+            return ErrorHandlor(req,err,res)
+          }
+          
+
+
+      })
+
+
+
   },
 };

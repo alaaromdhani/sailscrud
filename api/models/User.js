@@ -13,6 +13,12 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
   options: {
+    indexes: [
+      {
+        unique: true,
+        fields: ['email','username','phonenumber']
+      }
+    ],
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
@@ -55,7 +61,7 @@ module.exports = {
     email:{
       type:DataTypes.STRING,
       allowNull:false,
-      unique:true
+      
      },
     profilePicture:{
       type:DataTypes.STRING,
@@ -88,9 +94,9 @@ module.exports = {
        defaultValue:true,   
     },
     username:{ type:DataTypes.STRING,allowNull:false,
-      unique:true },
+       },
     phonenumber:{ type:DataTypes.STRING,allowNull:false,
-      unique:true },
+      },
     password:{ type:DataTypes.STRING },
     isDeleted:{ type:DataTypes.BOOLEAN }
 

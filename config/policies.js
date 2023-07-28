@@ -75,6 +75,9 @@ module.exports.policies = {
   LrsController:{
     '*':['lang','passport','role','tokenVerifier']
   },
+  OtherLrsController:{
+    '*':['lang','passport','role','tokenVerifier'],
+  },
   SoftSkillsController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'findAllChildren':['lang','passport','role','tokenVerifier','childrenPermissions'],
@@ -119,8 +122,14 @@ module.exports.policies = {
     'create':['lang','passport','role','tokenVerifier','permissions','unzipOther'],
     'update':['lang','passport','role','tokenVerifier','permissions'],
     'rateCourse':['lang','passport','role','tokenVerifier'],
+    'accessCourse':['lang','passport','role','tokenVerifier'],
+    'getResults':['lang','passport','role','tokenVerifier'],
     '*':['lang','passport','role','tokenVerifier','permissions']
-   }
+   },
+   OtherVideoController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'rateCourse':['lang','passport','role','tokenVerifier'],
+   },
 
 
 
