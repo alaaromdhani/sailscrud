@@ -4,6 +4,7 @@ const CoursDocumentShema = joi.object({
     description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number().required(),
+    forTeacher:joi.boolean(),
    
 })
 const CoursDocumentShemaWithFile = joi.object({
@@ -11,7 +12,8 @@ const CoursDocumentShemaWithFile = joi.object({
     description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number().required(),
-    document:joi.number().required()
+    document:joi.number().required(),
+    forTeacher:joi.boolean(),
 })
 const UpdateCoursDocumentShema = joi.object({
     name: joi.string(),
@@ -20,7 +22,8 @@ const UpdateCoursDocumentShema = joi.object({
     parent:joi.number(),
     validity:joi.boolean(),
     active:joi.boolean(),
-    document:joi.number()
+    document:joi.number(),
+    forTeacher:joi.boolean(),
 })
 module.exports = {CoursDocumentShema,UpdateCoursDocumentShema,CoursDocumentShemaWithFile}
 

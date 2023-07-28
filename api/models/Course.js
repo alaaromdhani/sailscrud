@@ -20,7 +20,8 @@ module.exports = {
           course.active = false
         }
         if (course.order && course.module_id&& !course.trimestre_id){
-         course.type ="cours"
+         
+          course.type ="cours"
         }
         else if (!course.order && !course.module_id&& course.trimestre_id){
           course.type ="exam"
@@ -50,6 +51,8 @@ module.exports = {
       primaryKey:true,
       autoIncrement:true
     },
+   
+    
     name: {
       type: DataTypes.STRING,
       required: true,

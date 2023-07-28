@@ -44,6 +44,9 @@ const {
         foreignKey:'c_interactive_id'
       
       })
+      Statement.belongsTo(OtherInteractive,{
+        foreignKey:'other_interactive_id'
+      })
       Statement.belongsTo(Obj,{
         foreignKey:'obj_id'
       })

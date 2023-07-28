@@ -7,10 +7,23 @@ const schemaValidation = require("../../utils/validations")
 const { OtherVideoShema, UpdateOtherVideoShema } = require("../../utils/validations/OtherVideoSchema")
 const { OthercourseShema, UpdateOthercourseShema } = require("../../utils/validations/OthercourseSchema")
 const { OtherdocumentShemaWithUpload, OtherdocumentShema, UpdatedocumentShemaWithUpload, UpdatedocumentShema } = require("../../utils/validations/OtherdocumentSchema")
+const { setMaxListeners } = require("events")
+const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
 
 
 module.exports={
-      
+    createOtherInteractive:(req,callback)=>{
+          sails.services.uploadservice.zipFileUploader(req,(err,data)=>{
+              if(err){
+                return ErrorHandlor(req,err,res)
+              }
+              else{
+                  return DataHandlor(req,data,res)
+              }
+          },'../../static/other/',"other")
+
+
+    },
     createOtherCourse:(req,callback)=>{
         new Promise((resolve,reject)=>{
           const createValidation =schemaValidation(OthercourseShema)(req.body)

@@ -113,6 +113,11 @@ module.exports.policies = {
     'create':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
     'update':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
     '*':['lang','passport','role','tokenVerifier','permissions']
+   },
+   OtherInteractiveController:{
+    'create':['lang','passport','role','tokenVerifier','permissions','unzipOther'],
+    'update':['lang','passport','role','tokenVerifier','permissions'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
    }
 
 

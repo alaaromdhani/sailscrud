@@ -47,6 +47,9 @@ const {
        Obj.hasMany(Statement,{
         foreignKey:'obj_id'
         })
+        Obj.belongsTo(OtherInteractive,{
+            foreignKey:'other_interactive_id'
+        })
        
        
       

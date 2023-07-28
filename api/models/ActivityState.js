@@ -53,6 +53,10 @@ const {
         foreignKey:'c_interactive_id',
         onDelete: 'CASCADE' 
        })
+       ActivityState.belongsTo(OtherInteractive,{
+        foreignKey:'other_intercative_id',
+        onDelete: 'CASCADE' 
+       })
       
 
         

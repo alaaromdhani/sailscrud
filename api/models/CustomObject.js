@@ -41,6 +41,9 @@ const {
        CustomObject.belongsTo(CoursInteractive,{
         foreignKey:'c_interactive_id'
        })
+       CustomObject.belongsTo(OtherInteractive,{
+        foreignKey:'other_interactive_id'
+       })
        CustomObject.hasMany(Statement,{
         foreignKey:'custom_object_id'
        })

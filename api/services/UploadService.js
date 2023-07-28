@@ -287,12 +287,19 @@ module.exports = {
                     zipFile.readEntry()
                     zipFile.once("end",()=>{
                       console.log('ended unzipping the file successfully')
-                     if(type=="interactive"){
+                     if(type=="interactive" || type==="other"){
                          console.log(entries)
+                       if(type=='other'){
+                        req.operation.courseType="other"
+                       }
+                       else{
+                        req.operation.courseType="cours"
+                       } 
                        return sails.services.uploadservice.handlexmlFile(req,objs,courseId,callback,uploadBasePath)
                      }
+                     
                      else{
-                      return callback(null,{courseId})
+                        return callback(null,{courseId})
                      }
                     })
                     zipFile.on("entry",async (entry)=>{
@@ -393,19 +400,45 @@ module.exports = {
           course.addedBy = req.user.id
           course.url  = req.upload.path
          course.id = courseId 
+            let key = req.operation.courseType==="other"?'other_interactive_id':'c_interactive_id'
             objs.forEach(o=>{
-              o.c_interactive_id = courseId
+              o[key] = courseId
              })
               try{
-                    let c = await CoursInteractive.create(course)
-                      req.cours = c
+                    let test = await CoursInteractive.findByPk(courseId) 
+                    if(test){
+                      throw new ValidationError({message:'this course exists'})
+                    } 
+                    let c = await sails.models[req.options.model].create(course)
+                    req.cours = c
                     await Obj.bulkCreate(objs)
                     return callback(null,c)
               }
              catch(e){
+                 if(e instanceof ValidationError){
+                  return callback(e,null)
+                 }
+                 else{
                   return callback(new SqlError(e),null)
-                }           
+                 }
+
+              }           
           }
+      },
+      saveOther:(req,courseId,callback)=> {
+          let course =req.body
+           delete course.zipFile
+          course.rating = 0
+          course.addedBy = req.user.id
+          course.url  = req.upload.path
+         course.id = courseId 
+         OtherInteractive.create(course).then(c=>{
+          callback(null,c)
+        }).catch(e=>{
+          callback(new SqlError(e),null)
+        })
+     
+
       },
       handlexmlFile:async (req,objs,courseId,callback,fileDirectory)=>{
        

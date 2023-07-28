@@ -58,6 +58,11 @@ module.exports = {
       type:DataTypes.FLOAT,
       allowNull: true,
     },
+    forTeacher:{
+      type:DataTypes.BOOLEAN,
+      allowNull:false,
+      defaultValue:false
+    },
     validity:{
       type:DataTypes.BOOLEAN,
       defaultValue:false,
