@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const SqlError = require("../../utils/errors/sqlErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 
 
@@ -70,16 +71,16 @@ module.exports = {
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
 
-      return res.json({
+      return DataHandlor(req,{
         success: true,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      });
+      },res)
     } catch (error) {
-      return res.serverError(error);
+      return ErrorHandlor(req,new SqlError(error),res);
     }
   },
 
@@ -87,11 +88,11 @@ module.exports = {
     try {
       const data = await OtherDocument.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'OtherDocument not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
-      return res.json(data);
+      return DataHandlor(req,data,res)
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res)
     }
   },
 
@@ -123,17 +124,27 @@ module.exports = {
      })
     }
   },
+  rateCourse:(req,res)=>{
+      sails.services.otherservice.rateCourse(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+      },type="document")
+  },
 
   async destroy(req, res) {
     try {
       const data = await OtherDocument.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'OtherDocument not found' });
+        return ErrorHandlor(req, new RecordNotFoundErr(),res)
       }
       await data.destroy();
-      return res.status(204).send();
+      return DataHandlor(req,{},res)
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req, new SqlError(err),res)
     }
   },
 };

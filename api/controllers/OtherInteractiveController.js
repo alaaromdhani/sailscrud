@@ -8,6 +8,7 @@
 const SqlError = require("../../utils/errors/sqlErrors");7
 const fs = require('fs')
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage");
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 
 
 module.exports = {
@@ -129,17 +130,28 @@ module.exports = {
       return res.status(500).json({ error: err.message });
     }
   },
+   rateCourse:(req,res)=>{
+    sails.services.otherservice.rateCourse(req,(err,data)=>{
+      if(err){
+        return ErrorHandlor(req,err,res)
+      }
+      else{
+        return DataHandlor(req,data,res)
+      }
+    },type="interactive")
+  },
 
   async destroy(req, res) {
     try {
       const data = await OtherInteractive.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'OtherInteractive not found' });
-      }
+        return ErrorHandlor(req,new RecordNotFoundErr(),res);
+       }
       await data.destroy();
-      return res.status(204).send();
+      return DataHandlor(req,{},res);
+   
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 };

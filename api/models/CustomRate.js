@@ -47,6 +47,7 @@ module.exports = {
     CustomRate.belongsTo(CType,{
         foreignKey:'c_type'
     })
+    
       
 
 

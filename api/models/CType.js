@@ -85,6 +85,9 @@ module.exports = {
       CType.hasMany(OtherCourse,{
         foreignKey:'type'
       })
+      CType.hasMany(CustomRate,{
+        foreignKey:'c_type'
+      })
       
   }
 

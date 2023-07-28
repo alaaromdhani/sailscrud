@@ -20,6 +20,16 @@ module.exports = {
       }
      })
   },
+  rateCourse:(req,res)=>{
+    sails.services.otherservice.rateCourse(req,(err,data)=>{
+      if(err){
+        return ErrorHandlor(req,err,res)
+      }
+      else{
+        return DataHandlor(req,data,res)
+      }
+    },type="video")
+  },
 
   async find(req, res) {
     try {

@@ -9,6 +9,7 @@ const { OthercourseShema, UpdateOthercourseShema } = require("../../utils/valida
 const { OtherdocumentShemaWithUpload, OtherdocumentShema, UpdatedocumentShemaWithUpload, UpdatedocumentShema } = require("../../utils/validations/OtherdocumentSchema")
 const { setMaxListeners } = require("events")
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
+const RateShema = require("../../utils/validations/RateSchema")
 
 
 module.exports={
@@ -371,6 +372,111 @@ module.exports={
               callback(new SqlError(e))
             }
           })
+
+
+
+      },
+      rateOthers:async (req,callback,type)=>{
+        let modelOptions={
+        }
+        if(type==="interactive"){
+            modelOptions.model = OtherInteractive
+            modelOptions.fk = 'other_interactive_id'
+        }
+        if(type==="video"){
+          modelOptions.model = OtherVideo
+          modelOptions.fk = 'other_video_id'
+        }
+        if(type==="document"){
+          modelOptions.model = OtherDocument
+          modelOptions.fk = 'other_document_id'
+        }
+        try {
+          const course = await modelOptions.model.findByPk(req.params.id,{
+            include:{
+              model:OtherCourse,
+              foreignKey:'parent',
+              include:{
+                model:CType,
+                foreignKey:'type'
+              }
+            }
+          })
+          if (course) {
+    
+            const rateCourseSchema = schemaValidation(RateShema)(req.body)
+                  if (rateCourseSchema.isValid) {
+                      try{
+                        let [rate, created] = await CustomRate.findOrCreate({
+                          where: {
+                            ratedBy: req.user.id,
+                            [modelOptions.fk]: req.params.id,
+                            other_course_id:course.parent,
+                            c_type:course.OtherCourse.type
+
+                          }, defaults: {
+                            ratedBy: req.user.id,
+                            [modelOptions.fk]: req.params.id,
+                            other_course_id:course.parent,
+                            c_type:course.OtherCourse.type,
+                            rating: req.body.rating
+                          }
+                        })
+                        if (!created) {
+                          rate.rating = req.body.rating
+                          await rate.save()
+                        }
+                        const subCourseratesCount = await CustomRate.findAll({
+                          where: {
+                            [modelOptions.fk]: req.params.id
+                          },
+                          attributes: [
+                            [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                          ]
+                        })
+                        const parentCourseratesCount = await CustomRate.findAll({
+                          where: {
+                            other_course_id: course.parent
+                          },
+                          attributes: [
+                            [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                          ]
+                        })
+                        const typeCourseratesCount = await CustomRate.findAll({
+                          where: {
+                            c_type: course.OtherCourse.type
+                          },
+                          attributes: [
+                            [Sequelize.fn('AVG', Sequelize.col('rating')), 'avgRating'],
+                          ]
+                        })
+                          const parentCourse =course.Course 
+                          let parentType = course.OtherCourse.CType
+
+                          parentType.rating = typeCourseratesCount[0].dataValues.avgRating
+                          
+                          parentCourse.rating = parentCourseratesCount[0].dataValues.avgRating
+                          course.rating = subCourseratesCount[0].dataValues.avgRating
+                          await parentType.save()
+                          await parentCourse.save()
+                          return callback(null,await course.save())
+                          //return DataHandlor(req, await course.save(), res)
+                      }catch(e){
+                        return callback(new SqlError(e),null)
+                      }
+                    
+                    } else {
+                      return callback(new ValidationError({message: rateCourseSchema.message}),null)
+                      
+                    }
+          } else {
+            return callback(new RecordNotFoundErr(),null)
+          }
+        }
+        catch(e){
+          console.log(e)
+          return callback(new RecordNotFoundErr(),null) 
+        }
 
 
 
