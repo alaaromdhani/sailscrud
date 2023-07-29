@@ -5,6 +5,7 @@ const CourseShema = joi.object({
   module_id:joi.number(),
   trimestre_id:joi.number(),
   order:joi.number(),
+
   niveau_scolaire_id:joi.number().required(),
   description:joi.string().required()
 })
@@ -14,6 +15,7 @@ const UpdateCourseShema = joi.object({
   module_id:joi.number(),
   order:joi.number(),
   trimestre_id:joi.number(),
+
   niveau_scolaire_id:joi.number(),
   description:joi.string()
 })

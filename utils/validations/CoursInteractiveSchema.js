@@ -3,6 +3,7 @@ const CoursInteractiveShema = joi.object({
     name: joi.string().required(),
     description:joi.string(),
     status: joi.string().valid('public','private'),
+    tracked:joi.boolean(),
     parent:joi.number().required()
 })
 const UpdateCoursInteractiveShema = joi.object({
@@ -10,6 +11,7 @@ const UpdateCoursInteractiveShema = joi.object({
     description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number(),
+    tracked:joi.boolean(),
     validity:joi.boolean(),
     active:joi.boolean()
 })

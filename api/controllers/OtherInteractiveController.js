@@ -9,7 +9,9 @@ const SqlError = require("../../utils/errors/sqlErrors");7
 const fs = require('fs')
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const SqlError = require("../../utils/errors/sqlErrors");
 const path = require("path");
+const UnkownError = require("../../utils/errors/UnknownError");
 
 
 module.exports = {
@@ -111,24 +113,26 @@ module.exports = {
     try {
       const data = await OtherInteractive.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'OtherInteractive not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
-      return res.json(data);
+      return DataHandlor(req,data,res);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+      return ErrorHandlor(req,new SqlError(err),res)
+     }
   },
 
   async update(req, res) {
     try {
       const data = await OtherInteractive.findByPk(req.params.id);
       if (!data) {
-        return res.status(404).json({ error: 'OtherInteractive not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
       const updatedOtherInteractive = await data.update(req.body);
-      return res.json(updatedOtherInteractive);
+      return DataHandlor(req,updatedOtherInteractive,res);
+      //
+      
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req, new SqlError(err),res)
     }
   },
   async accessCourse(req,res){
