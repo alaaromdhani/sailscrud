@@ -9,7 +9,6 @@ const SqlError = require("../../utils/errors/sqlErrors");7
 const fs = require('fs')
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
-const SqlError = require("../../utils/errors/sqlErrors");
 const path = require("path");
 const UnkownError = require("../../utils/errors/UnknownError");
 
