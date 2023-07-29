@@ -83,13 +83,13 @@ module.exports = {
       // url: 'mysql://user:password@host:port/database',
   
     },
-    wow: {
+    /*wow: {
       user:databaseCredentials.user,
       password:databaseCredentials.password,
   
       options:databaseCredentials.options,
       database:'wow'
-  
+  */
       /***************************************************************************
       *                                                                          *
       * Want to use a different database during development?                     *
@@ -107,7 +107,7 @@ module.exports = {
       // adapter: 'sails-mysql',
       // url: 'mysql://user:password@host:port/database',
   
-    },
+    //},
   },
 
 
