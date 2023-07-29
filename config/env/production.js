@@ -373,7 +373,7 @@ module.exports = {
     statics:(()=>{
         console.log('setting static files')
         return function(req,res,next){
-          return express.static(path.join(__dirname, '../static'))(req,res,next);
+          return express.static(path.join(__dirname, '../../static'))(req,res,next);
         }
 
     })(),
@@ -535,8 +535,8 @@ module.exports = {
       path: 'default',
 
     },
-    lrsEndPoint:databaseCredentials.lrsEndPoint,
-    lrsOtherPoint:databaseCredentials.lrsOtherPoint,
+    lrsEndPoint:databaseCredentials.baseUrl+"lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
+    lrsOtherPoint:databaseCredentials.baseUrl+"lrs/other/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
     baseUrl: databaseCredentials.baseUrl,
     internalEmailAddress: databaseCredentials.internalEmailAddress,
 
