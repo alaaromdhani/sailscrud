@@ -405,7 +405,8 @@ module.exports = {
               o[key] = courseId
              })
               try{
-                    let test = await CoursInteractive.findByPk(courseId) 
+                    let test = await CoursInteractive.findByPk(courseId)
+                     
                     if(test){
                       throw new ValidationError({message:'this course exists'})
                     } 

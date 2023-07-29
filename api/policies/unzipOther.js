@@ -4,6 +4,7 @@ const {SoftskillsinteractiveShema} = require('../../utils/validations/Softskills
 const ValidationError = require('../../utils/errors/validationErrors');
 const path = require('path');
 const { OtherinteractiveShema } = require('../../utils/validations/OtherinteractiveSchema');
+const { v4: uuidv4 } = require('uuid');
 
 
 const optionsGenerator=async (req,file,cb)=>{
@@ -12,7 +13,7 @@ const optionsGenerator=async (req,file,cb)=>{
     }
     try{
         let today = new Date()
-        const destination = '../../static/other/'+today.getFullYear()+'-'+today.getMonth()+"/"+(file.originalname.split(".").shift())
+        const destination = '../../static/other/'+today.getFullYear()+'-'+today.getMonth()+"/"+uuidv4()
         const path  = destination.split('other/').pop();
         let fileOptions = await sails.services.uploadservice.zipFileOptions(file,{type:"zipfiles",destination,path})
         let ss = {}
