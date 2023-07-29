@@ -137,9 +137,7 @@ module.exports = {
        }
        : {};
        where.parent = req.params.id
-       let includeOptions = [{
-        
-      }]
+       let includeOptions = []
         if(type==="document"){
           includeOptions.push({
             model:Upload,
@@ -167,7 +165,7 @@ module.exports = {
       }
       else{
        
-         return ErrorHandlor(req,new recordNotfFoundErr(),res)
+         return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
        
          
