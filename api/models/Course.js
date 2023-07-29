@@ -74,6 +74,7 @@ module.exports = {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
+    
     order:{
       type:DataTypes.INTEGER,
       allowNull:true

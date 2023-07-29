@@ -153,11 +153,8 @@ module.exports = {
     })
   },
   async accessCourse(req,res){
-      let where={id:req.params.id,validity:true,active:true} 
-      console.log('private courses',req.courses.private)
-      if(!req.courses.private){
-        where.status = "public"
-      }
+      let where={id:req.params.id} 
+      
       CoursInteractive.findOne({where}).then(ci=>{
         if(!ci){
             return ErrorHandlor(req,new RecordNotFoundErr(),res)

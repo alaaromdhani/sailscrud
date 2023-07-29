@@ -95,6 +95,15 @@ module.exports = {
             let created  
             const object =req.body.object 
             const courseId =object.id.split('/')[0]
+            const c = await CoursInteractive.findByPk(courseId)
+            if(c){
+                return ErrorHandlor(req,new RecordNotFoundErr(),res)
+            }
+            else{
+                    if(!c.tracked){
+                        return DataHandlor(req,{},res)
+                    }
+            }
         const agent = await Agent.findOne({where:{account_name:agentName}})
         let activityState = await ActivityState.findOne({where:{agent_id:agent.id,c_interactive_id:courseId,deprecated:false}})
             if(!activityState){

@@ -84,6 +84,10 @@ module.exports = {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    tracked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
     
     status:{
       type:DataTypes.ENUM(['public','private']),

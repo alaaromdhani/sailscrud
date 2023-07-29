@@ -42,16 +42,14 @@ module.exports = {
             }
         })
         await ActivityState.destroy({
-            where:{other_intercative_id:course.id}
+            where:{other_interactive_id:course.id}
         })
         await Statement.destroy({
-            where:{other_intercative_id:course.id}
+            where:{other_interactive_id:course.id}
         })
-        await Obj.destroy({
-            where:{other_intercative_id:course.id}
-        })
+       
         await CustomObject.destroy({
-            where:{other_intercative_id:course.id}
+            where:{other_interactive_id:course.id}
         })
         const fullUrlPath = path.join(__dirname,'../../static/other/'+course.url)
         try{
