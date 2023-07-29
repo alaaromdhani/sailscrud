@@ -15,6 +15,7 @@
   },
  
     "hooks": {
+      
       "session": false,
       "orm": false
     

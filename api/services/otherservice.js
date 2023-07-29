@@ -99,24 +99,15 @@ module.exports={
       },
       deleteOtherCourse:(req,callback)=>{
         
-        OtherCourse.findByPk(req.params.id,{
-          include:{
-            model:User,
-            foreignKey:'addedBy',
-            include:{
-              model:Role,
-              foreignKey:'role_id'
-            }                
-          }
-          })
+        OtherCourse.findByPk(req.params.id)
         .then(c=>{
           return new Promise((resolve,reject)=>{
             if(c){
               if(c.addedBy && c.User.Role.weight<=req.role.weight && req.user.id!=c.addedBy){
-                return resolve(c)
+                return reject(new UnauthorizedError({specific:'you cannot update a record created by a higher role'}))
               }
               else{
-                return reject(new UnauthorizedError({specific:'you cannot update a record created by a higher role'}))
+                return resolve(c)
               }
             }
             else{

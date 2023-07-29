@@ -96,7 +96,7 @@ module.exports = {
       }
      })
   },
-  findChildren:async ()=>{
+  findChildren:async (req,res)=>{
     console.log(req.params.id)
     try {
       let data =await OtherCourse.findByPk(req.params.id)

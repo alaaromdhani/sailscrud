@@ -274,6 +274,7 @@ module.exports = {
       const {MatiereId,NiveauScolaireId} = req.query
       if(MatiereId && NiveauScolaireId){
           
+          
           const matiere_niveau = await MatiereNiveau.findOne({where:{
               MatiereId,
               NiveauScolaireId
@@ -281,26 +282,37 @@ module.exports = {
             model:Matiere,
             foreignKey:'MatiereId'
           }}) 
+          let includeOptions = [{
+            model:Course,
+            include:[{
+                model:CoursInteractive,
+                foreignKey:'parent'
+            },
+            {
+              model:CoursVideo,
+              foreignKey:'parent'
+          },{
+            model:CoursDocument,
+            foreignKey:'parent'
+        }]
+
+        } ]
+
           if(matiere_niveau){
+            if(req.query.TrimestreId && parseInt(req.query.TrimestreId)){
+              includeOptions.push({
+                model:Trimestre,
+                through:'trimestres_modules',
+                where:{
+                  id:req.query.TrimestreId
+                }
+              })
+            }
               return DataHandlor(req,{rows:await Module.findAll({
                 where:{
                     matiere_niveau_id:matiere_niveau.id
                 },
-                include:{
-                    model:Course,
-                    include:[{
-                        model:CoursInteractive,
-                        foreignKey:'parent'
-                    },
-                    {
-                      model:CoursVideo,
-                      foreignKey:'parent'
-                  },{
-                    model:CoursDocument,
-                    foreignKey:'parent'
-                }]
-
-                }
+                include:includeOptions
 
               }),rtl:matiere_niveau.Matiere.rtl},res)
 
