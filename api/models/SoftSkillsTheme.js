@@ -19,6 +19,10 @@ module.exports = {
       tableName: 'skills_themes',
       options: {
         tableName: 'skills_themes',
+        indexes:[{
+          unique:true,
+          fields:['name']
+        }],
 
       },
 
@@ -32,7 +36,7 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         required: true,
-        unique:true
+        
       },
       description: {
         type: Sequelize.TEXT,

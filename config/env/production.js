@@ -296,38 +296,6 @@ module.exports = {
 
     /***************************************************************************
       *                                                                          *
-      * Uncomment the `onlyAllowOrigins` whitelist below to configure which      *
-      * "origins" are allowed to open socket connections to your Sails app.      *
-      *                                                                          *
-      * > Replace "https://example.com" etc. with the URL(s) of your app.        *
-      * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
-      *                                                                          *
-      ***************************************************************************/
-    onlyAllowOrigins: [
-      'http://localhost:8100',
-
-    ],
-    beforeConnect: function(handshake, proceed) {
-      console.log('poceeed');
-      // Send back `true` to allow the socket to connect.
-      // (Or send back `false` to reject the attempt.)
-      return proceed(undefined, true);
-
-    },
-    onConnect: function(session, socket) {
-      console.log('new socket is coming');
-      socket.emit('documents', 'ala');
-      socket.on('my other event', (data) => {
-        console.log(data);
-      });
-      // By default: do nothing
-      // This is a good place to subscribe a new socket to a room, inform other users
-      // that someone new has come online, or any other custom socket.io logic
-    }
-
-
-    /***************************************************************************
-      *                                                                          *
       * If you are deploying a cluster of multiple servers and/or processes,     *
       * then uncomment the following lines.  This tells Socket.io about a Redis  *
       * server it can use to help it deliver broadcasted socket messages.        *

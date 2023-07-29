@@ -11,6 +11,7 @@ const UnkownError = require('../../utils/errors/UnknownError');
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
+      
       tableName: 'sms',
       hooks:{
         beforeSave:async (sms,options)=>{

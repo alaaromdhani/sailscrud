@@ -13,6 +13,7 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
+    
     hooks: {
       beforeCreate: async (course,options)=>{
         if(course.isNewRecord){
@@ -43,7 +44,7 @@ module.exports = {
     name: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+      
       minLength: 2
     },
     description: {

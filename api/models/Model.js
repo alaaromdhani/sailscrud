@@ -14,7 +14,11 @@ const { DataTypes } = require('sequelize');
 module.exports = {
 
   options: {
-    tableName: 'models'
+    tableName: 'models',
+    indexes:[{
+      unique:true,
+      fields:['name']
+    }],
   },
   datastore: 'default',
   tableName: 'models',
@@ -27,7 +31,6 @@ module.exports = {
     name: {
       type:DataTypes.STRING,
       required: true,
-      unique: true,
       minLength: 1
     },
     identity: {

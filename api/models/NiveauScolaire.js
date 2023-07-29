@@ -17,6 +17,10 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
+    indexes:[{
+      unique:true,
+      fields:['name_fr','name_ar']
+    }],
     tableName: 'niveau_scolaires',
     hooks: {
       beforeSave(ns,options){
@@ -40,12 +44,10 @@ module.exports = {
     name_fr: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
     },
     name_ar: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
     },
     active: {
       type: DataTypes.BOOLEAN,

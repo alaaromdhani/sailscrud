@@ -5,6 +5,10 @@ const { DataTypes } = require("sequelize");
 module.exports = {  
   options: {
     tableName: 'roles',
+    indexes:[{
+      unique:true,
+      fields:['name','weight']
+    }],
     hooks:{
       beforeDestroy:async (role,options)=>{
         
@@ -29,13 +33,12 @@ module.exports = {
       name: {
         type: DataTypes.STRING,
         required: true,
-        unique: true,
+       
         minLength: 1
       },
       weight: {
         type: DataTypes.INTEGER,
         required: true,
-        unique: true,
        
       },
       active: {

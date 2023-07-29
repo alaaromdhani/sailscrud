@@ -9,7 +9,12 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-      tableName: 'packs'
+      tableName: 'packs',
+      indexes:[{
+        unique:true,
+        fields:['name']
+      }],
+      
     },
     datastore: 'default',
     tableName: 'packs',
@@ -21,7 +26,7 @@ const {
         },
         name: {
             type: DataTypes.STRING,
-            unique:true,
+           
             allowNull:false
         },
         price:{

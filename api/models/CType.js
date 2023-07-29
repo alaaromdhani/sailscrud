@@ -15,6 +15,10 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
+    indexes:[{
+      unique:true,
+      fields:['name']
+    }],
     hooks:{
       beforeSave:(type,options)=>{
         if(type.isNewRecord){
@@ -47,7 +51,8 @@ module.exports = {
     name: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
+      
+      
     },
     description: {
       type: DataTypes.STRING,

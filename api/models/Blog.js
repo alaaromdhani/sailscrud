@@ -13,6 +13,12 @@ module.exports = {
     charset: 'utf8mb4',
     collate: 'utf8mb4_general_ci',
     scopes: {},
+    indexes:[
+      {
+        unique: true,
+        fields: ['slug','title']
+      }
+    ],
     tableName: 'blogs',
     hooks:{
 
@@ -41,14 +47,13 @@ module.exports = {
     title: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
       minLength: 1
     },
 
     slug: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+     
       minLength: 1
     },
     short_description: {

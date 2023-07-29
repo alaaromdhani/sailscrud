@@ -12,9 +12,14 @@ const {
             if(activityState.isNewRecord){
                 activityState.deprecated = false
             }
-            
-          },
-      }
+           },
+      },
+      indexes: [
+            {
+            unique: true,
+            fields: ['registration','etag',]
+            }
+      ]
     },
     datastore: 'default',
     tableName: 'activitystates',
@@ -26,12 +31,12 @@ const {
         },
         registration: {
             type: DataTypes.STRING,
-            unique:true
+            
         },
   
         etag:{
             type: DataTypes.STRING,
-            unique:true
+            
         },
         state: {
             type: DataTypes.BLOB,

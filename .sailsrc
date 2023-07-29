@@ -16,8 +16,7 @@
  
     "hooks": {
       "session": false,
-
-    "orm": false
+      "orm": false
     
     
     }

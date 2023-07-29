@@ -13,7 +13,12 @@ module.exports = {
   charset: 'utf8',
   collate: 'utf8_general_ci',
   scopes: {},
+  
   options: {
+    indexes:[{
+      unique:true,
+      fields:['link','file_name']
+    }],
     tableName: 'uploads',
     hooks:{
       beforeDestroy: async(upload,options)=>{
@@ -79,7 +84,7 @@ module.exports = {
     link: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+      
       minLength: 3
     },
     isPublic:{
@@ -94,7 +99,6 @@ module.exports = {
     file_name: {//the uuid
       type: DataTypes.STRING,
       required: true,
-      unique: true,
       minLength: 3
     },
     type: {

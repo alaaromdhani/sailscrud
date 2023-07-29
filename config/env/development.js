@@ -279,28 +279,7 @@ module.exports = {
       * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
       *                                                                          *
       ***************************************************************************/
-    onlyAllowOrigins: [
-      'http://localhost:8100',
-
-    ],
-    beforeConnect: function(handshake, proceed) {
-      console.log('poceeed');
-      // Send back `true` to allow the socket to connect.
-      // (Or send back `false` to reject the attempt.)
-      return proceed(undefined, true);
-
-    },
-    onConnect: function(session, socket) {
-      console.log('new socket is coming');
-      socket.emit('documents', 'ala');
-      socket.on('my other event', (data) => {
-        console.log(data);
-      });
-      // By default: do nothing
-      // This is a good place to subscribe a new socket to a room, inform other users
-      // that someone new has come online, or any other custom socket.io logic
-    }
-
+   
 
     /***************************************************************************
       *                                                                          *

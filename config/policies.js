@@ -118,6 +118,10 @@ module.exports.policies = {
     'rateCourse':['lang','passport','role','tokenVerifier'],
     '*':['lang','passport','role','tokenVerifier','permissions']
    },
+   OtherCourseController:{
+    findChildren:['lang','passport','role','tokenVerifier'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+   },
    OtherInteractiveController:{
     'create':['lang','passport','role','tokenVerifier','permissions','unzipOther'],
     'update':['lang','passport','role','tokenVerifier','permissions'],

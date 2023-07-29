@@ -10,7 +10,8 @@ const { DataTypes } = require("sequelize");
 module.exports = {
 
   options: {
-    tableName: 'permissions'
+    tableName: 'permissions',
+    
   },
   datastore: 'default',
   tableName: 'permissions',

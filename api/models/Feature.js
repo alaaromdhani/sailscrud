@@ -11,6 +11,10 @@ module.exports = {
   options: {
     tableName: 'features'
   },
+  indexes:[{
+    unique:true,
+    fields:['name','identity']
+  }],
   datastore: 'default',
   tableName: 'features',
   attributes: {
@@ -22,7 +26,7 @@ module.exports = {
     name: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+    
       minLength: 1
     },
     description: {
@@ -33,7 +37,7 @@ module.exports = {
     identity: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+     
       minLength: 1
     },
     context: {

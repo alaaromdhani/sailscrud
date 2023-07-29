@@ -16,6 +16,7 @@ module.exports = {
   datastore: 'default',
   tableName: 'rates',
   attributes: {
+    
     id:{
       type:DataTypes.INTEGER,
       primaryKey:true,

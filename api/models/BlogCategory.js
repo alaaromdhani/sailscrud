@@ -14,7 +14,13 @@ module.exports = {
           async beforeSave(blogCategory,options){
             blogCategory.slug = getSlug(blogCategory.category_name)
           }
-      }
+      },
+      indexes:[
+        {
+          unique: true,
+          fields: ['category_name','slug']
+        }
+      ],
   },
   datastore: 'default',
   tableName: 'blog_categories',
@@ -27,14 +33,14 @@ module.exports = {
     category_name: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+     
       minLength: 1
     },
 
     slug: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+      
       minLength: 1
     },
 

@@ -9,7 +9,11 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-      tableName: 'sellers'
+      tableName: 'sellers',
+      indexes:[{
+        unique:true,
+        fields:['name','address','phone_number']
+      }],
     },
     datastore: 'default',
     tableName: 'sellers',
@@ -21,13 +25,12 @@ const {
         },
         name: {
             type: DataTypes.STRING,
-            unique:true,
+            
             allowNull:false
             
         },
         address: {
             type: DataTypes.STRING,
-            unique:true,
             allowNull:false
         },
         postal_code:{
@@ -37,7 +40,6 @@ const {
         },
         phone_number:{
             type:DataTypes.STRING,
-            unique:true,
             allowNull:false
         }
         

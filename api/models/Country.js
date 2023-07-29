@@ -12,6 +12,10 @@ module.exports = {
   options: {
     charset: 'utf8',
     collate: 'utf8_general_ci',
+    indexes:[{
+      unique:true,
+      fields:['code']
+    }],
     scopes: {},
     tableName: 'countries'
   },
@@ -26,7 +30,7 @@ module.exports = {
     code: {
       type: DataTypes.STRING,
       required: true,
-      unique: true,
+
       minLength: 2
     },
 

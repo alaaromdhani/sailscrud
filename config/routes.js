@@ -49,6 +49,8 @@ module.exports.routes = {
   'get /othercourses/:id':'OtherInteractiveController.accessCourse',
   'GET /api/v1/otherresults/:id':'OtherInteractiveController.getResults',
   'GET /lrs/other/activities/state':'OtherLrsController.getActivityState',
+  'GET /api/v1/other_courses_children/:id':'OtherCourseController.findChildren',
+ 
   'PUT /lrs/other/activities/state':'OtherLrsController.putState',
   'PUT /lrs/other/statements':'OtherLrsController.putStatement',
  

@@ -28,7 +28,7 @@ module.exports = {
     value: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
+      
     },
     expiredDate:{
         type:DataTypes.DATE,

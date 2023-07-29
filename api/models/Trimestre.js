@@ -17,6 +17,10 @@ module.exports = {
     collate: 'utf8_general_ci',
     scopes: {},
     tableName: 'trimesters',
+    indexes:[{
+      unique:true,
+      fields:['name_fr','name_ar']
+    }],
 
   },
 
@@ -30,12 +34,12 @@ module.exports = {
     name_fr: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
+    
     },
     name_ar: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
+
     }
   },
   associations:()=>{

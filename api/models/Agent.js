@@ -8,7 +8,14 @@ const {
   
   module.exports = {
     options: {
-      tableName: 'agents'
+      tableName: 'agents',
+      indexes: [
+        {
+        unique: true,
+        fields: ['mbox','account_name']
+        }
+      ]
+      
     },
     datastore: 'default',
     tableName: 'agents',
@@ -20,13 +27,11 @@ const {
       },
       mbox:{
         type:DataTypes.STRING,
-        allowNull:false,
-        unique:true
+        allowNull:false
       },
       account_homepage:{ type:DataTypes.STRING,allowNull:false,
         },
-        account_name:{ type:DataTypes.STRING,allowNull:false,
-          unique:true },
+        account_name:{ type:DataTypes.STRING,allowNull:false},
     },
     
         

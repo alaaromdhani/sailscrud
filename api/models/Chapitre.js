@@ -16,6 +16,12 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
+    indexes:
+      [{
+        unique: true,
+        fields: ['order']
+      }]
+    ,
     tableName: 'chapitres',
 
   },
@@ -25,17 +31,17 @@ module.exports = {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      allowNull: false,
+     
     },
     name: {
       type: DataTypes.STRING,
       required: true,
-      unique:true
+      
     },
     order:{
       type: DataTypes.INTEGER,
       required: true,
-      unique:true
+     
     }
 
   },

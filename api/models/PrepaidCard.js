@@ -9,7 +9,11 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-      tableName: 'prepaidcards'
+      tableName: 'prepaidcards',
+      indexes:[{
+        unique:true,
+        fields:['name']
+      }],
     },
     datastore: 'default',
     tableName: 'prepaidcards',
@@ -21,7 +25,6 @@ const {
         },
         name: {
             type: DataTypes.STRING,
-            unique:true,
             allowNull:false
             
         },
