@@ -95,7 +95,8 @@ module.exports = {
             const object =req.body.object 
             const courseId =object.id.split('/')[0]
             const c = await OtherInteractive.findByPk(courseId)
-            if(c){
+
+            if(!c){
                 return ErrorHandlor(req,new RecordNotFoundErr(),res)
             }
             else{
