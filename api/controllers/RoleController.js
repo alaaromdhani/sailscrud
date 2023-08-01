@@ -77,7 +77,7 @@ module.exports = {
           }
         },{
           model:User,
-          attributes:['name','profilePicture']
+          attributes:['firstName','lastName','profilePicture']
         }],
         order,
         limit: parseInt(limit, 10),
