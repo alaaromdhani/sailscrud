@@ -57,7 +57,7 @@ module.exports = async ()=>{
     }
     const actionsPerModel={
         coursdocument:['read','create','delete','update','validate'],
-        coursinteractive:['read','create','delete','update','validate'],
+        coursinteractive:['read','create','delete','update','validate','track'],
         coursvideo:['read','create','delete','update','validate']
     }
     let allActions = ['read','create','delete','update']
