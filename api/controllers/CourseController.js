@@ -179,6 +179,7 @@ module.exports = {
   findOneCourse:async(req,res)=>{
     console.log(req.params.id)
   try {
+    
     let data =await Course.findByPk(req.params.id)
     if(data){
      const type = req.query.type || "interactive"
