@@ -218,9 +218,9 @@ let grantsToPermissionsConverter =  (granted)=>{
                         }
                     }
                     allowedActions.forEach(a=>{
-                            if(!['update','delete','create','read','validate'].includes(a)){
+                            /*if(!['update','delete','create','read','validate'].includes(a)){
                                 throw new Error('not a valid acion ',a)
-                            }
+                            }*/
                             permissions.push({
                                   model_id,
                                   action:a  

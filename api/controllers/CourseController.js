@@ -274,53 +274,62 @@ module.exports = {
   treeView:async (req,res)=>{
       const {MatiereId,NiveauScolaireId} = req.query
       if(MatiereId && NiveauScolaireId){
-          
-          
-          const matiere_niveau = await MatiereNiveau.findOne({where:{
-              MatiereId,
-              NiveauScolaireId
-          },include:{
-            model:Matiere,
-            foreignKey:'MatiereId'
-          }}) 
-          let includeOptions = [{
-            model:Course,
-            include:[{
-                model:CoursInteractive,
+              let where ={MatiereId,
+                NiveauScolaireId}
+              if(req.role.name===sails.config.custom.roles.inspector.name ){
+                where.inspector = req.user.id
+              }
+              if(req.role.name===sails.config.custom.roles.intern_teacher.name ){
+                where.intern_teacher = req.user.id
+              }  
+
+           
+              const matiere_niveau = await MatiereNiveau.findOne({where
+             ,include:{
+              model:Matiere,
+              foreignKey:'MatiereId'
+            }}) 
+            let includeOptions = [{
+              model:Course,
+              include:[{
+                  model:CoursInteractive,
+                  foreignKey:'parent'
+              },
+              {
+                model:CoursVideo,
                 foreignKey:'parent'
-            },
-            {
-              model:CoursVideo,
+            },{
+              model:CoursDocument,
               foreignKey:'parent'
-          },{
-            model:CoursDocument,
-            foreignKey:'parent'
-        }]
-
-        } ]
-
-          if(matiere_niveau){
-            if(req.query.TrimestreId && parseInt(req.query.TrimestreId)){
-              includeOptions.push({
-                model:Trimestre,
-                through:'trimestres_modules',
-                where:{
-                  id:req.query.TrimestreId
-                }
-              })
+          }]
+  
+          } ]
+  
+            if(matiere_niveau){
+              if(req.query.TrimestreId && parseInt(req.query.TrimestreId)){
+                includeOptions.push({
+                  model:Trimestre,
+                  through:'trimestres_modules',
+                  where:{
+                    id:req.query.TrimestreId
+                  }
+                })
+              }
+                return DataHandlor(req,{rows:await Module.findAll({
+                  where:{
+                      matiere_niveau_id:matiere_niveau.id
+                  },
+                  include:includeOptions
+  
+                }),rtl:matiere_niveau.Matiere.rtl},res)
+  
             }
-              return DataHandlor(req,{rows:await Module.findAll({
-                where:{
-                    matiere_niveau_id:matiere_niveau.id
-                },
-                include:includeOptions
-
-              }),rtl:matiere_niveau.Matiere.rtl},res)
-
-          }
-          else{
-            return DataHandlor(req,[],res)
-          }
+            else{
+              return DataHandlor(req,[],res)
+            }
+            
+          
+          
 
       }
       else{

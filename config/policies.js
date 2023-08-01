@@ -115,9 +115,26 @@ module.exports.policies = {
   MatiereController:{
     'create':['lang','passport','role','tokenVerifier','permissions','matiereImageUploader'],
     'update':['lang','passport','role','tokenVerifier','permissions','matiereImageUploader'],
+    'find':['lang','passport','role','tokenVerifier'],
     '*':['lang','passport','role','tokenVerifier','permissions']
     
   },
+  NiveauScolaireController:{
+    'find':['lang','passport','role','tokenVerifier'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+    
+  },
+  TrimestreController:{
+    'find':['lang','passport','role','tokenVerifier'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+    
+  },
+  ChapitreController:{
+    'find':['lang','passport','role','tokenVerifier'],
+    '*':['lang','passport','role','tokenVerifier','permissions']
+    
+  },
+
   CTypeController:{
     'create':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],
     'update':['lang','passport','role','tokenVerifier','permissions','CTypeFileUploader'],

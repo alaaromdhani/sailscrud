@@ -37,7 +37,25 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(NiveauScolaire.sequelize.models.NiveauScolaire.rawAttributes);
-
+      if(sails.config.custom.roles.inspector.name===req.role.name||sails.config.custom.roles.intern_teacher.name===req.role.name){
+        let where={}
+        
+        if(sails.config.custom.roles.inspector.name===req.role.name){
+          where.inspector = req.user.id
+        }
+        if(sails.config.custom.roles.intern_teacher.name===req.role.name){
+          where.intern_teacher = req.user.id
+        } 
+         let data = await MatiereNiveau.findAll({where,include:{
+          model:NiveauScolaire,
+          foreignKey:'NiveauScolaireId'
+         }})
+         
+         data = data.map(d=>d.NiveauScolaire)
+         return DataHandlor(req,{data},res)
+        
+      }
+ 
 
       // Create the filter conditions based on the search query
       const where = search

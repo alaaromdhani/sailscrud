@@ -62,7 +62,30 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(Matiere.sequelize.models.Matiere.rawAttributes);
-
+      if(sails.config.custom.roles.inspector.name===req.role.name||sails.config.custom.roles.intern_teacher.name===req.role.name){
+        let where={}
+        
+        if(sails.config.custom.roles.inspector.name===req.role.name){
+          where.inspector = req.user.id
+        }
+        if(sails.config.custom.roles.intern_teacher.name===req.role.name){
+          where.intern_teacher = req.user.id
+        } 
+         let data = await MatiereNiveau.findAll({where,include:{
+          model:Matiere,
+          foreignKey:'MatiereId'
+         }})
+         data = data.reduce((prec,curr)=>{
+            if(!prec[curr.MatiereId]){
+              prec[curr.MatiereId] =curr.Matiere 
+            }
+            return prec
+         },{})
+         console.log(data)
+         data = Object.keys(data).map(k=>data[k])
+         return DataHandlor(req,{data},res)
+        
+      }
 
       // Create the filter conditions based on the search query
       const where = search
@@ -105,6 +128,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res);
     } catch (error) {
+      console.log(error)
       return ErrorHandlor(req,new SqlError(error),res)
     }
   },
