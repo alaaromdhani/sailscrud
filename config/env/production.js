@@ -22,18 +22,10 @@ const bodyParser = require('body-parser');
 
 const express = require('../../node_modules/sails/node_modules/express');
 const path = require('path');
-const Sequelize = require('sequelize')
 const expressSession = require('../../node_modules/sails/node_modules/express-session');
 const databaseCredentials = require('../../utils/constants');
-const sessionStore = require('express-session-sequelize')(expressSession.Store)
-const connection = new Sequelize(databaseCredentials.database, databaseCredentials.user, databaseCredentials.password, {
-  host: databaseCredentials.options.host,
-  dialect: databaseCredentials.options.dialect,
-});
-let sequelizeSessionStore = new sessionStore({
-  db:connection
 
-})
+let sequelizeSessionStore = require('../../utils/sessionconf/Session')
 module.exports = {
   //cron : {
   //  login: {
@@ -124,7 +116,7 @@ module.exports = {
       * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
       *                                                                          *
       ***************************************************************************/
-    migrate: 'alter',
+    migrate: 'safe',
 
     /***************************************************************************
       *                                                                          *
@@ -293,7 +285,7 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
   sockets: {
-
+    onlyAllowOrigins: ["http://www.mydeployedapp.com", "http://mydeployedapp.com"]
     /***************************************************************************
       *                                                                          *
       * If you are deploying a cluster of multiple servers and/or processes,     *
@@ -387,7 +379,8 @@ module.exports = {
           saveUninitialized: true,
           store:sequelizeSessionStore,
           cookie:{
-            secure:sails.config.environment==="production"
+            sameSite:'none',
+       //     secure:sails.config.environment==="production"
           }
           
         })(req,res,next)

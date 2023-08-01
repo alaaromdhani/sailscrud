@@ -4,7 +4,9 @@ const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const UnkownError = require('../../utils/errors/UnknownError');
 const ValidationError = require('../../utils/errors/validationErrors');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
-const SqlError = require('../../utils/errors/sqlErrors')
+const SqlError = require('../../utils/errors/sqlErrors');
+const { Op } = require('sequelize');
+const Session = require('../../utils/sessionconf/Session').Session
 module.exports = {
 
   /**
@@ -26,7 +28,7 @@ module.exports = {
   callback: function (req, res) {
     
     if(req.user){
-      console.log(req.user)
+     
       return ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res);
     }
     sails.services.passport.callback(req, res, (err, data, info, status) => {
@@ -51,9 +53,16 @@ module.exports = {
             }
             else{
               req.session.authenticated = true;
-              const activeSession = "'"+req.sessionID+"'"
+              const activeSession = req.sessionID
               const userSessionData = '%\"passport\":{\"user\":'+data.user.id+'}%'
-              await User.sequelize.query(`delete  FROM sessions WHERE data like '${userSessionData}' and session_id!=${activeSession} `);
+              await Session.destroy({
+                where:{
+                  data:{[Op.like]:userSessionData},
+                  session_id:{[Op.ne]:activeSession}
+
+                },
+              })
+        //      await User.sequelize.query(`delete  FROM sessions WHERE data like '${userSessionData}' and session_id!=${activeSession} `);
               DataHandlor(req,data.user,res,'login successful');
             }
           });
@@ -86,8 +95,12 @@ module.exports = {
         const currentSession = req.sessionID
         req.session.authenticated = false;
         delete req.user;
-        
-        await User.sequelize.query(`delete  FROM sessions WHERE session_id ='${currentSession}'`);
+        await Session.destroy({
+          where:{
+              session_id:currentSession
+
+          },
+        })
       
         return DataHandlor(req,{},res,'logged out successfully');
       }

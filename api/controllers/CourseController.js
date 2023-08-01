@@ -235,7 +235,7 @@ module.exports = {
         includeOptions.push({
           model:Upload,
           foreignKey:'document',
-          attributes:['file_name'],
+          attributes:['link'],
           
        })
       }

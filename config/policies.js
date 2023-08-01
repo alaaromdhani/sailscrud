@@ -39,18 +39,23 @@ module.exports.policies = {
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'treeView':['lang','passport','role','tokenVerifier'],
-    'findOneCourse':['lang','passport','role','tokenVerifier','canseecourse']
+    'findOneCourse':['lang','passport','role','tokenVerifier','canseecourse'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
   },
   CoursDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','coursFileUploader'],
+    'validateCours':['lang','passport','role','tokenVerifier','validation'],
     'rateCourse':['lang','passport','role','tokenVerifier'],
     'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
     
   },
   CoursInteractiveController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
+    'validateCours':['lang','passport','role','tokenVerifier','validation'],
     'accessCourse':['lang','passport','role','tokenVerifier','cours-feature'],
     'rateCourse':['lang','passport','role','tokenVerifier'],
     'getResults':['lang','passport','role','tokenVerifier'],
@@ -59,17 +64,22 @@ module.exports.policies = {
   },
   CoursVideoController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
+    'validateCours':['lang','passport','role','tokenVerifier','validation'],
+    
     'rateCourse':['lang','passport','role','tokenVerifier'],
     'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
   },
   SoftSkillsDocumentController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
     'create':['lang','passport','role','tokenVerifier','permissions','skDocument'],
     'rateSoftSkill':['lang','passport','role','tokenVerifier']
     
   },
   SoftSkillsVideoController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
     'rateSoftSkill':['lang','passport','role','tokenVerifier']
   },
   LrsController:{
@@ -80,10 +90,12 @@ module.exports.policies = {
   },
   SoftSkillsController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
     'findAllChildren':['lang','passport','role','tokenVerifier','childrenPermissions'],
   },
   SoftSkillsInteractiveController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'update':['lang','passport','role','tokenVerifier','permissions','validation'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzipsoftskill'],
     'accessSoftSkills':['lang','passport','role','tokenVerifier','cours-feature'],
     'rateSoftSkill':['lang','passport','role','tokenVerifier']
@@ -132,6 +144,8 @@ module.exports.policies = {
    },
    OtherVideoController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
+    'update':['lang','passport','role','tokenVerifier','permissions'],
+    
     'rateCourse':['lang','passport','role','tokenVerifier'],
    },
 

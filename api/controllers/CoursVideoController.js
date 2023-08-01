@@ -12,9 +12,30 @@ const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMess
 const schemaValidation = require("../../utils/validations");
 const { CoursVideoShema } = require("../../utils/validations/CoursvideoSchema");
 const RateShema = require("../../utils/validations/RateSchema");
+const ValidateSchema = require("../../utils/validations/ValidateCourseSchema");
 
 
 module.exports = {
+  validateCours:async  (req,res)=>{
+    const validateCoursSchema = schemaValidation(ValidateSchema)(req.body)
+    if(validateCoursSchema.isValid){
+      try{
+        let cours =await CoursVideo.findByPk(req.params.id)
+        if(!cours){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        
+            return DataHandlor(req,await cours.update(req.body),res)
+      }catch(e){
+          return ErrorHandlor(req, new SqlError(e),res)
+      }
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:validateCoursSchema.message}),res)
+    }
+
+
+  },
   async create(req, res) {
       const createVideoCourseValidation = schemaValidation(CoursVideoShema)(req.body)
       if(createVideoCourseValidation.isValid){

@@ -15,11 +15,9 @@
   },
  
     "hooks": {
-      
+      "sockets":false,
       "session": false,
       "orm": false
-    
-    
     }
   
 }

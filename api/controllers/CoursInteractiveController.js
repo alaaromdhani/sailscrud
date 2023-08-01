@@ -13,9 +13,34 @@ const fs = require('fs');
 const UnkownError = require("../../utils/errors/UnknownError");
 const schemaValidation = require("../../utils/validations");
 const RateShema = require("../../utils/validations/RateSchema");
+const ValidationError = require("../../utils/errors/validationErrors");
+const ValidateSchema = require("../../utils/validations/ValidateCourseSchema");
 
 
 module.exports = {
+  validateCours:async  (req,res)=>{
+    const validateCoursSchema = schemaValidation(ValidateSchema)(req.body)
+    console.log(validateCoursSchema)
+    if(validateCoursSchema.isValid){
+      try{
+        let cours =await CoursInteractive.findByPk(req.params.id)
+        console.log(cours)
+        if(!cours){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        
+            return DataHandlor(req,await cours.update(req.body),res)
+      }catch(e){
+          console.log(e)
+          return ErrorHandlor(req, new SqlError(e),res)
+      }
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:validateCoursSchema.message}),res)
+    }
+
+
+  },
   async create(req, res) {
     sails.services.uploadservice.zipFileUploader(req,async (err,data)=>{
       if(err){

@@ -119,7 +119,7 @@ exports.register = function (user,callback){
 }
 exports.login = function (req, identifier, password, next) {
     
-      let query   = {isDeleted:false,phonenumber:identifier};
+      let query   =req.dash_login?{isDeleted:false,email:identifier}:{isDeleted:false,phonenumber:identifier};
        User.findOne({where:query,
       include:{
         model:Role,

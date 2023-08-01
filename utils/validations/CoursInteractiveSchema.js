@@ -1,7 +1,7 @@
 const joi = require('joi')
 const CoursInteractiveShema = joi.object({
     name: joi.string().required(),
-    description:joi.string(),
+    description:joi.string().allow(''),
     status: joi.string().valid('public','private'),
     tracked:joi.boolean(),
     parent:joi.number().required()

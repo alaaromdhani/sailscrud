@@ -69,19 +69,12 @@ module.exports = {
         where,
         include:[{
           model:Permission,
+          attributes: ['action'],
           through:'roles_permissions',
           include:{
             model:Model,
             attributes: ['name']
           }
-        },{
-          model:Feature,
-          through:'roles_features',
-        },{
-            model:User,
-            foreignKey:'role_id',
-
-
         }],
         order,
         limit: parseInt(limit, 10),

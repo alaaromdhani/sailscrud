@@ -77,7 +77,7 @@ module.exports = {
     },
     birthDate:{
       type:DataTypes.DATE,
-      allowNull:false
+      allowNull:true
     },
     preferredLanguage:{
       type:DataTypes.ENUM({values:['ar','fr','en']}),

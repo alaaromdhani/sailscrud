@@ -1,4 +1,5 @@
 const _ = require('@sailshq/lodash')
+
 const {Op, fn} = require('sequelize')
 
 
@@ -29,9 +30,9 @@ module.exports = async ()=>{
             actions:['*'],
             features:['*'],
             restrictions:[
-                {model:'coursinteractive',actions:['read']},
-                {model:'coursvideo',actions:['read']},
-                {model:'coursdocument',actions:['read']},
+                {model:'coursinteractive',actions:['read','validate']},
+                {model:'coursvideo',actions:['read','validate']},
+                {model:'coursdocument',actions:['read','validate']},
                 {model:'course',actions:['read']},
                 {model:'niveauscolaire',actions:['read']},
                 
@@ -54,7 +55,11 @@ module.exports = async ()=>{
            
         }
     }
-    
+    const actionsPerModel={
+        coursdocument:['read','create','delete','update','validate'],
+        coursinteractive:['read','create','delete','update','validate'],
+        coursvideo:['read','create','delete','update','validate']
+    }
     let allActions = ['read','create','delete','update']
         
     let allModels = await Model.findAll()
@@ -70,17 +75,25 @@ module.exports = async ()=>{
         through:'roles_features'
     }]})
     const createPermissions = async ()=>{
-    
-        return await Permission.bulkCreate(   allModels.filter(model=>allPermissions.filter(permission=>permission.model_id==model.id).length==0).reduce((prec,model)=>{
-            allActions.forEach(a=>{
-                prec.push({
-                    model_id:model.id,
-                    action:a
-                })
+        let permissionsToAdd = []
+        allModels.forEach(m=>{
+            let validActions
+            if(actionsPerModel[m.name]){
+                 validActions = actionsPerModel[m.name]
+            }
+            else{
+                validActions =allActions
+            }
+            validActions.forEach(a=>{
+               if(!allPermissions.some(p=>p.model_id===m.id && p.action===a)){
+                permissionsToAdd.push({model_id:m.id,action:a})
+               }
+             })
+        })
+        
+        
 
-            }) 
-            return prec
-        },[]))
+        return await Permission.bulkCreate(permissionsToAdd)
             
     }
 
@@ -91,7 +104,7 @@ const getGranted = (granted)=>{
             throw new Error({message:' the key '+k+' is required'})
         }
     })
-    Object.keys(granted).forEach(k=>{
+   /* Object.keys(granted).forEach(k=>{
         let validateFunction = GrantedobjectValidators[k]
         if(!validateFunction(granted[k])){
             if(requiredKeys.includes(k)){
@@ -103,15 +116,13 @@ const getGranted = (granted)=>{
                 delete granted[k]
             }
         } 
-    })
+    })*/
     return granted
 }
 const repairKeys = (object)=>{
     Object.keys(object).forEach(k=>{
         if(Array.isArray(object[k]) && object[k].length>0 && object[k][0]=='*'){
-            if(k=='actions'){
-                object[k] = allActions
-            }
+            
             if(k=='models'){
                 object[k] = appModels
             }
@@ -193,6 +204,13 @@ let grantsToPermissionsConverter =  (granted)=>{
                 const model_id = allModels.filter(model=>model.name==m).map(model=>model.id).at(0)
                 if(model_id){
                     let allowedActions = granted.actions
+                    if(allowedActions[0]==='*'){
+                        if(actionsPerModel[m]){
+                            allowedActions =actionsPerModel[m]
+                        }else{
+                            allowedActions =allActions
+                        }
+                    }
                     if(granted.restrictions){
                         let modelRestrictions = granted.restrictions.filter(r=>r.model==m)
                         if(modelRestrictions.length>0){
@@ -200,6 +218,9 @@ let grantsToPermissionsConverter =  (granted)=>{
                         }
                     }
                     allowedActions.forEach(a=>{
+                            if(!['update','delete','create','read','validate'].includes(a)){
+                                throw new Error('not a valid acion ',a)
+                            }
                             permissions.push({
                                   model_id,
                                   action:a  
@@ -220,32 +241,47 @@ let grantsToPermissionsConverter =  (granted)=>{
             throw e
         }
     }
+    
     return {permissions,features:granted.features.filter(fName=>allFeatures.filter(f=>f.name==fName).length>0).map(fName=>allFeatures.filter(f=>f.name==fName).at(0))}
 }
 
 
 let appPermissions = await createPermissions()
-allPermissions = allPermissions.concat(appPermissions)
-grants = repairKeys(grants)
-console.log(Object.keys(grants))
+allPermissions = await Permission.findAll()
+grants = repairKeys(grants);
+ 
+
 for(let i=0;i<Object.keys(grants).length;i++){
+    
     let roleName = Object.keys(grants)[i]
-
-    let role = allRoles.filter(r=>r.name==roleName).at(0)
-    if(role){
-        
-        let permissions = (grantsToPermissionsConverter(grants[roleName])).permissions.filter(p=>allPermissions.filter(permission=>permission.model_id==p.model_id&&p.action==permission.action).length>0).map(p=>{
-            return allPermissions.filter(permission=>permission.model_id==p.model_id&&p.action==permission.action).at(0)
-        })
-        
-        let result = await role.setPermissions(permissions)
-        role.setFeatures((grantsToPermissionsConverter(grants[roleName])).features)
-        
+    //console.log(roleName)
+    if(roleName==='superadmin'){
+        const groupedDatabasePermissions = allPermissions.reduce((prec,curr)=>{
+            prec[curr.model_id+'-'+curr.action] = curr
+            return prec
+        },{})
+            
+        const groupedRolePermissions = (grantsToPermissionsConverter(grants[roleName])).permissions.reduce((prec,curr)=>{
+                prec[curr.model_id+'-'+curr.action] = curr
+                return prec
+        },{})
+       
+            
+        let role = allRoles.filter(r=>r.name==roleName).at(0)
+        if(role){
+            let permissions =Object.keys(groupedRolePermissions).map(k=>groupedDatabasePermissions[k]) 
+            console.log(permissions.length)
+            
+           await role.setPermissions(permissions);
+            console.log(role.Permissions.length)
+            await role.setFeatures((grantsToPermissionsConverter(grants[roleName])).features)
+            
+        }
+        else{
+            console.log("can't find the role "+roleName+" statement will be ignored ")
+        }
+    
     }
-    else{
-        console.log("can't find the role "+roleName+" statement will be ignored ")
-    }
-
 }
 
 }

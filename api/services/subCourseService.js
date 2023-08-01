@@ -224,18 +224,6 @@ module.exports = {
                 }
             }]
         }).then(cd=>{
-             ci =cd  
-            return ActivityState.findOne({where:{deprecated:false,c_interactive_id:cd.id}})
-        }).then(acts=>{
-            return new Promise((resolve,reject)=>{
-                    if(!acts){
-                        return resolve(ci)
-                    }
-                    else{
-                        return reject(new UnauthorizedError({specific:'you cant delete a course that some people attempted'}))
-                    }
-            })
-        }).then(cd=>{
             return new Promise((resolve,reject)=>{
                 if(!cd){
                     return reject(new RecordNotFoundErr())

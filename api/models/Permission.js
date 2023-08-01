@@ -22,7 +22,7 @@ module.exports = {
       autoIncrement:true
     },
     action: {
-      type: DataTypes.ENUM('create','read','update','delete'),
+      type: DataTypes.ENUM('create','read','update','delete','validate','tracked'),
       required: true,
       /**
        * TODO remove enum and support permissions based on all controller

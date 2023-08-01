@@ -1,9 +1,9 @@
 
   
 const features = [{
-    name:'course Access',
-    description:' this feature gives authorised access to courses',
-    identity:'course access'
+    name:'validate course',
+    description:'this feature enables users to validate courses',
+    identity:'validate course'
 
 
 

@@ -10,11 +10,33 @@ const SqlError = require("../../utils/errors/sqlErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 const schemaValidation = require("../../utils/validations");
 const RateShema = require("../../utils/validations/RateSchema");
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize');
+const ValidateSchema = require("../../utils/validations/ValidateCourseSchema");
+const ValidationError = require("../../utils/errors/validationErrors");
 
 
 
 module.exports = {
+  validateCours:async  (req,res)=>{
+    const validateCoursSchema = schemaValidation(ValidateSchema)(req.body)
+    if(validateCoursSchema.isValid){
+      try{
+        let cours =await CoursDocument.findByPk(req.params.id)
+        if(!cours){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        
+            return DataHandlor(req,await cours.update(req.body),res)
+      }catch(e){
+          return ErrorHandlor(req, new SqlError(e),res)
+      }
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:validateCoursSchema.message}),res)
+    }
+
+
+  },
   async create(req, res) {
     if(req.operation){
         if(req.operation.error){
@@ -51,43 +73,17 @@ module.exports = {
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
-      const attributes = Object.keys(CoursDocument.sequelize.models.CoursDocument.rawAttributes);
-      let whereNs ={}
-      let allowedParents
-      if(req.role.name===sails.config.custom.roles.intern_teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
-         allowedParents = (await Course.findAll({include:{
-          model:MatiereNiveau,
-          where:{
-            [Sequelize.Op.or]:[
-              {
-               intern_teacher:req.user.id 
-
-              },
-              {
-                inspector:req.user.id 
- 
-               }
-            ]
-          }
-
-      }})).map(c=>c.id)
-       }
-         
-       let where = {}
-      // Create the filter conditions based on the search query
-      if(search){
-        where.name= {
-          [Sequelize.Op.like]: '%'+search+'%',
-          
-        }   
+      const where = search
+      ? {
+        [Sequelize.Op.or]: attributes.map((attribute) => ({
+          [attribute]: {
+            [Sequelize.Op.like]: '%'+search+'%',
+          },
+        })),
       }
-      if(allowedParents){
-        where.parent= {
-          [Sequelize.Op.in]: '%'+allowedParents+'%',
-          
-        }
-      }
-          
+      : {};
+
+    // Create the sorting order based on the sortBy and sortOrder parameters
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
@@ -95,15 +91,7 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await CoursDocument.findAndCountAll({
         where,
-        include:{
-          model:CoursComment,
-          foreignKey:'c_document_id',
-          include:{
-             model:User,
-             foreignKey:'addedBy',
-             attributes:['lastName','firstName','email','profilePicture'] 
-          }
-        },
+        
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),

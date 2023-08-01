@@ -15,6 +15,7 @@ const { profileUpdate } = require('../../utils/validations/UserSchema');
 const { ErrorHandlor } = require('../../utils/translateResponseMessage');
 const fs = require('fs');
 const generateCode = require('../../utils/generateCode');
+const { result } = require('lodash');
 
 
 
@@ -158,19 +159,35 @@ module.exports = {
   },
   create: (req, user, callback) => {
     const where = user.role_id ? { id: user.role_id } : { name: 'registred' };
-    Role.findOne({
-      where, include: [{
-        model: Permission,
-        through: 'roles_permissions'
-
-
-      },
-      {
-        model: Feature,
-        through: 'roles_features'
-
-
-      }]
+    Country.findByPk(user.country_id).then(c=>{
+      return new Promise((resolve,reject)=>{
+        if(c && c.active){
+          return resolve(c)
+        }
+        else{
+          return reject(new ValidationError({message:'a valid country is required'}))
+        }
+      })
+    }).then(c=>{
+      user.phonenumber = c.tel_code.startsWith('+')?c.tel_code+" "+user.phonenumber:'+'+c.tel_code+" "+user.phonenumber
+      user.username = user.firstName+" "+user.lastName  
+      return user
+    }).then(u=>{
+     return  Role.findOne({
+        where, include: [{
+          model: Permission,
+          through: 'roles_permissions'
+  
+  
+        },
+        {
+          model: Feature,
+          through: 'roles_features'
+  
+  
+        }]
+      
+    })
     }).then(role => {
 
       return new Promise((resolve, reject) => {
@@ -275,6 +292,9 @@ module.exports = {
 
       return new Promise((resolve, reject) => {
         if (data) {
+          if(user.phonenumber){
+            user.phonenumber = data.phonenumber.split(" ").at(0)+user.phonenumber
+          }
           return resolve(data);
         }
         else {
@@ -611,13 +631,14 @@ module.exports = {
   profileUpdater: (req, callback) => {
 
     let dat = {};
+    
     Object.keys(req.body).filter(key => key !== 'pp').forEach(key => { //emtying the requestbody from the pp parameter to be ready for validation
       dat[key] = req.body[key];
     });
     const updateProfileSchema = schemaValidation(profileUpdate)(dat);//validation for schema
     if (updateProfileSchema.isValid) { //
 
-
+        let u
 
       User.findOne({
         where: {
@@ -626,6 +647,7 @@ module.exports = {
 
         }
       }).then(user => {
+        u =user
         return new Promise((resolve, reject) => {
           //in this step verify if the user wants or not to update his password
           //if he wants to update his password  he has to mention the old one
@@ -640,26 +662,18 @@ module.exports = {
       }).then(user => {
 
         if (dat.oldPassword && dat.newPassword) {
-          return { result: bcrypt.compare(dat.oldPassword, user.password), user };
+
+          return bcrypt.compare(dat.oldPassword, user.password)
         }
         else {
-          return new Promise((resolve, reject) => {
-            return resolve({ result: true, user });
-
-          });
-
-
+          return true
         }
-
-
-
-
-      }).then(async ({ result, user }) => {
-        const valid = await result; //checks for matching passwords(old)
+      }).then(result => {
+        const valid = result; //checks for matching passwords(old)
         return new Promise((resolve, reject) => {
           if (valid) {
 
-            resolve(user);
+            resolve(u);
           }
           else {
             return reject(new UnauthorizedError({ specific: 'passwords do not match' }));
@@ -671,12 +685,16 @@ module.exports = {
 
 
 
-      }).then(async user => {
+      }).then( user => {
         //i keep checking if the user wants to update his password
         if (dat.oldPassword && dat.newPassword) {
           user.password = dat.newPassword;
         }
+       
         let attributes = dat;
+        if(attributes.phonenumber){
+          attributes.phonenumber = u.phonenumber.split(" ").at(0)+" "+attributes.phonenumber
+        }
         delete attributes.oldPassword;
         delete attributes.newPassword;
 
