@@ -16,4 +16,5 @@ const databaseCredentials = {
 
 
 }
+
 module.exports = databaseCredentials

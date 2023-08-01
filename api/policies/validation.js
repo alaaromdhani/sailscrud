@@ -1,4 +1,5 @@
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports = async (req,res,next)=>{
@@ -22,6 +23,7 @@ module.exports = async (req,res,next)=>{
                     return ErrorHandlor(req,new UnauthorizedError({specific:'you are not authorized to validate courses'}),res)
                 }   
                 else{
+                    
                     let course = await ModelReference.findByPk(req.params.id,{
                         include:{
                             model:Course,
@@ -42,13 +44,20 @@ module.exports = async (req,res,next)=>{
                             }
                         }
                     })
-                    
-                    if((course.Course.MatiereNiveau.inspector!==req.user.id && course.Course.MatiereNiveau.intern_teacher!==req.user.id) && req.role.weight>=course.Course.MatiereNiveau.Inspector.Role.weight){
-                        return ErrorHandlor(req,new UnauthorizedError({specific:'you are not responsible to validate this course'}),res)
+                    console.log(!course)
+                    if(!course){
+                        return ErrorHandlor(req, new RecordNotFoundErr(),res)
+
                     }
                     else{
-                        req.course = course
-                        return next()
+                        if((course.Course.MatiereNiveau.inspector!==req.user.id && course.Course.MatiereNiveau.intern_teacher!==req.user.id) && req.role.weight>=course.Course.MatiereNiveau.Inspector.Role.weight){
+                            return ErrorHandlor(req,new UnauthorizedError({specific:'you are not responsible to validate this course'}),res)
+                        }
+                        else{
+                            req.course = course
+                            console.log('course')
+                            return next()
+                        }
                     }
                 } 
      }  

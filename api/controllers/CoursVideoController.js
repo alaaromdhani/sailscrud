@@ -20,12 +20,9 @@ module.exports = {
     const validateCoursSchema = schemaValidation(ValidateSchema)(req.body)
     if(validateCoursSchema.isValid){
       try{
-        let cours =await CoursVideo.findByPk(req.params.id)
-        if(!cours){
-          return ErrorHandlor(req,new RecordNotFoundErr(),res)
-        }
+          
         
-            return DataHandlor(req,await cours.update(req.body),res)
+            return DataHandlor(req,await req.cours.update(req.body),res)
       }catch(e){
           return ErrorHandlor(req, new SqlError(e),res)
       }

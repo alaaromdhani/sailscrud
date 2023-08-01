@@ -52,7 +52,7 @@ module.exports.routes = {
   'GET /api/v1/other_courses_children/:id':'OtherCourseController.findChildren',
   'PATCH /api/v1/coursdocuments/validate/:id':'CoursDocumentController.validateCours',
   'PATCH /api/v1/coursinteractives/validate/:id':'CoursInteractiveController.validateCours',
-  'PATCH /api/v1/coursvideos/validate/:id':'CoursDocumentController.validateCours',
+  'PATCH /api/v1/coursvideos/validate/:id':'CoursVideo.validateCours',
  
   'PUT /lrs/other/activities/state':'OtherLrsController.putState',
   'PUT /lrs/other/statements':'OtherLrsController.putStatement',

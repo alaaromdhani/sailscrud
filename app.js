@@ -50,7 +50,7 @@ const databaseCredentials = require('./utils/constants');
     },3000)
   })
   console.log('created')
-  
+  require('appmetrics-dash').monitor();
   
   // Attempt to import `sails` dependency, as well as `rc` (for loading `.sailsrc` files).
   var sails;
