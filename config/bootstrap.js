@@ -57,7 +57,7 @@ module.exports.bootstrap = async function() {
   await matiereSeeders()
   await trimestresSeeders()
   await chaptersSeeders()
-  await documentSeeders()
+//  await documentSeeders()
  }
  catch(e){
   console.log(e)
