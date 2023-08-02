@@ -114,7 +114,7 @@ module.exports = {
          data = {id:req.params.id,Matieres:data.map(d=>d.Matiere)}
          
            
-         return DataHandlor(req,{data},res)
+         return DataHandlor(req,data,res)
         
       }
       else{
