@@ -8,7 +8,7 @@
  * For more information on configuration, check out:
  * https://sailsjs.com/config/http
  */
-const bodyParser = require('body-parser')
+/*const bodyParser = require('body-parser')
 const express = require('express');
 const databaseCredentials = require('../utils/constants')
 const path = require('path');
@@ -22,7 +22,7 @@ const connection = new Sequelize(databaseCredentials.database, databaseCredentia
 let sequelizeSessionStore = new sessionStore({
   db:connection
 
-})
+})*/
 module.exports.http = {
     
   /****************************************************************************
@@ -34,7 +34,7 @@ module.exports.http = {
   *                                                                           *
   ****************************************************************************/
 
-  middleware: {
+  /*middleware: {
           bodyParser:(()=>{
             const octetStreamOptions  ={
                 
@@ -96,7 +96,7 @@ module.exports.http = {
     *                                                                          *
     ***************************************************************************/
 
-     order: [
+    /* order: [
        'cookieParser',
        'ex_session',
         'statics',
@@ -123,6 +123,6 @@ module.exports.http = {
     //   return middlewareFn;
     // })(),
 
-},
+//},
 
 };

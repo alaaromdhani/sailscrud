@@ -1,5 +1,5 @@
 module.exports = sails => {
-    const Sequelize = require('sequelize');
+    const Sequelize = sails.config.custom.database.sequelize
 
     // keep a ref to the original sails model loader function
     const originalLoadModels = sails.modules.loadModels;
@@ -69,7 +69,7 @@ module.exports = sails => {
             let connections;
             const self = this;
 
-            connections = this.initConnections();
+            connections = sails.config.custom.database.connections
 
             if (sails.config[this.configKey].exposeToGlobal) {
                 sails.log.verbose('Exposing Sequelize connections globally');
@@ -93,51 +93,7 @@ module.exports = sails => {
             }
         },
 
-        initConnections() {
-            const connections = {};
-            let connection, connectionName;
-
-            // Try to read settings from old Sails then from the new.
-            // 0.12: sails.config.connections & sails.config.models.connection
-            // 1.00: sails.config.datastores & sails.config.models.datastore
-            const datastores = sails.config.connections || sails.config.datastores;
-            const datastoreName = sails.config.models.connection || sails.config.models.datastore || 'default';
-
-            sails.log.verbose('Using default connection named ' + datastoreName);
-            if (!Object.prototype.hasOwnProperty.call(datastores, datastoreName)) {
-                throw new Error('Default connection \'' + datastoreName + '\' not found in config/connections');
-            }
-
-            for (connectionName in datastores) {
-                connection = datastores[connectionName];
-                    //console.log(connection)
-                // Skip waterline and possible non sequelize connections
-                if (connection.adapter || !(connection.dialect || connection.options.dialect)) {
-                    continue;
-                }
-
-                if (!connection.options) {
-                    connection.options = {};
-                }
-
-                // If custom log function is specified, use it for SQL logging or use sails logger of defined level
-                if (typeof connection.options.logging === 'string' && connection.options.logging !== '') {
-                    connection.options.logging = sails.log[connection.options.logging];
-                }
-
-                if (connection.url) {
-                    connections[connectionName] = new Sequelize(connection.url, connection.options);
-                } else {
-                    connections[connectionName] = new Sequelize(connection.database,
-                        connection.user,
-                        connection.password,
-                        connection.options);
-                }
-            }
-
-            return connections;
-        },
-
+        
         initModels() {
             if (typeof (sails.models) === 'undefined') {
                 sails.models = {};

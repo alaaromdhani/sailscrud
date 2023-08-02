@@ -18,7 +18,19 @@
  * For more best practices and tips, see:
  * https://sailsjs.com/docs/concepts/deployment
  */
-const databaseCredentials = require('../../utils/constants')
+const bodyParser = require('body-parser');
+
+const express = require('express')
+const expressSession = require('../../node_modules/sails/node_modules/express-session');
+const databaseCredentials = require('../../utils/constants');
+const sessionStore = require('express-session-sequelize')(expressSession.Store)
+const {initConnections,datastores,Sequelize} = require('../../utils/sequelize');
+const path = require('path');
+let connections = initConnections()
+let sequelizeSessionStore = new sessionStore({
+  db:connections['default'],
+})
+
 module.exports = {
   //cron : {
   //  login: {
@@ -41,48 +53,7 @@ module.exports = {
     * (https://sailsjs.com/config/datastores)                                 *
     *                                                                         *
     **************************************************************************/
-  datastores: {
-
-    /***************************************************************************
-      *                                                                          *
-      * Configure your default production database.                              *
-      *                                                                          *
-      * 1. Choose an adapter:                                                    *
-      *    https://sailsjs.com/plugins/databases                                 *
-      *                                                                          *
-      * 2. Install it as a dependency of your Sails app.                         *
-      *    (For example:  npm install sails-mysql --save)                        *
-      *                                                                          *
-      * 3. Then set it here (`adapter`), along with a connection URL (`url`)     *
-      *    and any other, adapter-specific customizations.                       *
-      *    (See https://sailsjs.com/config/datastores for help.)                 *
-      *                                                                          *
-      ***************************************************************************/
-    default: {
-      user:databaseCredentials.user,
-      password:databaseCredentials.password,
-  
-      options:databaseCredentials.options,
-      database:databaseCredentials.database
-  
-      /***************************************************************************
-      *                                                                          *
-      * Want to use a different database during development?                     *
-      *                                                                          *
-      * 1. Choose an adapter:                                                    *
-      *    https://sailsjs.com/plugins/databases                                 *
-      *                                                                          *
-      * 2. Install it as a dependency of your Sails app.                         *
-      *    (For example:  npm install sails-mysql --save)                        *
-      *                                                                          *
-      * 3. Then pass it in, along with a connection URL.                         *
-      *    (See https://sailsjs.com/config/datastores for help.)                 *
-      *                                                                          *
-      ***************************************************************************/
-      // adapter: 'sails-mysql',
-      // url: 'mysql://user:password@host:port/database',
-  
-    },
+  datastores:datastores,
     /*wow: {
       user:databaseCredentials.user,
       password:databaseCredentials.password,
@@ -108,7 +79,7 @@ module.exports = {
       // url: 'mysql://user:password@host:port/database',
   
     //},
-  },
+ 
 
 
 
@@ -359,24 +330,92 @@ module.exports = {
       *                                                                          *
       ***************************************************************************/
     cache: 365.25 * 24 * 60 * 60 * 1000, // One year
+    middleware: {
+      bodyParser:(()=>{
+        const octetStreamOptions  ={
+          inflate: true,
+          limit: '100kb',
+          type: 'application/octet-stream'
+      } 
+    
 
-    /***************************************************************************
-      *                                                                          *
-      * Proxy settings                                                           *
-      *                                                                          *
-      * If your app will be deployed behind a proxy/load balancer - for example, *
-      * on a PaaS like Heroku - then uncomment the `trustProxy` setting below.   *
-      * This tells Sails/Express how to interpret X-Forwarded headers.           *
-      *                                                                          *
-      * This setting is especially important if you are using secure cookies     *
-      * (see the `cookies: secure` setting under `session` above) or if your app *
-      * relies on knowing the original IP address that a request came from.      *
-      *                                                                          *
-      * (https://sailsjs.com/config/http)                                        *
-      *                                                                          *
-      ***************************************************************************/
-    // trustProxy: true,
+    return (req,res,next)=>{
+        if(req.headers['content-type']=='application/octet-stream'){
+          const octetStreamBodyParser = bodyParser.raw(octetStreamOptions)
+            console.log('octet stream body')
+            return octetStreamBodyParser(req,res,next)
+        }
+        else{
+          console.log('json content')
+          return bodyParser()(req,res,next)
+        }
+    }
 
+
+    })(),
+    statics:(()=>{
+        console.log('setting static files')
+        return function(req,res,next){
+          return express.static(path.join(__dirname, '../../static'))(req,res,next);
+        }
+
+    })(),
+    ex_session:(()=>{
+      console.log('the session hook for sails have been disaibled ...')
+      return function(req,res,next){
+          console.log('req usest is ')
+        return expressSession({
+          secret: 'hhh try-hack-me',
+          resave: false,
+          saveUninitialized: true,
+          store:sequelizeSessionStore,
+          cookie:{
+            sameSite:'none',
+       //     secure:sails.config.environment==="production"
+          }
+          
+        })(req,res,next)
+      }
+
+
+
+    })(),
+
+/***************************************************************************
+*                                                                          *
+* The order in which middleware should be run for HTTP requests.           *
+* (This Sails app's routes are handled by the "router" middleware below.)  *
+*                                                                          *
+***************************************************************************/
+
+    order: [
+      'cookieParser',
+      'ex_session',
+        'statics',
+      'bodyParser',
+    //   'compress',
+    //   'poweredBy',
+    //   'router',
+
+    //   'favicon',
+    ],
+
+
+/***************************************************************************
+*                                                                          *
+* The body parser that will handle incoming multipart HTTP requests.       *
+*                                                                          *
+* https://sailsjs.com/config/http#?customizing-the-body-parser             *
+*                                                                          *
+***************************************************************************/
+
+// bodyParser: (function _configureBodyParser(){
+//   var skipper = require('skipper');
+//   var middlewareFn = skipper({ strict: true });
+//   return middlewareFn;
+// })(),
+
+   },
   },
 
 
@@ -424,6 +463,13 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
   custom: {
+    database:{
+      connections,
+      session:{
+        store:sequelizeSessionStore
+      },
+      sequelize:Sequelize
+    },
     nb_chapitres:30,
     roles:{
       superadmin:{
@@ -489,17 +535,7 @@ module.exports = {
         maxValue:5,
         minValue:0
     },
-    database:{
-        credentials:{
-          username:databaseCredentials.user,
-          password:databaseCredentials.password,
-          host:databaseCredentials.options.host,
-          port:databaseCredentials.options.port,
-          dialect:databaseCredentials.options.dialect,      
-          database:databaseCredentials.database
 
-        }
-    },
     files:{
       extensions:{
         images:['gif','png','jpg','jpeg','webp','svg','ico'],
@@ -536,8 +572,8 @@ module.exports = {
     //--------------------------------------------------------------------------
 
   },
+  }
 
 
 
-};
 

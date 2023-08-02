@@ -6,7 +6,7 @@ const ValidationError = require('../../utils/errors/validationErrors');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 const SqlError = require('../../utils/errors/sqlErrors');
 const { Op } = require('sequelize');
-const Session = require('../../utils/sessionconf/Session').Session
+
 module.exports = {
 
   /**
@@ -52,6 +52,7 @@ module.exports = {
               ErrorHandlor(req,new UnkownError(),res);
             }
             else{
+              let Session = sails.config.custom.database.session.store.Session
               req.session.authenticated = true;
               const activeSession = req.sessionID
               const userSessionData = '%\"passport\":{\"user\":'+data.user.id+'}%'
@@ -95,6 +96,7 @@ module.exports = {
         const currentSession = req.sessionID
         req.session.authenticated = false;
         delete req.user;
+        let Session = sails.config.custom.database.session.store.Session
         await Session.destroy({
           where:{
               session_id:currentSession
