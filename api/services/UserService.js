@@ -631,10 +631,13 @@ module.exports = {
   profileUpdater: (req, callback) => {
 
     let dat = {};
-    
+      if(req.body.phonenumber){
+        req.body.phonenumber = parseInt(req.body.phonenumber) 
+      }
     Object.keys(req.body).filter(key => key !== 'pp').forEach(key => { //emtying the requestbody from the pp parameter to be ready for validation
       dat[key] = req.body[key];
     });
+    
     const updateProfileSchema = schemaValidation(profileUpdate)(dat);//validation for schema
     if (updateProfileSchema.isValid) { //
 
