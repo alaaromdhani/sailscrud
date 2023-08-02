@@ -631,9 +631,7 @@ module.exports = {
   profileUpdater: (req, callback) => {
 
     let dat = {};
-      if(req.body.phonenumber){
-        req.body.phonenumber = parseInt(req.body.phonenumber) 
-      }
+      
     Object.keys(req.body).filter(key => key !== 'pp').forEach(key => { //emtying the requestbody from the pp parameter to be ready for validation
       dat[key] = req.body[key];
     });
@@ -695,9 +693,7 @@ module.exports = {
         }
        
         let attributes = dat;
-        if(attributes.phonenumber){
-          attributes.phonenumber = u.phonenumber.split(" ").at(0)+" "+attributes.phonenumber
-        }
+        
         delete attributes.oldPassword;
         delete attributes.newPassword;
 

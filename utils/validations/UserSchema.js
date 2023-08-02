@@ -46,7 +46,7 @@ const profileUpdate= joi.object({
     newPassword: joi.string(),
     oldPassword: joi.string(),
     preferredLanguage:joi.string(),
-    phonenumber: joi.number().integer(),
+    phonenumber: joi.string(),
     birthDate:joi.string(),
     country_id:joi.number(),
     state_id:joi.number(),
