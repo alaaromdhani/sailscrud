@@ -17,13 +17,15 @@ const ValidateSchema = require("../../utils/validations/ValidateCourseSchema");
 
 module.exports = {
   validateCours:async  (req,res)=>{
+    console.log('cours video')
     const validateCoursSchema = schemaValidation(ValidateSchema)(req.body)
     if(validateCoursSchema.isValid){
       try{
           
         
-            return DataHandlor(req,await req.cours.update(req.body),res)
+          return DataHandlor(req,await req.course.update(req.body),res)
       }catch(e){
+        console.log(e)
           return ErrorHandlor(req, new SqlError(e),res)
       }
     }
