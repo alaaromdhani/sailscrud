@@ -124,11 +124,7 @@ exports.login = function (req, identifier, password, next) {
       include:{
         model:Role,
         foreignKey:'role_id',
-        where:{
-          name:{
-            [Op.in]:req.dash_login?Object.values(sails.config.custom.roles).filter(r=>r.dashboardUser).map(r=>r.name):Object.values(sails.config.custom.roles).filter(r=>!r.dashboardUser).map(r=>r.name)
-          }
-        }
+        
       }}).then(function ( user) { 
         
       if (!user) {

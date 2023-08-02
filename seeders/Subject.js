@@ -1,5 +1,23 @@
 module.exports =async ()=> {
      let niveau_scolaires = await NiveauScolaire.findAll()
+    let inspectors = await User.findAll({
+        include:{
+            model:Role,
+            foreignKey:'role_id',
+            where:{
+                name:sails.config.custom.roles.inspector.name
+            }
+        }
+    })
+    let teachers = await User.findAll({
+        include:{
+            model:Role,
+            foreignKey:'role_id',
+            where:{
+                name:sails.config.custom.roles.intern_teacher.name
+            }
+        }
+    })
     let subjects =[] 
     for(let i=0;i<10;i++){
         subjects.push({
@@ -10,15 +28,41 @@ module.exports =async ()=> {
         })
 
     }
-    const createdSubjects = await Matiere.BulkCreate(subjects)
+    const createdSubjects = await Matiere.bulkCreate(subjects)
     let niveau_matieres = []
     
-/*    createdSubjects.forEach((element,i)=>{
-           for(let index=i;index<createdSubjects.legth)
+    createdSubjects.forEach((element,i)=>{
+           for(let index=i;index<niveau_scolaires.length;index++){
+                niveau_matieres.push({
+                    MatiereId:element.id,
+                    NiveauScolaireId:niveau_scolaires[index].id,
+                    nb_modules:5,
+                    inspector:inspectors[index].id,
+                    intern_teacher:teachers[index].id,
+                    name:"wwaawawa",
+                    
+                })
+           }
+     })
+     let modules = []
+    let createdNiveauMatieres =  await MatiereNiveau.bulkCreate(niveau_matieres)
+     createdNiveauMatieres.forEach((mn,index)=>{
+        
+        if(mn.nb_modules){
+            for(let i=0;i<mn.nb_modules;i++){
+                modules.push({
+                    name:'NOT_ASSIGNED'+i,
+                    chapitre_id:(i+1),
+                    matiere_niveau_id:mn.id
+                })
+            }
+        }
+        
 
 
-
-    })*/
+     })
+     return await Module.bulkCreate(modules)
+     
     /*let roles = []
     roles.push(role)
     roles.push(roleTeacher)

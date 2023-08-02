@@ -24,6 +24,8 @@ module.exports=async ()=>{
     }
     for(let i=0;i<10;i++){
         let u ={ 
+            
+            phonenumber:"+216"+(29*i*Math.floor(Math.random()*100)),
             firstName:user1.firstName+""+i,
             lastName:user1.lastName+""+i,
             password:"123456",
@@ -39,6 +41,7 @@ module.exports=async ()=>{
     }
     for(let i=10;i<20;i++){
         let u ={ 
+            phonenumber:"+216"+(29*i*Math.floor(Math.random()*100)),
             firstName:user1.firstName+""+i,
             lastName:user1.lastName+""+i,
             password:"123456",
@@ -53,7 +56,7 @@ module.exports=async ()=>{
 
     }
 //    await Promise.all(usersToAdd.map())
-   let createdUsers =  await User.BulkCreate(usersToAdd)
+   let createdUsers =  await User.bulkCreate(usersToAdd)
    let groupedRoles = {} 
    roles.forEach(r=>{
         groupedRoles[r.id] = r
