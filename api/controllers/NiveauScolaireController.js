@@ -118,6 +118,7 @@ module.exports = {
         
       }
       else{
+        
         const data = await NiveauScolaire.findByPk(req.params.id,{
           include:{
               model:Matiere,
@@ -126,16 +127,18 @@ module.exports = {
 
           }
         });
+        if (!data) {
+          return ErrorHandlor(req,new RecordNotFoundErr(),res);
+        }
+        return DataHandlor(req,data,res);
+      } 
+      }
+      catch (err) {
+        return ErrorHandlor(req,new SqlError(err),res)
       }
  
       
-      if (!data) {
-        return ErrorHandlor(req,new RecordNotFoundErr(),res);
-      }
-      return DataHandlor(req,data,res);
-    } catch (err) {
-      return ErrorHandlor(req,new SqlError(err),res)
-    }
+      
   },
 
   async update(req, res) {

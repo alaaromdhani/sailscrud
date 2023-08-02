@@ -21,6 +21,14 @@ module.exports.policies = {
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','blogfileUploader']
   },
+  ModuleController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'find':['lang','passport','role','tokenVerifier']
+  },
+  ChapitreController:{
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+    'find':['lang','passport','role','tokenVerifier']
+  },
   UploadController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','bulkUpload']
