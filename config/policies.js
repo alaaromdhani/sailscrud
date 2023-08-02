@@ -121,6 +121,7 @@ module.exports.policies = {
   },
   NiveauScolaireController:{
     'find':['lang','passport','role','tokenVerifier'],
+    'findOne':['lang','passport','role','tokenVerifier'],
     '*':['lang','passport','role','tokenVerifier','permissions']
     
   },

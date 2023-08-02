@@ -94,14 +94,41 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await NiveauScolaire.findByPk(req.params.id,{
+      if(sails.config.custom.roles.inspector.name===req.role.name||sails.config.custom.roles.intern_teacher.name===req.role.name){
+        let where={NiveauScolaireId:req.params.id}
+        
+        if(sails.config.custom.roles.inspector.name===req.role.name){
+          where.inspector = req.user.id
+        }
+        if(sails.config.custom.roles.intern_teacher.name===req.role.name){
+          where.intern_teacher = req.user.id
+        } 
+         let data = await MatiereNiveau.findAll({where,include:[{
+          model:Matiere,
+        
+          
+
+          
+          foreignKey:'MatiereId'
+         }]})
+         data = {id:req.params.id,Matieres:data.map(d=>d.Matiere)}
+         
+           
+         return DataHandlor(req,{data},res)
+        
+      }
+      else{
+        const data = await NiveauScolaire.findByPk(req.params.id,{
           include:{
               model:Matiere,
             foreignKey:'matiere_id',
             through:MatiereNiveau
 
           }
-      });
+        });
+      }
+ 
+      
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
