@@ -162,7 +162,7 @@ module.exports = {
         findOptions.include = {
           model:Upload,
           foreignKey:'document',
-          attributes:['file_name'],
+          attributes:['link'],
           
        }
        }
