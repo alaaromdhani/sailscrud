@@ -56,7 +56,9 @@ module.exports=async ()=>{
 
     }
 //    await Promise.all(usersToAdd.map())
-   let createdUsers =  await User.bulkCreate(usersToAdd)
+   let createdUsers =  await User.bulkCreate(usersToAdd,{
+        individualHooks:true
+   })
    let groupedRoles = {} 
    roles.forEach(r=>{
         groupedRoles[r.id] = r

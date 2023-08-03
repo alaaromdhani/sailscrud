@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-
+const Sequelize = require('sequelize')
 const schemaValidation = require('../../utils/validations');
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
 const SqlError = require('../../utils/errors/sqlErrors');
@@ -46,13 +46,18 @@ module.exports = {
         if(sails.config.custom.roles.intern_teacher.name===req.role.name){
           where.intern_teacher = req.user.id
         } 
-         let data = await MatiereNiveau.findAll({where,include:{
-          model:NiveauScolaire,
-          foreignKey:'NiveauScolaireId'
-         }})
-         
-         data = data.map(d=>d.NiveauScolaire)
-         return DataHandlor(req,{data},res)
+         let data = await MatiereNiveau.findAll({where,
+          attributes: ["NiveauScolaireId"],
+          group: "NiveauScolaireId",
+          include:{
+            model:NiveauScolaire,
+            foreignKey:'NiveauScolaireId'
+          }
+        
+         })
+       
+        // data = data.map(d=>d.NiveauScolaire)
+         return DataHandlor(req,{data:data.map(d=>d.NiveauScolaire)},res)
         
       }
  
@@ -88,6 +93,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res);
     } catch (error) {
+      console.log(error)
       return ErrorHandlor(req,new SqlError(error),res);
     }
   },

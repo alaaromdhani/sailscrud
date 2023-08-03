@@ -24,6 +24,7 @@ const  trimestresSeeders = require('../utils/seeders/trimestres');
 const default_user_image = require('../seeders/defaultProfilePict');
 const chaptersSeeders = require('../utils/seeders/chatpter')
 const documentSeeders = require('../seeders/DocumentCourse')
+const usersSeeders = require('../seeders/users')
 module.exports.bootstrap = async function() {
   /*function getAllKeys(object){
     Object.keys(object).forEach(k=>{
@@ -38,7 +39,8 @@ module.exports.bootstrap = async function() {
 
    await featureSeeders()
   }*/
-  console.log(Object.keys(sails.config))
+  //let message =sails.hooks.http.app.hasOwnProperty('static')?'it has its own static method':'it does not have its own static method'
+  console.log(Object.keys(sails.hooks.http.app))
 
  try{
   await default_user_image()
@@ -57,6 +59,7 @@ module.exports.bootstrap = async function() {
   await matiereSeeders()
   await trimestresSeeders()
   await chaptersSeeders()
+  //await usersSeeders()
 //  await documentSeeders()
  }
  catch(e){

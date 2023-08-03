@@ -19,8 +19,8 @@
  * https://sailsjs.com/docs/concepts/deployment
  */
 const bodyParser = require('body-parser');
+const serveStatic = require('serve-static')
 
-const express = require('express')
 const expressSession = require('../../node_modules/sails/node_modules/express-session');
 const databaseCredentials = require('../../utils/constants');
 const sessionStore = require('express-session-sequelize')(expressSession.Store)
@@ -356,8 +356,22 @@ module.exports = {
     statics:(()=>{
         console.log('setting static files')
         return function(req,res,next){
-          return express.static(path.join(__dirname, '../../static'))(req,res,next);
+         
+          
+          
+          function setCustomCacheControl (res, path) {
+            if (serveStatic.mime.lookup(path) === 'text/html') {
+              // Custom Cache-Control for HTML files
+              res.setHeader('Cache-Control', 'public, max-age=0')
+            }
+          }
+          console.log('passed by here')
+          return serveStatic(path.join(__dirname, '../../static'), {
+            maxAge: '1d',
+            setHeaders: setCustomCacheControl
+          })(req,res,next)
         }
+
 
     })(),
     ex_session:(()=>{
@@ -371,7 +385,7 @@ module.exports = {
           store:sequelizeSessionStore,
           cookie:{
             sameSite:'none',
-       //     secure:sails.config.environment==="production"
+          secure:sails.config.environment==="production"
           }
           
         })(req,res,next)

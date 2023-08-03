@@ -126,8 +126,9 @@ exports.login = function (req, identifier, password, next) {
         foreignKey:'role_id',
         
       }}).then(function ( user) { 
-        
+          console.log("user",user)
       if (!user) {
+        
         next(err=new BadCredentialsError(),user=null,info='Bad Credentials');
       }
       else{
