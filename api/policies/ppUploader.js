@@ -4,40 +4,59 @@ const SqlError = require('../../utils/errors/sqlErrors')
 const {ErrorHandlor} = require('../../utils/translateResponseMessage');
 const UnkownError = require('../../utils/errors/UnknownError')
 async function optionsValidator(req,file,cb){
+  if(!req.operation){
+    req.operation = {}
+  }
   let fileOptions;
   try {
     fileOptions= await sails.services.uploadservice.optionsGeneratorV2(file,{isPublic:true,type:'images'});
     // eslint-disable-next-line handle-callback-err
     fileOptions.addedBy = req.user.id;
-
-    return  sails.services.userservice.profileUpdater(req,async (err,data)=>{
-      if(err){
-        req.operation = {
-          error:err
-        };
-        return cb(null,false);
-      }
-      else{
-        try{
-          let user = await data.save()
-          let upload = await Upload.create(fileOptions)
-          req.upload = upload
-          user.profilePicture = upload.link
-          user = await  user.save()
+    if(req.options &&req.options.model=="user"&&req.method=="PATCH"){
+        return sails.services.userservice.update(req,(err,data)=>{
+          req.upload = fileOptions    
+          if(err){
+               
+                req.operation = {error:err}
+                    return cb(null,false);
+              }
+              else{
+                req.operation = {data}
+                return cb(null,false);
+              }
+        })
+    }
+    else{
+      return  sails.services.userservice.profileUpdater(req,async (err,data)=>{
+        if(err){
           req.operation = {
-            data:user
+            error:err
           };
-
-          return cb(null,true)
-
-        }catch(e){
-          req.operation = {
-            error:new SqlError(err)
-          }
-          return cb(null,false)
+          return cb(null,false);
         }
-      }
-    });
+        else{
+          try{
+            let user = await data.save()
+            let upload = await Upload.create(fileOptions)
+            req.upload = upload
+            user.profilePicture = upload.link
+            user = await  user.save()
+            req.operation = {
+              data:user
+            };
+  
+            return cb(null,true)
+  
+          }catch(e){
+            req.operation = {
+              error:new SqlError(err)
+            }
+            return cb(null,false)
+          }
+        }
+      });
+    }
+   
   }catch(e){
     req.operation = {
       error:e

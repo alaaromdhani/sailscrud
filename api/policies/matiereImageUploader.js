@@ -14,6 +14,7 @@ const fileFilerOptions = async (req,file,cb)=>{
             req.body.ns = JSON.parse(req.body.ns)
         }
         let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
+        fileOptions.addedBy = req.user.id    
         req.upload = fileOptions
         let bodyData = {}
         Object.keys(req.body).filter(k=>k!=="img").forEach(k=>{

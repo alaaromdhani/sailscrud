@@ -11,7 +11,7 @@ const { SAPassportLockedError } = require('../../utils/errors/lockedError');
 const { getDifferenceOfTwoDatesInTime } = require('../../utils/getTimeDiff');
 const bcrypt = require('bcrypt');
 const schemaValidation = require('../../utils/validations');
-const { profileUpdate } = require('../../utils/validations/UserSchema');
+const { profileUpdate, updateUserSchema } = require('../../utils/validations/UserSchema');
 const { ErrorHandlor } = require('../../utils/translateResponseMessage');
 const fs = require('fs');
 const generateCode = require('../../utils/generateCode');
@@ -286,103 +286,56 @@ module.exports = {
 
 
   },
-  update: (req, user, callback) => {
-
-    User.findByPk(req.params.id).then((data) => {
-
-      return new Promise((resolve, reject) => {
-        if (data) {
-          if(user.phonenumber){
-            user.phonenumber = data.phonenumber.split(" ").at(0)+user.phonenumber
-          }
-          return resolve(data);
+  update: (req, callback) => {
+    let bodyData = {}
+    if(req.body.isDeleted && typeof(req.body.isDeleted)==='string'){
+      req.body.isDeleted=req.body.isDeleted==='true'?true:false
+    }
+    Object.keys(req.body).filter(k=>k!='pp').forEach(k=>{
+        bodyData[k] = req.body
+    })
+    const bodyDataValidation= schemaValidation(updateUserSchema)(bodyData)
+    if(bodyDataValidation.isValid){
+      User.findByPk(req.params.id,{
+        include:{
+          model:Role,
+          foreignKey:'role_id'
         }
-        else {
-          return reject(new RecordNotFoundErr({ specific: 'user' }));
-        }
+      }).then((data) => {
+          return new Promise((resolve,reject)=>{
+            if(data){
+                if(req.role.weight>=data.Role.weight && req.user.id!=data.addedBy){
+                    return reject(new UnauthorizedError({specific:'you canot update a higher user than you'}))
+                }
+                else{
+                    return resolve(data)
+                }
+            }
+            else{
+              reject(new RecordNotFoundErr())
+            }
 
 
-      });
+          })
+      }).then(data=>{
+      
+        return data.update(bodyData)
+        
+      }).then(data=>{
+          callback(null,data)
+      }).catch(err=>{
 
-    }).then((data) => {
-
-      return Promise.all([Role.findOne({ where: { id: data.role_id } }), data]);
-
-    }).then(([role, data]) => {
-
-      return new Promise((resolve, reject) => {
-        if (role.weight > req.role.weight || data.addedBy == req.user.id) {
-          return resolve(data);
-        }
-        else {
-          return reject(new UnauthorizedError({ specific: 'you cant update this user' }));
-        }
-
-
-      });
-
-
-    }).then(data => {
-
-      return new Promise((resolve, reject) => {
-        let permissions = [];
-        let features = [];
-        if (user.permissions) {
-          const testPermissions = sails.services.permissionservice.canAssignPermissions(req.user, user.permissions);
-          if (testPermissions) {
-            permissions = sails.services.permissionservice.convertPermissions(req.user, user.permissions);
-          }
-          else {
-            return reject(new UnauthorizedError({ specific: 'cannot assign permissions you do not have' }));
-          }
-          delete user.permissions;
-        }
-        if (user.features) {
-          const testFeatures = sails.services.permissionservice.canAssignFeatures(req.user, user.features);
-          if (testFeatures) {
-            features = sails.services.permissionservice.convertFeatures(req.user, user.features);
-          }
-          else {
-            return reject(new UnauthorizedError({ specific: 'cannot assign features you do not have' }));
-          }
-          delete user.features;
-
-        }
-
-        return resolve({ data, permissions, features });
-
-
-
-
-      });
-
-    }).then(async ({ data, permissions, features }) => {
-      try {
-        let u = data;
-        Object.keys(user).forEach(k => u[k] = user[k]);
-        u = await u.save();
-        if (permissions.length > 0) {
-          await u.setPermissions([]);
-          await u.addPermissions(permissions);
-
-        }
-        if (features.length > 0) {
-          await u.setFeatures([]);
-          await u.addFeatures(features);
-
-        }
-        callback(null, u);
+        callback(err,null)
+      })
+  
       }
-      catch (e) {
-        callback(new SqlError(e), null);
-      }
+    else{
+       callback(new ValidationError({message:bodyDataValidation.message}))
+    }
+    
+    
 
 
-    }).catch(err => {
-      callback(err, null);
-
-
-    });
 
 
 
@@ -706,6 +659,7 @@ module.exports = {
 
 
       }).catch(err => {
+        console.log(err)
         callback(err, null);
 
 
@@ -713,6 +667,7 @@ module.exports = {
       });
     }
     else {
+      
       // eslint-disable-next-line callback-return
       callback(new ValidationError({ message: updateProfileSchema.message }), null);
 

@@ -70,7 +70,7 @@ module.exports = {
     },
     canAssignFeatures:(user,features)=>{
             
-        return features.filter(f=>user.Features.filter(feature=>feature.name==f.name).length==0).length>0;
+        return features.filter(f=>user.Features?.filter(feature=>feature.name==f.name).length==0).length>0;
 
 
 

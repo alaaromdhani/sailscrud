@@ -16,7 +16,8 @@ const optionsVerifier= async (req,file,cb)=>{
    }
    try{
        let uploadOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'doc',isPublic:false});
-//        console.log(uploadOptions)
+       uploadOptions.addedBy = req.user.id     
+       //        console.log(uploadOptions)
        let coursDocument ={}
        
        Object.keys(req.body).filter(k=>k!='doc').forEach(k=>{

@@ -1,16 +1,4 @@
-login {
-     normal_user:another_route
-     admin_user:route_admin_user_ogin,
-}
-
-register {
-     the registred user is automatically a parent 
-     the user does not have the right to connect until he has verified account   
-     the registred user must have a valid phonenumber code cuntrey combined with state
-
-     code verification after user registration: ---> the user makes a register a code goes to its phone number 
-                                                ---> the code must be regisred in the database and                                                  
-}    
-othercourses:{
-     we must make sure 
-}
+mustn't delete a file created by a super user 
+update user does not work 
+profile/me some attributes must not contain some parameters 
+/courses : the inspector and the teacher must see only the courses attributed to them 

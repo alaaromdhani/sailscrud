@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
+const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 /**
  * @module Upload
  *
@@ -22,6 +23,9 @@ module.exports = {
     tableName: 'uploads',
     hooks:{
       beforeDestroy: async(upload,options)=>{
+        if(upload.link ===sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name){
+          throw new UnauthorizedError({specific:'you can t delete this photo'})
+        }
         if(upload.isPublic){
           await User.update({profilePicture:sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.dafault_user_image.file_name},{where:{profilePicture:upload.link}});
         }

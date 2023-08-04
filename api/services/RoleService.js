@@ -198,25 +198,10 @@ module.exports = {
                             }
     
                     }
-                    if(features.length>0){
-                       // console.log(features)
-                        await r.setFeatures(features)
-                       // await r.setFeatures([])
-                       // await r.addFeatures(features)
-                        if(r.Users.length>0){
-                            const userIds = r.Users.map(u=>u.id)
-                            await User.sequelize.query(`DELETE FROM users_features WHERE UserId IN (${userIds.join(',')})`)
-                         
-                            for(let u of r.Users){
-                                await u.addFeatures(features)
-    
-    
-                            } 
-                        }
-    
-                    }
-                   
-                    callback(null,r)
+                    
+                   //delete r.Users
+                
+                   callback(null,r)
                 
                 }                
                 catch(e){

@@ -63,22 +63,24 @@ else{
     });
   
     passport.deserializeUser(function (id, next) {
-       return User.findOne({where:{id: id,isDeleted:false},include:[{
+       return User.findOne({where:{id: id,isDeleted:false},
+        attributes:['id','email','profilePicture','lastName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt']
+        ,include:[{
         model:Role,
         foreighKey:'role_id'
       },
       {
+
         model:Permission,
+        attributes:['id','action'],
         through:'users_permissions',
         include:{
             model:Model,
+            attributes:['name'],
             foreighKey:'model_id'
-        }
+      }
 
 
-      },{
-        model:Feature,
-        through:'users_features'
       }]})
         .then(function (user) {
           next(null, user || null);

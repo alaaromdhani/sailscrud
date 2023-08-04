@@ -30,10 +30,8 @@ const updateUserSchema= joi.object({
     email: joi.string(),
     isDeleted: joi.boolean(),
     sex:joi.string().valid('M','F'),    
-    phonenumber: joi.number().integer(),
-    birthDate:joi.string(),
-   permissions: joi.array().items(PermissionShema).allow(null),
-    features:joi.array().items(joi.string()).allow(null),
+    phonenumber: joi.string(),
+    
     country_id:joi.number().integer(),
     state_id:joi.number().integer(),
 })

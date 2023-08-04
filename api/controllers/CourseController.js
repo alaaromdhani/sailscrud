@@ -43,7 +43,8 @@ module.exports = {
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(Course.sequelize.models.Course.rawAttributes);
-
+      let whereNs = {}
+     
 
       // Create the filter conditions based on the search query
       let where = search
@@ -101,8 +102,7 @@ module.exports = {
         })
        }
       const order = [[sortBy, sortOrder]];
-       let whereNs = {}
-       if(req.role.name===sails.config.custom.roles.intern_teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
+      if(req.role.name===sails.config.custom.roles.intern_teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
         whereNs ={
           [Sequelize.Op.or]:[{
             intern_teacher:req.user.id
@@ -110,6 +110,11 @@ module.exports = {
             inspector:req.user.id
           }]
         }
+          includeOptions.push({
+            model:MatiereNiveau,
+            foreignKey:'matiere_niveau_id',
+            attributes:['name'],where:whereNs
+          })
        } 
       // Perform the database query with pagination, filtering, sorting, and ordering
       console.log(whereNs)

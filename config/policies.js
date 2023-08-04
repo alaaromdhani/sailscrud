@@ -44,6 +44,10 @@ module.exports.policies = {
     upload:['lang','passport','role','bulkUpload'],
     '*':['lang','passport','role']
   },
+  UserController:{
+    update:['lang','passport','role','tokenVerifier','permissions','ppUploader'],
+    '*':['lang','passport','role','tokenVerifier','permissions'],
+  },
   CourseController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'treeView':['lang','passport','role','tokenVerifier'],
@@ -64,7 +68,7 @@ module.exports.policies = {
     'create':['lang','passport','role','tokenVerifier','permissions','unzip'],
     'update':['lang','passport','role','tokenVerifier','permissions'],
     'validateCours':['lang','passport','role','tokenVerifier','validation'],
-    'accessCourse':['lang','passport','role','tokenVerifier','cours-feature'],
+    'accessCourse':['lang','passport','role','tokenVerifier'],
     'rateCourse':['lang','passport','role','tokenVerifier'],
     'getResults':['lang','passport','role','tokenVerifier'],
     'commentCourse':['lang','passport','role','tokenVerifier','canCommentCours'],
@@ -105,7 +109,7 @@ module.exports.policies = {
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'update':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','unzipsoftskill'],
-    'accessSoftSkills':['lang','passport','role','tokenVerifier','cours-feature'],
+    'accessSoftSkills':['lang','passport','role','tokenVerifier'],
     'rateSoftSkill':['lang','passport','role','tokenVerifier']
     
   },

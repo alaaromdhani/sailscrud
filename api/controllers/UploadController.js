@@ -12,6 +12,7 @@ const { updateUploadShema } = require('../../utils/validations/UploadSchema');
 const ValidationError = require('../../utils/errors/validationErrors');
 const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 const SqlError = require('../../utils/errors/sqlErrors');
+const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 module.exports = {
   create :async(req,res)=>{
     if(req.operation){
@@ -142,14 +143,28 @@ module.exports = {
 
   async destroy(req, res) {
     try {
-      const data = await Upload.findByPk(req.params.id);
+      const data = await Upload.findByPk(req.params.id,{
+        include:{
+          model:User,
+          foreignKey:'addedBy',
+          attributes:['id'],
+          include:{
+            model:Role,
+            foreignKey:'role_id',
+            attributes:['name','weight']
+          }
+        }
+      });
+      if(data.addedBy && data.User.Role.weight>=req.role.weight&&data.addedBy!==req.user.id){
+        return ErrorHandlor(req,new UnauthorizedError({specific:'you can t delete a record created by a role higher than you '}),res)
+      }
       if (!data) {
-        return res.status(404).json({ error: 'Upload not found' });
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }
       await data.destroy();
       return DataHandlor(req,{},res)
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return ErrorHandlor(req,new SqlError(err),res);
     }
   },
 };

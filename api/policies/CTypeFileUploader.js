@@ -36,7 +36,7 @@ const fileFilerOptions = async (req,file,cb)=>{
    try{
 
     let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:modelToValidationConverter[req.options.model].typeUpload,isPublic:true});
-      
+      fileOptions.addedBy = req.user.id
       if(req.method=="PATCH"){
         return modelToValidationConverter[req.options.model].method.update(req,(err,data)=>{
           if(err){

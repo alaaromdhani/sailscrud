@@ -140,27 +140,36 @@ module.exports = {
   },
 
   async update(req, res) {
-    const bodyValidation = schemaValidation(updateUserSchema)(req.body)
-    if(bodyValidation.isValid){
+      if(req.operation){
+        if(req.operation.error){
+          return ErrorHandlor(req,req.operation.error,res)
+        }
+        else{
+            try{
+              let upload = await Upload.create(req.upload) 
+            let  user = req.operation.data
+            user.profilePicture  = upload.link
+            return DataHandlor(req,await user.save(),res)
+            } 
+            catch(e){
+                return ErrorHandlor(req,new SqlError(e),res)
+            } 
 
-      sails.services.userservice.update(req,req.body,(err,user)=>{
-          console.log(err)
-          if(err){
-            ErrorHandlor(req,err,res)
-          }
-          else{
-            DataHandlor(req,user,res)
-          }
+        }
+
+      }else{
+          sails.services.userservice.update(req,(err,data)=>{
+            if(err){
+              return ErrorHandlor(req,err,data)
+            }
+            else{
+              return DataHandlor(req,data,res)
+            }
 
 
-      })
-    }
-    else{
-      ErrorHandlor(req,new ValidationError(bodyValidation),res)
-
-    }
-
-
+          })
+      }
+      
 
   },
 
