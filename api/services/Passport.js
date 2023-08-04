@@ -64,7 +64,7 @@ else{
   
     passport.deserializeUser(function (id, next) {
        return User.findOne({where:{id: id,isDeleted:false},
-        attributes:['id','email','profilePicture','lastName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt']
+        attributes:['id','email','profilePicture','firstName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt']
         ,include:[{
         model:Role,
         foreighKey:'role_id'
