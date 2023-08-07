@@ -45,6 +45,8 @@ module.exports = {
         required: true,
        
       },
+ 
+      
       active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true

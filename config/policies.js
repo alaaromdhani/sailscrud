@@ -12,7 +12,7 @@ module.exports.policies = {
   '*':['lang','passport','role','tokenVerifier','permissions'],
   AuthController:{
     '*':['lang','passport','role'],
-    logout:['lang','passport','role','tokenVerifier'],
+    logout:['lang','passport','role','auth'],
     profileCallback:['lang','passport','role','tokenVerifier'],
     profileUpdater:['lang','passport','role','tokenVerifier','ppUploader'],
 

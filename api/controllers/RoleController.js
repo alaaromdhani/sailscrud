@@ -62,8 +62,13 @@ module.exports = {
         : {};
 
       // Create the sorting order based on the sortBy and sortOrder parameters
+      let configRoles= sails.config.custom.roles
       const order = [[sortBy, sortOrder]];
-        where = {...where,weight:{
+        where = {...where,
+          name:{
+            [Op.notIn]:Object.keys(configRoles).filter(name=>!configRoles[name].dashboardUser)
+
+          },weight:{
           [Op.gte]:req.role.weight
 
         }}
