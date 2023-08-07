@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing role endpoints
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const {Op} = require('sequelize')
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const UnkownError = require("../../utils/errors/UnknownError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
@@ -51,7 +51,7 @@ module.exports = {
 
 
       // Create the filter conditions based on the search query
-      const where = search
+      let where = search
         ? {
           [Sequelize.Op.or]: attributes.map((attribute) => ({
             [attribute]: {
@@ -63,10 +63,14 @@ module.exports = {
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = [[sortBy, sortOrder]];
+        where = {...where,weight:{
+          [Op.gte]:req.role.weight
 
+        }}
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Role.findAndCountAll({
         where,
+
         include:[{
           model:Permission,
           attributes: ['action'],
@@ -94,6 +98,7 @@ module.exports = {
       }
       ,res)
     } catch (error) {
+      console.log(error)
       ErrorHandlor(req,new SqlError(error),res)
     }
   },
