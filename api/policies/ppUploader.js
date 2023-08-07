@@ -4,6 +4,7 @@ const SqlError = require('../../utils/errors/sqlErrors')
 const {ErrorHandlor} = require('../../utils/translateResponseMessage');
 const UnkownError = require('../../utils/errors/UnknownError')
 async function optionsValidator(req,file,cb){
+  console.log(req.body)
   if(!req.operation){
     req.operation = {}
   }
@@ -22,7 +23,7 @@ async function optionsValidator(req,file,cb){
               }
               else{
                 req.operation = {data}
-                return cb(null,false);
+                return cb(null,true);
               }
         })
     }
@@ -67,7 +68,7 @@ async function optionsValidator(req,file,cb){
 }
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-
+    console.log('file in destination')
     cb(null, path.join(__dirname,'../../assets/'+req.upload.path));
   },
   filename: (req, file, cb) => {

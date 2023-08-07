@@ -27,7 +27,7 @@ else{
                   return passport.authenticate('local',next)(req,res,req.next)
                 }
                 else if(action==="login"){
-            
+                    
                   return passport.authenticate('local',next)(req,res,req.next)
                 }
                 else {

@@ -10,10 +10,10 @@ module.exports=async  ()=>{
     },
     {
         key:'ACCOUNT_ACTIVATION',
-        value:JSON.stringify({ active:true,
+        value:JSON.stringify({ active:false,
             type:{
-                email_verification:{active:true},
-                sms_verification:{active:true}
+                email_verification:{active:false},
+                sms_verification:{active:false}
 
         }})
      }]

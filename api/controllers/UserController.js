@@ -140,6 +140,7 @@ module.exports = {
   },
 
   async update(req, res) {
+    
       if(req.operation){
         if(req.operation.error){
           return ErrorHandlor(req,req.operation.error,res)
@@ -160,7 +161,7 @@ module.exports = {
       }else{
           sails.services.userservice.update(req,(err,data)=>{
             if(err){
-              return ErrorHandlor(req,err,data)
+              return ErrorHandlor(req,err,res)
             }
             else{
               return DataHandlor(req,data,res)
@@ -175,7 +176,7 @@ module.exports = {
 
   async destroy(req, res) {
     return sails.services.userservice.destroyUser(req,(err,data)=>{
-      
+
       if(err){
         return ErrorHandlor(req,err,res)
       }

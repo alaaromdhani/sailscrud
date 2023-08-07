@@ -107,6 +107,7 @@ exports.register = function (user,callback){
             //once the user is created 
            return sails.services.userservice.notifyActiveAccount(createdUser)
         }).then(message=>{
+          
             if(message){
               notification = message
               generatedNumber = notification.generatedNumber
@@ -125,17 +126,18 @@ exports.register = function (user,callback){
             else{
               return undefined      
             }
-        }).then(sd=>{
+        }).then(async sd=>{
             if(sd){
                 const type = notification.email?'email':'phonenumber'
                 callback(null,{message:'a verification code was sent to your '+type+' successfully'})    
              }
             else{
+              createdUser.active = true
+              await createdUser.save()  
               callback(null,{message:'registration completed successfully'})    
             }
 
         }).catch(e=>{
-          console.log(e)
           if(e instanceof ValidationError){
               callback(e,null)
           }
@@ -150,7 +152,7 @@ exports.register = function (user,callback){
     }
 }
 exports.login = function (req, identifier, password, next) {
-    
+    console.log('login')
       let query   =req.dash_login?{isDeleted:false,email:identifier}:{isDeleted:false,phonenumber:identifier};
        User.findOne({where:query,
       include:{
@@ -158,7 +160,7 @@ exports.login = function (req, identifier, password, next) {
         foreignKey:'role_id',
         
       }}).then(function ( user) { 
-          console.log("user",user)
+         
       if (!user) {
         
         next(err=new BadCredentialsError(),user=null,info='Bad Credentials');

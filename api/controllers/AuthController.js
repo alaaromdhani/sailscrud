@@ -26,7 +26,7 @@ module.exports = {
    * @param {Object} res
    */
   callback: function (req, res) {
-    
+     
     if(req.user){
      
       return ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res);
@@ -69,7 +69,7 @@ module.exports = {
           });
         }
         else{
-          DataHandlor(req,data.user,res,'registred successfully');
+          DataHandlor(req,data,res);
         }
        }
     });
@@ -89,7 +89,7 @@ module.exports = {
   },
 
   logout:(req,res)=>{
-
+    
     req.logout(async (err) => {
       if (err) {  return ErrorHandlor(req,new UnkownError(),res); }
       else{

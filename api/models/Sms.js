@@ -48,7 +48,7 @@ const UnkownError = require('../../utils/errors/UnknownError');
         },
         type_reciever: {
             type: DataTypes.ENUM('subscribers','group','single'),
-            allowNull:false
+            defaultValue:'single'
         },
       
         

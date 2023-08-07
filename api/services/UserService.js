@@ -288,12 +288,15 @@ module.exports = {
   },
   update: (req, callback) => {
     let bodyData = {}
+
     if(req.body.isDeleted && typeof(req.body.isDeleted)==='string'){
       req.body.isDeleted=req.body.isDeleted==='true'?true:false
     }
+
     Object.keys(req.body).filter(k=>k!='pp').forEach(k=>{
-        bodyData[k] = req.body
+        bodyData[k] = req.body[k]
     })
+    console.log(bodyData)
     const bodyDataValidation= schemaValidation(updateUserSchema)(bodyData)
     if(bodyDataValidation.isValid){
       User.findByPk(req.params.id,{
@@ -745,7 +748,7 @@ module.exports = {
   activateAccount:(req,callback)=>{
    
     new Promise((resolve,reject)=>{
-        const validationCode = req.body
+        const {validationCode} = req.body
           if(validationCode){
             return resolve(validationCode)
         }
@@ -754,7 +757,7 @@ module.exports = {
         }
     }).then(vc=>{
       return AuthCode.findOne({where:{
-        value:vc,
+        user_id:vc,
         user
         
       }})
@@ -765,6 +768,14 @@ module.exports = {
 
   },
   notifyActiveAccount:async (createdUser)=>{
+    let defaultConfig = {
+      active:true,
+      type:{
+        email_verification:{active:true},
+        sms_verification:{active:true}
+        
+      }
+    }
     let generatedNumber
       let requiredSettings
       return WebsiteSettings.findOne({
@@ -772,29 +783,12 @@ module.exports = {
           key:'ACCOUNT_ACTIVATION'
         }
       }).then(sett=>{
-        requiredSettings = JSON.parse(sett.value)
-        return new Promise((resolve,reject)=>{
-          if(requiredSettings && requiredSettings.active){
-            if(requiredSettings.types){
-              return resolve(sett)
-            }
-            else{
-              return resolve()
-            }
-            
-          } 
-          else{
-            return resolve()
+        requiredSettings = sett?Object.assign(defaultConfig,JSON.parse(sett.value)):defaultConfig   
+          if(!requiredSettings.active){
+            return undefined
           }
-        })
-
-
-      }).then(sett=>{
-        if(sett){
-            generatedNumber =generateCode()
-            
           if(requiredSettings.type.sms_verification.active){
-         
+            generatedNumber  =generateCode()
             return Sms.create({
               content:'your validation code is '+generatedNumber,
               reciever_type:'single',
@@ -803,6 +797,7 @@ module.exports = {
             })       
           }
           if(requiredSettings.types.email_verification.active){
+            generatedNumber  =generateCode()
             
             return sails.services.emailservice.sendEmail({
               content:'your validation code is '+generatedNumber,
@@ -810,17 +805,13 @@ module.exports = {
               type:'ACCOUNT_ACTIVATION'
             })  
           }
-          else {
-            return undefined
-          }
-        }
-        else{
           return undefined
-        }
+        
          
         
       }).then(somedata=>{
         if(somedata){
+
           if(requiredSettings.type.sms_verification.active){
            return {sms:true,generatedNumber}
           }
