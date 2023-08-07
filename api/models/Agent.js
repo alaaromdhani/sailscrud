@@ -12,8 +12,13 @@ const {
       indexes: [
         {
         unique: true,
-        fields: ['mbox','account_name']
-        }
+        fields: ['mbox']
+        },
+        {
+          unique: true,
+          fields: ['account_name']
+          }
+        
       ]
       
     },

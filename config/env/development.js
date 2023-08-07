@@ -508,7 +508,12 @@ module.exports = {
         },
         parent:{
           name:'Parent',
-          weight:25,
+          weight:500,
+          dashboardUser:false
+        },
+        teacher:{
+          name:'Teacher',
+          weight:400,
           dashboardUser:false
         }
     },
@@ -541,8 +546,8 @@ module.exports = {
         value:3,
         unit:'minute'
       },//m for minutes h for hours D for days W for week 
-      authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
-      sender:'2160000'
+      /*authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
+      sender:'2160000'*/
 
     },
     ratings:{

@@ -13,7 +13,11 @@ module.exports = {
   },
   indexes:[{
     unique:true,
-    fields:['name','identity']
+    fields:['identity']
+  },
+  {
+    unique:true,
+    fields:['name']
   }],
   datastore: 'default',
   tableName: 'features',

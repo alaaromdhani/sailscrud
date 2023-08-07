@@ -14,15 +14,16 @@ const UserShema = joi.object({
 
 })
 const registerSchema = joi.object({
-    firstName:joi.string().required(),
-    lastName:joi.string().required(),
+    name:joi.string().pattern(/^[^\d]*\s[^\d]*$/).required(),  
     email: joi.string().required(),
+    niveau_scolaire_id: joi.number().integer(),
     phonenumber: joi.number().integer().required(),
     birthDate:joi.string().required(),
-     sex:joi.string().valid('M','F'),    
+     sex:joi.string().valid('M','F').required(),    
     password: joi.string().required(),
     country_id:joi.number().integer().required(),
     state_id:joi.number().integer().required(),
+    role_id:joi.number().integer().required()
 })
 const updateUserSchema= joi.object({
     firstName:joi.string(),

@@ -20,7 +20,7 @@ else{
             if(provider=="local"){
              
                 if(action==="register"){
-                    return passport.register(req.body,next)
+                    return passport.protocols.local.register(req.body,next)
                 }
                 else if(action==="dashboard"){
                   req.dash_login=true

@@ -7,7 +7,11 @@ module.exports = {
     tableName: 'roles',
     indexes:[{
       unique:true,
-      fields:['name','weight']
+      fields:['name']
+    },
+    {
+      unique:true,
+      fields:['weight']
     }],
     hooks:{
       beforeDestroy:async (role,options)=>{

@@ -17,7 +17,11 @@ const {
       indexes: [
             {
             unique: true,
-            fields: ['registration','etag',]
+            fields: ['registration']
+            },
+            {
+                unique: true,
+                fields: ['etag']
             }
       ]
     },

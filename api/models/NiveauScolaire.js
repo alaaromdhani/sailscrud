@@ -19,7 +19,9 @@ module.exports = {
     scopes: {},
     indexes:[{
       unique:true,
-      fields:['name_fr','name_ar']
+      fields:['name_fr'],
+      unique:true,
+      fields:['name_ar']
     }],
     tableName: 'niveau_scolaires',
     hooks: {

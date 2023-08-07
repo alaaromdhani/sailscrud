@@ -16,7 +16,11 @@ module.exports = {
     indexes:[
       {
         unique: true,
-        fields: ['slug','title']
+        fields: ['title']
+      },
+      {
+        unique: true,
+        fields: ['slug']
       }
     ],
     tableName: 'blogs',

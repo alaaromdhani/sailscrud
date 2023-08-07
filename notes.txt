@@ -1,4 +1,5 @@
-mustn't delete a file created by a super user 
-update user does not work 
-profile/me some attributes must not contain some parameters 
-/courses : the inspector and the teacher must see only the courses attributed to them 
+endpoint:{
+    register:{
+        edgecases:['sending a invalid school level']
+    }
+}

@@ -18,7 +18,11 @@ module.exports = {
       indexes:[
         {
           unique: true,
-          fields: ['category_name','slug']
+          fields: ['category_name']
+        },
+        {
+          unique: true,
+          fields: ['slug']
         }
       ],
   },

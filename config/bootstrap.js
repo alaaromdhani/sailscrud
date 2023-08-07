@@ -25,6 +25,7 @@ const default_user_image = require('../seeders/defaultProfilePict');
 const chaptersSeeders = require('../utils/seeders/chatpter')
 const documentSeeders = require('../seeders/DocumentCourse')
 const usersSeeders = require('../seeders/users')
+const settingsSeeders = require('../seeders/settings')
 module.exports.bootstrap = async function() {
   /*function getAllKeys(object){
     Object.keys(object).forEach(k=>{
@@ -59,6 +60,7 @@ module.exports.bootstrap = async function() {
   await matiereSeeders()
   await trimestresSeeders()
   await chaptersSeeders()
+  await settingsSeeders()
   //await usersSeeders()
 //  await documentSeeders()
  }

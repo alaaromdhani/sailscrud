@@ -174,15 +174,14 @@ module.exports = {
   },
 
   async destroy(req, res) {
-    try {
-      const data = await User.findByPk(req.params.id);
-      if (!data) {
-        return ErrorHandlor(req,new RecordNotFoundErr(),res)
+    return sails.services.userservice.destroyUser(req,(err,data)=>{
+      
+      if(err){
+        return ErrorHandlor(req,err,res)
       }
-      await data.destroy();
-      return DataHandlor(req,{},res)
-    } catch (err) {
-      return ErrorHandlor(req,new SqlError(err),res)
-    }
+      else{
+        return DataHandlor(req,data,res)
+      }
+    })
   },
 };

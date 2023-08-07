@@ -11,6 +11,7 @@ const validateOptions = async (req,file,cb)=>{
   try {
     let  uploadOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{})
       uploadOptions.addedBy = req.user.id
+      
 
 
     req.operation.files.push(uploadOptions)

@@ -17,7 +17,11 @@ module.exports = {
     scopes: {},
     indexes:[{
       unique:true,
-      fields:['name','url']
+      fields:['name']
+    },
+    {
+      unique:true,
+      fields:['url']
     }],
     hooks: {
       beforeSave:(course,options)=>{

@@ -42,8 +42,9 @@ exports.register = function (user,callback){
     if(validationRequest.isValid){
         let createdUser
         let generatedNumber
+        let notification
         let permissions
-        let {name} = sails.config.custom.roles.parent
+        let allowedRolesNames = [sails.config.custom.roles.parent.name,sails.config.custom.roles.teacher.name]
         //countryvalidation must come first 
         State.findByPk(user.state_id,{include:{
             model:Country,
@@ -53,13 +54,8 @@ exports.register = function (user,callback){
             //validating the country and the state 
               if(s && s.active && s.Country && s.country_id==user.country_id  && s.Country.active){
                 //validating the phonenumber is related to the country 
-                const countryPhoneCode = s.Country.tel_code.startsWith('+')?s.Country.tel_code:'+'+s.Country.tel_code
-                  if(user.phonenumber.startsWith(countryPhoneCode)){
-                      return resolve()
-                  }
-                  else{
-                      return reject(new ValidationError({message:'the phone number must match the country you belong'}))
-                  }
+                user.phonenumber = s.Country.tel_code.startsWith('+')?s.Country.tel_code+' '+user.phonenumber:'+'+s.Country.tel_code+' '+user.phonenumber
+                return resolve()
               }
               else{
                   return reject(new ValidationError({message:' a valid state and country is required'}))
@@ -68,15 +64,40 @@ exports.register = function (user,callback){
            })
 
         }).then(()=>{
-          return Role.findOne({where:{name},include:{
+          return Role.findAll({where:{
+            name:{
+              [Op.in]:allowedRolesNames
+            }
+          },
+          include:{
             model:Permission,
+           
             through:'roles_permissions'
-          }})
+          },
+          attributes:['id','name']
+        
+          })
+        }).then(roles=>{
+              return new Promise((resolve,reject)=>{
+                let role = roles.filter(r=>r.id===user.role_id).at(0)
+                    if(role){
+                      return resolve(role)
+                    }
+                    else{
+                      return reject(new ValidationError({message:'a valid role is required'})) 
+                    }
+              })
+
+
         }).then(role=>{
 
           permissions = role.Permissions
           user.role_id = role.id
           user.active =false
+          user.firstName =user.name.split(" ").at(0)
+          user.lastName =user.name.split(" ").at(1) 
+          user.username=user.firstName+" "+user.lastName
+
           return User.create(user)
         }).then(u=>{
           createdUser =u
@@ -84,26 +105,37 @@ exports.register = function (user,callback){
 
         }).then(ps=>{
             //once the user is created 
-            generatedNumber =generateCode() 
-            return Sms.create({
-              content:'your validation code is '+generatedNumber,
-              reciever_type:'single',
-              reciever_id:createdUser.id,
-              type:'ACCOUNT_ACTIVATION'
-            })
-        }).then(sms=>{
-          let {expires} = sails.config.custom.otpconf
-             return AuthCode.create({
-              value:generatedNumber,
-              expiredDate:dayjs().add(expires.value,expires.unit).toISOString(),
-              user_id:createdUser.id,
-              type:'ACCOUNT_ACTIVATION'
-             })
+           return sails.services.userservice.notifyActiveAccount(createdUser)
+        }).then(message=>{
+            if(message){
+              notification = message
+              generatedNumber = notification.generatedNumber
 
-        }).then(sms=>{
-            callback(null,{message:'an sms was sent to your phonenumber'})
+              let {expires} = sails.config.custom.otpconf
+                //must return the generated code in the user service because its undefined in this function
+              
+                return AuthCode.create({
+                 value:generatedNumber,
+                 expiredDate:dayjs().add(expires.value,expires.unit).toISOString(),
+                 user_id:createdUser.id,
+                 type:'ACCOUNT_ACTIVATION'
+                })
+              
+            }
+            else{
+              return undefined      
+            }
+        }).then(sd=>{
+            if(sd){
+                const type = notification.email?'email':'phonenumber'
+                callback(null,{message:'a verification code was sent to your '+type+' successfully'})    
+             }
+            else{
+              callback(null,{message:'registration completed successfully'})    
+            }
 
         }).catch(e=>{
+          console.log(e)
           if(e instanceof ValidationError){
               callback(e,null)
           }

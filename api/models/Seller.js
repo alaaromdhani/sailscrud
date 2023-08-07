@@ -12,7 +12,15 @@ const {
       tableName: 'sellers',
       indexes:[{
         unique:true,
-        fields:['name','address','phone_number']
+        fields:['address']
+      },
+      {
+        unique:true,
+        fields:['phone_number']
+      },
+      {
+        unique:true,
+        fields:['name']
       }],
     },
     datastore: 'default',

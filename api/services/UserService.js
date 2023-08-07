@@ -341,7 +341,57 @@ module.exports = {
 
 
   },
+  destroyUser:(req,callback)=>{
+    User.findByPk(req.params.id,{
+      include:[{
+        model:Role,
+        foreignKey:'role_id'
+      },{
+        model:User,
+        foreignKey:'addedBy',
+        as:'adder',
+        include:{
+          model:Role,
+          foreignKey:'role_id'
+        }
+      }],
+    }).then(user=>{
+       return new Promise((resolve,reject)=>{
+        if(!user){
+          return reject(new RecordNotFoundErr())
+        }else{
+          if(user.addedBy){
+            if(user.adder.Role.weight<=req.role.weight && user.addedBy!==req.user.id ){
+              return reject(new UnauthorizedError({specific:'you can not delete a higher user'}))
+            }
+        }
+        else{
+          if(user.Role.weight<=req.role.weight){
+            return reject(new UnauthorizedError({specific:'you can not delete a higher user'}))
+          } 
+        }
+        return resolve(user)
+        }
+        })
 
+
+    }).then(user=>{
+      return user.destroy()
+   
+    }).then(sd=>{
+
+      callback(null,{})
+
+    }).catch(err=>{
+      console.log(err)
+      if(err instanceof UnauthorizedError || err instanceof RecordNotFoundErr){
+        callback(err,null)
+      }
+      else{
+        callback(new SqlError(err),null)
+       }
+    })
+  },
   sendResetPasswordNotification: (req, callback) => {
     const identifier = req.body.identifier;
 
@@ -581,6 +631,7 @@ module.exports = {
 
 
   },
+
   profileUpdater: (req, callback) => {
 
     let dat = {};
@@ -692,6 +743,7 @@ module.exports = {
 
   },
   activateAccount:(req,callback)=>{
+   
     new Promise((resolve,reject)=>{
         const validationCode = req.body
           if(validationCode){
@@ -711,6 +763,75 @@ module.exports = {
     })
 
 
+  },
+  notifyActiveAccount:async (createdUser)=>{
+    let generatedNumber
+      let requiredSettings
+      return WebsiteSettings.findOne({
+        where:{
+          key:'ACCOUNT_ACTIVATION'
+        }
+      }).then(sett=>{
+        requiredSettings = JSON.parse(sett.value)
+        return new Promise((resolve,reject)=>{
+          if(requiredSettings && requiredSettings.active){
+            if(requiredSettings.types){
+              return resolve(sett)
+            }
+            else{
+              return resolve()
+            }
+            
+          } 
+          else{
+            return resolve()
+          }
+        })
+
+
+      }).then(sett=>{
+        if(sett){
+            generatedNumber =generateCode()
+            
+          if(requiredSettings.type.sms_verification.active){
+         
+            return Sms.create({
+              content:'your validation code is '+generatedNumber,
+              reciever_type:'single',
+              reciever_id:createdUser.id,
+              type:'ACCOUNT_ACTIVATION'
+            })       
+          }
+          if(requiredSettings.types.email_verification.active){
+            
+            return sails.services.emailservice.sendEmail({
+              content:'your validation code is '+generatedNumber,
+              reciever:createdUser,
+              type:'ACCOUNT_ACTIVATION'
+            })  
+          }
+          else {
+            return undefined
+          }
+        }
+        else{
+          return undefined
+        }
+         
+        
+      }).then(somedata=>{
+        if(somedata){
+          if(requiredSettings.type.sms_verification.active){
+           return {sms:true,generatedNumber}
+          }
+          if(requiredSettings.type.email_verification.active){
+            return {email:true,generatedNumber}
+          }
+        }
+        else{
+          return undefined
+        }
+      })
   }
 
 

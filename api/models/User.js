@@ -16,7 +16,16 @@ module.exports = {
     indexes: [
       {
         unique: true,
-        fields: ['email','username','phonenumber']
+        fields: ['email']
+      },{
+        unique:true,
+        fields:['username']
+
+      },
+      {
+        unique:true,
+        fields:['phonenumber']
+
       }
     ],
     charset: 'utf8',
@@ -33,6 +42,9 @@ module.exports = {
               else{
                 user.isDeleted = true
               } 
+              if(!user.username){
+                user.username = user.firstName+" "+user.lastName
+              }
           }
           user.password = await bcrypt.hash(user.password, 10);
         }
@@ -113,6 +125,10 @@ module.exports = {
     User.belongsToMany(Feature, { through: 'users_features'});
     User.belongsTo(Role,{
       foreignKey:'role_id'
+
+    });
+    User.belongsTo(NiveauScolaire,{
+      foreignKey:'niveau_scolaire_id'
 
     });
 
