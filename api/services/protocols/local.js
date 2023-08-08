@@ -51,7 +51,7 @@ exports.register = function (user,callback){
         if(user.role=='teacher'){
           role_name = sails.config.custom.roles.teacher.name              
         }
-        if(!rolename){
+        if(!role_name){
           return callback(new ValidationError({message:'a valid role name is required'}))
         }
         
