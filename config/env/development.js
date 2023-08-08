@@ -477,6 +477,11 @@ module.exports = {
     *                                                                         *
     ***************************************************************************/
   custom: {
+    security:{
+      recaptcha:{
+        key:'6LfzbI0nAAAAAJVjT9_5O40dEwPsWT9G5NtJhXJ7'
+      }
+    },
     database:{
       connections,
       session:{

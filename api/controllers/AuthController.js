@@ -258,7 +258,9 @@ module.exports = {
 
   },
   getCounteries:async (req,res)=>{
-    const countries = await Country.findAll();
+    const countries = await Country.findAll({where:{
+      active:true
+    }});
     DataHandlor(req,countries,res);
   },
   getStatesByCountry:async (req,res)=>{

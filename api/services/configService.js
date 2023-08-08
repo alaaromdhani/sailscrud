@@ -10,6 +10,7 @@ const { Op, QueryError } = require('sequelize');
 const { UpdateCTypeShemaWithUpload, UpdateCTypeShema, CTypeShemaWithUpload, CTypeShema } = require('../../utils/validations/CTypeSchema');
 const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const { OthercourseShema, UpdateOthercourseShema } = require('../../utils/validations/OthercourseSchema');
+const { default: axios } = require('axios');
 const converter = {
   ctype:{validation:{withFile:{create:CTypeShemaWithUpload,update:UpdateCTypeShemaWithUpload},withoutFile:{create:CTypeShema,update:CTypeShemaWithUpload}},hasUpload:true,uploadKey:"image"},
   othercourse:{validation:{create:OthercourseShema,update:UpdateOthercourseShema},hasUpload:false}
@@ -422,12 +423,23 @@ module.exports = {
         }
 
        })
+    },
+    validateRecaptcha:async (token)=>{
+      const {secret_key} = sails.config.custom.security.recaptcha
+      return new Promise((resolve,reject)=>{
+        axios.get(`https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${token}`).then(data=>{
+          console.log(data)
+            return resolve()
+
+        }).catch(e=>{
+          return reject(new ValidationError({message:'a valid recaptcha key is required'}))
+
+        })
 
 
+        
+      })
 
-      
 
-
-
-  }
+    }
 }
