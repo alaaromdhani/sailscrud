@@ -21,7 +21,8 @@ const registerSchema = joi.object({
     password: joi.string().required(),
     country_id:joi.number().integer().required(),
     state_id:joi.number().integer().required(),
-    role:joi.string().valid('teacher','parent').required()
+    role:joi.string().valid('teacher','parent').required(),
+    gReCaptchaToken:joi.string().required()
 })
 const updateUserSchema= joi.object({
     firstName:joi.string(),

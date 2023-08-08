@@ -97,7 +97,8 @@ exports.register = function (user,callback){
 
 
         }).then(role=>{
-
+            delete user.role
+            delete user.gReCaptchaToken
           permissions = role.Permissions
           user.role_id = role.id
           user.active =false
