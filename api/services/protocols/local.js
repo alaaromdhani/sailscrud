@@ -108,7 +108,7 @@ exports.register = function (user,callback){
           return User.create(user)
         }).then(u=>{
           createdUser =u
-          return  u.setPermissions(permissions)
+         return u
 
         }).then(ps=>{
             //once the user is created 
