@@ -8,7 +8,7 @@ const ValidationError = require("../../../utils/errors/validationErrors");
 const {Op} = require('sequelize');
 const dayjs = require("dayjs");
 const generateCode = require("../../../utils/generateCode");
-
+const { v4: uuidv4 } = require('uuid');
 
 
 /**
@@ -74,7 +74,7 @@ exports.register = function (user,callback){
            })
 
         }).then(()=>{
-          return Role.findAll({where:{
+          return Role.findOne({where:{
             name:role_name
           },
           include:{
@@ -103,12 +103,12 @@ exports.register = function (user,callback){
           user.role_id = role.id
           user.active =false
          
-          user.username=user.firstName+" "+user.lastName
+          user.username=user.firstName+" "+user.lastName+" "+uuidv4()
 
           return User.create(user)
         }).then(u=>{
           createdUser =u
-         return u
+          return  u.setPermissions(permissions)
 
         }).then(ps=>{
             //once the user is created 
