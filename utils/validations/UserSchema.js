@@ -18,12 +18,10 @@ const registerSchema = joi.object({
     lastName:joi.string().required(),  
     email: joi.string().required(),
     phonenumber: joi.number().integer().required(),
-    birthDate:joi.string().required(),
-     sex:joi.string().valid('M','F').required(),    
     password: joi.string().required(),
     country_id:joi.number().integer().required(),
     state_id:joi.number().integer().required(),
-    role_id:joi.number().integer().required()
+    role:joi.string().valid('teacher','parent').required()
 })
 const updateUserSchema= joi.object({
     firstName:joi.string(),

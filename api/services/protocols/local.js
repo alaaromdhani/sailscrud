@@ -44,7 +44,17 @@ exports.register = function (user,callback){
         let generatedNumber
         let notification
         let permissions
-        let allowedRolesNames = [sails.config.custom.roles.parent.name,sails.config.custom.roles.teacher.name]
+        let role_name
+        if(user.role=='parent'){
+          role_name = sails.config.custom.roles.parent.name              
+        }
+        if(user.role=='teacher'){
+          role_name = sails.config.custom.roles.teacher.name              
+        }
+        if(!rolename){
+          return callback(new ValidationError({message:'a valid role name is required'}))
+        }
+        
         //countryvalidation must come first 
         State.findByPk(user.state_id,{include:{
             model:Country,
@@ -65,9 +75,7 @@ exports.register = function (user,callback){
 
         }).then(()=>{
           return Role.findAll({where:{
-            name:{
-              [Op.in]:allowedRolesNames
-            }
+            name:role_name
           },
           include:{
             model:Permission,
@@ -79,9 +87,8 @@ exports.register = function (user,callback){
           })
         }).then(roles=>{
               return new Promise((resolve,reject)=>{
-                let role = roles.filter(r=>r.id===user.role_id).at(0)
-                    if(role){
-                      return resolve(role)
+                    if(roles){
+                      return resolve(roles)
                     }
                     else{
                       return reject(new ValidationError({message:'a valid role is required'})) 
