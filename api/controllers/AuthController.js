@@ -63,13 +63,21 @@ module.exports = {
 
                 },
               })
-        //      await User.sequelize.query(`delete  FROM sessions WHERE data like '${userSessionData}' and session_id!=${activeSession} `);
               DataHandlor(req,data.user,res,'login successful');
             }
           });
         }
         else{
-          DataHandlor(req,data,res);
+          req.logIn(data.user,async (err) => {
+            if (err) {
+              ErrorHandlor(req,new UnkownError(),res);
+            }
+            else{
+              req.session.authenticated = true;
+              DataHandlor(req,{message:data.message},res);
+            }
+          });
+ 
         }
        }
     });
@@ -84,8 +92,25 @@ module.exports = {
           }
       })
   },
-  resendAccountActivationCode:(req,res)=>{
-      sails.services.userservice.resend
+  resendCallback:(req,res)=>{
+    let type = req.params.type   
+      console.log(type)
+      console.log(req.user.active)
+    if(type==="account_activation" && !req.user.active){
+        req.operation = {type:'ACCOUNT_ACTIVATION'}
+        sails.services.userservice.resendNotification(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+        })
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:'a valid type is required'}),res)
+    }
+      
   },
 
   logout:(req,res)=>{
@@ -259,17 +284,8 @@ module.exports = {
 
 
   },
-  getActiveSessions:async (req,res)=>{
-    if(req.user){
-        const data = '%\"passport\":{\"user\":'+req.user.id+'}%'
-        const openedSessions = await User.sequelize.query(`delete  FROM sessions WHERE data like '${data}' `);
-       
-        return DataHandlor(req,openedSessions,res)
-    }
-    else{
-      return ErrorHandlor(req,new UnauthorizedError(),res)
-    }
-  }
+  
+ 
 
 
 

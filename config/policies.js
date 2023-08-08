@@ -8,13 +8,17 @@
  * https://sailsjs.com/docs/concepts/policies
  */
 
+
+
 module.exports.policies = {
   '*':['lang','passport','role','tokenVerifier','permissions'],
   AuthController:{
     '*':['lang','passport','role'],
     logout:['lang','passport','role','auth'],
-    profileCallback:['lang','passport','role','tokenVerifier'],
-    profileUpdater:['lang','passport','role','tokenVerifier','ppUploader'],
+    profileCallback:['lang','passport','role','auth'],
+    activateAccount:['lang','passport','role','inactiveonly'],
+    resendCallback:['lang','passport','role','auth'],
+    profileUpdater:['lang','passport','role','auth','ppUploader'],
 
   },
   BlogController:{

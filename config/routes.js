@@ -56,6 +56,9 @@ module.exports.routes = {
  
   'PUT /lrs/other/activities/state':'OtherLrsController.putState',
   'PUT /lrs/other/statements':'OtherLrsController.putStatement',
+  //front_routes 
+  'POST /api/v1/activate_account': 'AuthController.activateAccount',
+  'GET /api/v1/resend/:type': 'AuthController.resendCallback'
  
   
 

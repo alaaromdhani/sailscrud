@@ -545,7 +545,14 @@ module.exports = {
       expires:{
         value:3,
         unit:'minute'
-      },//m for minutes h for hours D for days W for week 
+      },
+      resend:{
+        time:{
+          value:1,
+          unit:'minute'
+        }
+      }
+      //m for minutes h for hours D for days W for week 
       /*authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
       sender:'2160000'*/
 

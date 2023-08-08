@@ -94,8 +94,7 @@ exports.register = function (user,callback){
           permissions = role.Permissions
           user.role_id = role.id
           user.active =false
-          user.firstName =user.name.split(" ").at(0)
-          user.lastName =user.name.split(" ").at(1) 
+         
           user.username=user.firstName+" "+user.lastName
 
           return User.create(user)
@@ -129,15 +128,16 @@ exports.register = function (user,callback){
         }).then(async sd=>{
             if(sd){
                 const type = notification.email?'email':'phonenumber'
-                callback(null,{message:'a verification code was sent to your '+type+' successfully'})    
+                callback(null,{message:'a verification code was sent to your '+type+' successfully',user:createdUser})    
              }
             else{
               createdUser.active = true
               await createdUser.save()  
-              callback(null,{message:'registration completed successfully'})    
+              callback(null,{message:'registration completed successfully',user:createdUser})    
             }
 
         }).catch(e=>{
+          console.log(e)
           if(e instanceof ValidationError){
               callback(e,null)
           }
@@ -152,7 +152,7 @@ exports.register = function (user,callback){
     }
 }
 exports.login = function (req, identifier, password, next) {
-    console.log('login')
+      
       let query   =req.dash_login?{isDeleted:false,email:identifier}:{isDeleted:false,phonenumber:identifier};
        User.findOne({where:query,
       include:{

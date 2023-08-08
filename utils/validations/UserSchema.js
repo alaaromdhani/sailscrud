@@ -14,9 +14,9 @@ const UserShema = joi.object({
 
 })
 const registerSchema = joi.object({
-    name:joi.string().pattern(/^[^\d]*\s[^\d]*$/).required(),  
+    firstName:joi.string().required(),  
+    lastName:joi.string().required(),  
     email: joi.string().required(),
-    niveau_scolaire_id: joi.number().integer(),
     phonenumber: joi.number().integer().required(),
     birthDate:joi.string().required(),
      sex:joi.string().valid('M','F').required(),    
