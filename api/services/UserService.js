@@ -13,6 +13,8 @@ const bcrypt = require('bcrypt');
 const schemaValidation = require('../../utils/validations');
 const { profileUpdate, updateUserSchema } = require('../../utils/validations/UserSchema');
 const generateCode = require('../../utils/generateCode');
+const { ValidateSchema } = require('../../utils/validations/VerificationCodeSchema');
+const { resolve } = require('path');
 
 
 
@@ -827,6 +829,7 @@ module.exports = {
 
       phonenumber:'+'+phonenumber
     }}).then(u=>{
+        
       return new Promise((resolve,reject)=>{
         if(u){
           user =u
@@ -847,6 +850,7 @@ module.exports = {
 
 
     }).then(c=>{
+
       return new Promise((resolve,reject)=>{
         if(!c){
           return resolve()
@@ -914,8 +918,91 @@ module.exports = {
 
     })
   },
-  resetPassword:(req,callback)=>{
+  validateCode:(req,callback)=>{
+      let codeValidated = false
+       const validation = schemaValidation(ValidateSchema)(req.body)
+       let user
+       if(validation.isValid){
+          const {password,conf_pass,phonenumber,code} = req.body
+          if(password!==conf_pass){
+            callback(new ValidationError('the password and confirm password aren t the same')) 
+          }
+          User.findOne({where:{
+            phonenumber:'+'+phonenumber
+          }}).then(u=>{
+            user =u
+            return new Promise((resolve,reject)=>{
+              if(u){
+                return resolve(u)
+              }
+              else{
+                return reject(new UnauthorizedError('this phonenumber does not belong to any user'))
+              }
+            })
+          }).then(u=>{
+            return AuthCode.findOne({where:{
+              user_id:u.id,
+              type:'FORGET_PASSWORD'
+            }})
+          }).then(code=>{
+            return new Promise((resolve,reject)=>{
+              if(!code){
+                return reject(new UnauthorizedError('you cannot access this ressourese'))
+              }
+              let nowDate =new Date()
+              const otpconf = sails.config.custom.otpconf
+              if(code.numberAttempsRetry>otpconf.activationCode.maxRetry){
+                return  reject(new UnauthorizedError({specific:'you did reach the max retries attemps please hit resend to have a new one'}))
+              }
+              if(code.numberAttempsResend>otpconf.activationCode.maxSend){
+                return  reject(new UnauthorizedError({specific:'you did reach the max resend attemps please contact the administrator to update your password'}))
+              }
+              if(nowDate>new Date(code.expiredDate)){
+                return  reject(new UnauthorizedError({specific:'your activation code is expired please hit resend to have a new one'}))
+              }
+              
+              return resolve(code)
+      
+            })
+          }).then(c=>{
+            if(c.value===vc){
+              codeValidated=true
+              user.password=req.body.password
+              return user.save()
+            }
+            else{
+                c.numberAttempsRetry++
+                return c.save() 
+            }
+          }).then(c=>{
+            return new Promise((resolve,reject)=>{
+              if(codeValidated){  
+                  return resolve()
+              }
+              else{
+                  return reject(new UnauthorizedError({specific:'invalid code'}))
+              }
+            })
+          }).then(()=>{
+              callback(null,{message:'your password is updated successfully'})
+
+
+          }).catch(e=>{
+            if(e instanceof UnauthorizedError || e instanceof ValidationError){
+              callback(e)
+            }
+            else{
+              callback(new SqlError(e))
+            }
+
+
+          })
           
+       }
+       else{
+        return callback(new ValidationError({message:validation.isValid}))
+       }
+       
   }
 
 

@@ -100,9 +100,10 @@ module.exports = {
 
       // Create the sorting order based on the sortBy and sortOrder parameters
       const order = [[sortBy, sortOrder]];
-
+          
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Matiere.findAndCountAll({
+        
         where,
         include:[{
 
@@ -118,7 +119,7 @@ module.exports = {
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
-
+      console.log(count)
       return DataHandlor(req,{
         success: true,
         data: rows,

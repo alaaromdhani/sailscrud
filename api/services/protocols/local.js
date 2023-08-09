@@ -69,7 +69,7 @@ exports.register = function (user,callback){
                  if(!user.phonenumber.startsWith(tel_code)){
                   return reject(new ValidationError({message:'a valid phonenumber is required'}))
                  } 
-                user.phonenumber = '+'+s.phonenumber
+                user.phonenumber = '+'+user.phonenumber
                 return resolve()
               }
               else{
