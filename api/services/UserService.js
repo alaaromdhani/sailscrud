@@ -884,6 +884,7 @@ module.exports = {
         })  
       }).then(sms=>{
       let {expires} = sails.config.custom.otpconf
+      const otpconf = sails.config.custom.otpconf
       //must return the generated code in the user service because its undefined in this function
       if(validationCode){
         validationCode.numberAttempsRetry=0
@@ -919,7 +920,7 @@ module.exports = {
     })
   },
   validateCode:(req,callback)=>{
-      let codeValidated = false
+      let codeValidated 
        const validation = schemaValidation(ValidateSchema)(req.body)
        let user
        if(validation.isValid){
@@ -944,28 +945,28 @@ module.exports = {
               user_id:u.id,
               type:'FORGET_PASSWORD'
             }})
-          }).then(code=>{
+          }).then(c=>{
             return new Promise((resolve,reject)=>{
-              if(!code){
+              if(!c){
                 return reject(new UnauthorizedError('you cannot access this ressourese'))
               }
               let nowDate =new Date()
               const otpconf = sails.config.custom.otpconf
-              if(code.numberAttempsRetry>otpconf.activationCode.maxRetry){
+              if(c.numberAttempsRetry>otpconf.activationCode.maxRetry){
                 return  reject(new UnauthorizedError({specific:'you did reach the max retries attemps please hit resend to have a new one'}))
               }
-              if(code.numberAttempsResend>otpconf.activationCode.maxSend){
+              if(c.numberAttempsResend>otpconf.activationCode.maxSend){
                 return  reject(new UnauthorizedError({specific:'you did reach the max resend attemps please contact the administrator to update your password'}))
               }
-              if(nowDate>new Date(code.expiredDate)){
+              if(nowDate>new Date(c.expiredDate)){
                 return  reject(new UnauthorizedError({specific:'your activation code is expired please hit resend to have a new one'}))
               }
               
-              return resolve(code)
+              return resolve(c)
       
             })
           }).then(c=>{
-            if(c.value===vc){
+            if(c.value===code){
               codeValidated=true
               user.password=req.body.password
               return user.save()
@@ -984,10 +985,14 @@ module.exports = {
               }
             })
           }).then(()=>{
-              callback(null,{message:'your password is updated successfully'})
-
-
+              return AuthCode.destroy({where:{
+                user_id:user.id,
+                type:'FORGET_PASSWORD'
+              }})
+            }).then(sd=>{
+            callback(null,{message:'your password is updated successfully'})
           }).catch(e=>{
+            console.log(e)
             if(e instanceof UnauthorizedError || e instanceof ValidationError){
               callback(e)
             }
@@ -1000,7 +1005,7 @@ module.exports = {
           
        }
        else{
-        return callback(new ValidationError({message:validation.isValid}))
+        return callback(new ValidationError({message:validation.message}))
        }
        
   }

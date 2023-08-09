@@ -14,6 +14,8 @@ module.exports.policies = {
   '*':['lang','passport','role','tokenVerifier','permissions'],
   AuthController:{
     '*':['lang','passport','role'],
+    forgetPassword:['lang','passport','role','noauth'],
+    validateCode:['lang','passport','role','noauth'],
     logout:['lang','passport','role','auth'],
     profileCallback:['lang','passport','role','auth'],
     activateAccount:['lang','passport','role','inactiveonly'],

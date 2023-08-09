@@ -12,13 +12,13 @@
 module.exports.routes = {
   'post /auth/:provider/:action': 'AuthController.callback',
   'get /logout': 'AuthController.logout',
-  'post /forgetpass':'AuthController.forgetPassword',
+  
   'get /validate/:user_id/:code':'AuthController.validateResetPasswordLink',
-  'post /resetpass/:user_id/:code':'AuthController.resetPassword',
   'get /profile/me':'AuthController.profileCallback',
   'patch /profile/me':'AuthController.profileUpdater',
   'get /register/countries':'AuthController.getCounteries',
   'get /register/states/:countryId':'AuthController.getStatesByCountry',
+  //medialibrary
   'get /v/uploads/:filename':'AssetsController.streamPrivateFile',
   'get /v/public/:filename':'AssetsController.streamPublicFile',
   'get /d/uploads/:filename':'AssetsController.downloadPrivateFile',
@@ -50,6 +50,7 @@ module.exports.routes = {
   'GET /api/v1/otherresults/:id':'OtherInteractiveController.getResults',
   'GET /lrs/other/activities/state':'OtherLrsController.getActivityState',
   'GET /api/v1/other_courses_children/:id':'OtherCourseController.findChildren',
+  //validation
   'PATCH /api/v1/coursdocuments/validate/:id':'CoursDocumentController.validateCours',
   'PATCH /api/v1/coursinteractives/validate/:id':'CoursInteractiveController.validateCours',
   'PATCH /api/v1/coursvideos/validate/:id':'CoursVideo.validateCours',
@@ -58,7 +59,13 @@ module.exports.routes = {
   'PUT /lrs/other/statements':'OtherLrsController.putStatement',
   //front_routes 
   'POST /api/v1/activate_account': 'AuthController.activateAccount',
-  'GET /api/v1/resend/:type': 'AuthController.resendCallback'
+  'GET /api/v1/resend/:type': 'AuthController.resendCallback',
+  //forgetpassword
+  'POST /api/v1/forgetpassword': 'AuthController.forgetPassword',
+  'POST /api/v1/forgetpassword/verify': 'AuthController.validateCode',
+  
+  
+
  
   
 

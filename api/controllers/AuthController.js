@@ -25,6 +25,7 @@ module.exports = {
    * @param {Object} req
    * @param {Object} res
    */
+  //authenticating
   callback: function (req, res) {
      
     if(req.user){
@@ -137,89 +138,35 @@ module.exports = {
 
 
   },
-
+//forget password
   forgetPassword:(req,res)=>{
 
-    if(req.user){
-
-
-      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res);
-
-
-    }
-    else{
-      sails.services.userservice.sendResetPasswordNotification(req,(err,data)=>{
+    
+      sails.services.userservice.forgetPassword(req,(err,data)=>{
         if(err){
           console.log(err);
           ErrorHandlor(req,err,res);
 
         }
         else{
-          DataHandlor(req,{},res,'notification sent successfully');
+          DataHandlor(req,data,res);
 
         }
-
-
-
-
-      });
-
-
-
-
-
-
-    }
-
-
-
+       });
   },
-  validateResetPasswordLink:(req,res)=>{
-    if(req.user){
-      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res));
-    }
-    else{
-      sails.services.userservice.validatePasswordToken(req,(err,data)=>{
+  validateCode:(req,res)=>{
+      sails.services.userservice.validateCode(req,(err,data)=>{
         if(err){
-          ErrorHandlor(req,err,res);
+          return ErrorHandlor(req,err,res)
         }
         else{
-          DataHandlor(req,{},res,'link validated');
-
+            return DataHandlor(req,data,res)
         }
-
-
-
-      });
-
-
-    }
+      })
+    
 
   },
-  resetPassword:(req,res)=>{
-    if(req.user){
-      ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'},res));
-    }
-    else{
-      sails.services.userservice.resetPassword(req,(err,data)=>{
-        if(err){
-          ErrorHandlor(req,err,res);
-        }
-        else{
-          DataHandlor(req,{},res,'password updated successfully');
-
-        }
-
-
-
-      });
-
-
-    }
-
-
-  },
-
+  //user profile
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
   },
