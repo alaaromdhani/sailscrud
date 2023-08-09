@@ -18,6 +18,7 @@ const generateCode = require('../../utils/generateCode');
 
 
 
+
 var EMAIL_REGEX = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
 let phoneregex = /^(\+|\d{1,3})\s?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 module.exports = {
@@ -324,7 +325,8 @@ module.exports = {
        }
     })
   },
-  sendResetPasswordNotification: (req, callback) => {
+
+  /*sendResetPasswordNotification: (req, callback) => {
     const identifier = req.body.identifier;
 
     //   console.log(identifier)
@@ -460,7 +462,7 @@ module.exports = {
     });
 
 
-  },
+  },*/
   //this function validates the link (front support) if the link is validated then show password modification prompt to the user
   validatePasswordToken: (req, callback) => {
     const { user_id, code } = req.params;
@@ -812,7 +814,110 @@ module.exports = {
           return undefined
         }
       })
+  },
+  forgetPassword:(req,callback)=>{
+    let generatedNumber
+    let user
+    let validationCode
+    const {phonenumber} = req.body
+    if(!phonenumber){
+      return callback(new ValidationError({message:'phonenumber is required'}))
+    }
+    User.findOne({where:{
+
+      phonenumber:'+'+phonenumber
+    }}).then(u=>{
+      return new Promise((resolve,reject)=>{
+        if(u){
+          user =u
+          return resolve(u)
+        }
+        else{
+          return reject(new UnauthorizedError({specific:'the phonenumber you entred does not belong to any user'}))  
+        }
+
+
+      })
+    }).then(u=>{
+      return AuthCode.findOne({where:{
+          user_id:u.id,
+          type:'FORGET_PASSWORD'
+
+      }})
+
+
+    }).then(c=>{
+      return new Promise((resolve,reject)=>{
+        if(!c){
+          return resolve()
+        }
+        const otpconf = sails.config.custom.otpconf.activationCode
+        if(c.numberAttempsResend>otpconf.maxSend){
+          return reject(new UnauthorizedError({specific:'you reached the maximum number of sms sent please contact the administrator to activate your account'}))
+        }
+        if(new Date()<new Date(c.resendTime)){
+          //i should comeback to this to add the specific date and time
+          return reject(new UnauthorizedError({specific:'your resend time is sill going please try again later'})) 
+        } 
+        
+        return resolve(c)
+
+
+       }) 
+
+
+
+    }).then(c=>{
+        if(c){
+          validationCode = c
+        }
+        generatedNumber  =generateCode()
+        return Sms.create({
+          content:'your validation code is '+generatedNumber,
+          reciever_type:'single',
+          reciever_id:user.id,
+          type:'FORGET_PASSWORD'
+        })  
+      }).then(sms=>{
+      let {expires} = sails.config.custom.otpconf
+      //must return the generated code in the user service because its undefined in this function
+      if(validationCode){
+        validationCode.numberAttempsRetry=0
+        validationCode.numberAttempsResend++
+        validationCode.value = generatedNumber
+        validationCode.resendTime = dayjs().add(otpconf.resend.time.value,otpconf.resend.time.unit)
+        validationCode.expiredDate = dayjs().add(otpconf.expires.value,otpconf.expires.unit)
+          return validationCode.save()
+      } 
+      else{
+        return AuthCode.create({
+          value:generatedNumber,
+          expiredDate:dayjs().add(expires.value,expires.unit).toISOString(),
+          user_id:user.id,
+          type:'FORGET_PASSWORD'
+         })
+      }  
+      
+    
+
+    }).then(c=>{
+      callback(null,{message:'a verifcation code was sent to your phonenumber successfully'})
+
+    }).catch(e=>{
+      if(e instanceof UnauthorizedError ){
+        callback(e)
+      }
+      else{
+        callback(new SqlError(e))
+      }
+
+
+    })
+  },
+  resetPassword:(req,callback)=>{
+          
   }
+
 
 
 

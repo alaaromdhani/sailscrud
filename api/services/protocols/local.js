@@ -61,10 +61,15 @@ exports.register = function (user,callback){
             foreignKey:'country_id'
         }}).then(s=>{
           return new Promise((resolve,reject)=>{
-            //validating the country and the state 
+            //validating the country and the state
+
               if(s && s.active && s.Country && s.country_id==user.country_id  && s.Country.active){
                 //validating the phonenumber is related to the country 
-                user.phonenumber = s.Country.tel_code.startsWith('+')?s.Country.tel_code+' '+user.phonenumber:'+'+s.Country.tel_code+' '+user.phonenumber
+                let tel_code = s.Country.tel_code.startsWith('+')?s.Country.tel_code.substring(1):s.Country.tel_code
+                 if(!user.phonenumber.startsWith(tel_code)){
+                  return reject(new ValidationError({message:'a valid phonenumber is required'}))
+                 } 
+                user.phonenumber = '+'+s.phonenumber
                 return resolve()
               }
               else{
@@ -160,12 +165,16 @@ exports.register = function (user,callback){
     }
 }
 exports.login = function (req, identifier, password, next) {
-      
-      let query   =req.dash_login?{isDeleted:false,email:identifier}:{isDeleted:false,phonenumber:identifier};
+      const configRoles =sails.config.custom.roles 
+      const undashboardRoles = Object.keys(configRoles).filter(k=>!configRoles[k].dashboardUser)
+      let {query,allowedRoles}   =req.dash_login?{query:{isDeleted:false,email:identifier},allowedRoles:{[Op.notIn]:undashboardRoles}}:{query:{[Op.and]:[{isDeleted:false},{[Op.or]:[{email:identifier},{phonenumber:identifier}]}]},allowedRoles:{[Op.in]:undashboardRoles}};
        User.findOne({where:query,
       include:{
         model:Role,
         foreignKey:'role_id',
+        where:{
+          name:allowedRoles
+        }
         
       }}).then(function ( user) { 
          

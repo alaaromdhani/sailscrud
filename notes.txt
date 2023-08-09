@@ -17,8 +17,8 @@ endpoint:{
                     //blocking the user
                     try_type to invalidate the number of attemtps--->verify if the user is blocked
                     //resend the user
-                    try to resend--->in normal cases and verify if the the number of attemps becomes 0 and the resendattemps increment and the resendTime grows
-                    try to resend--->try to invalidate the number of attemps to resend
+                    try to resend--->in normal cases and verify if the the number of attemps becomes 0 and the resendattemps increment and the resendTime grows--->done
+                    try to resend--->try to invalidate the number of attemps to resend--->done
                     arabic messages
 
                 }    
