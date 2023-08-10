@@ -30,6 +30,10 @@ else{
                     
                   return passport.authenticate('local',next)(req,res,req.next)
                 }
+                else if(action==="student"){
+                    req.student_login =true
+                    return passport.authenticate('local',next)(req,res,req.next)
+                }
                 else {
                   return ErrorHandlor(req,new ValidationError({message:'valid action is required'}),res)
                 }
