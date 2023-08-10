@@ -5,7 +5,7 @@
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 const {
-  DataTypes, Op
+  DataTypes, Op, Sequelize
 } = require('sequelize');
 
 const bcrypt = require('bcrypt');
@@ -35,16 +35,27 @@ module.exports = {
     hooks:{
       beforeSave: async (user, options) => {
         if (user.changed('password') || user.isNewRecord) {
-          if(user.isNewRecord){
+           if(user.isNewRecord){
+
               if(!user.isDeleted){
                 user.isDeleted =false
               }
               else{
                 user.isDeleted = true
               } 
-              if(!user.username){
-                user.username = user.firstName+" "+user.lastName
+              let lastId =await  User.findAll({
+                attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'maxId']],
+              });
+              console.log(lastId)
+              let rand =Math.floor(Math.random()*10)
+              let secretNumber = (rand>0?rand:1)*(10**5)
+              if(!lastId.length){
+                  user.username = user.firstName+"."+user.lastName+""+secretNumber+(Math.floor(Math.random()*10))
               }
+              else{
+                user.username = user.firstName+"."+user.lastName+""+secretNumber+(lastId[0].dataValues.maxId)
+              }              
+              
           }
           user.password = await bcrypt.hash(user.password, 10);
         }
@@ -65,6 +76,7 @@ module.exports = {
   datastore: 'default',
   tableName: 'users',
   attributes: {
+
     id:{
       type:DataTypes.INTEGER,
       primaryKey:true,

@@ -31,6 +31,7 @@ const optionsVerifier= async (req,file,cb)=>{
             }
            const createDocCoursValidation = schemaValidation(SoftskillsdocumentShema)(coursDocument)
            if(createDocCoursValidation.isValid){
+                
                 coursDocument.addedBy = req.user.id   
                const createdCourse = await SoftSkillsDocument.create(coursDocument)    
                req.operation.data=createdCourse    

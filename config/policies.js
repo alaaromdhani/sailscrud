@@ -23,6 +23,9 @@ module.exports.policies = {
     profileUpdater:['lang','passport','role','auth','ppUploader'],
 
   },
+  StudentController:{
+    'create':['lang','passport','role','tokenVerifier','parent','ppUploader']
+  },
   BlogController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','blogfileUploader']

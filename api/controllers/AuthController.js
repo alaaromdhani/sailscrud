@@ -217,9 +217,11 @@ module.exports = {
       ErrorHandlor(req,new ValidationError({message:'countryId is required'}),res);
     }
     else{
-      const country =  await Country.findOne({where:{id:countryId},include:{
+      //coming back to that later
+      const country =  await Country.findOne({where:{id:countryId,active:true},include:{
         model:State,
-        foreignKey:'country_id'
+        foreignKey:'country_id',
+        where:{active:true}
 
       }});
       if(!country){

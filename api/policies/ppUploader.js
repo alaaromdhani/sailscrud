@@ -27,6 +27,25 @@ async function optionsValidator(req,file,cb){
               }
         })
     }
+    else if(req.url.includes("students")){
+      if(req.body.niveau_scolaire_id){
+        req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
+      }
+      sails.services.studentservice.createStudent(req,(err,data)=>{
+        
+        req.upload = fileOptions    
+        req.upload.addedBy = req.user.id
+        if(err){
+                  req.operation = {error:err}
+                  return cb(null,false);
+            }
+            else{
+              req.operation = {data}
+              return cb(null,true);
+            }
+        })
+
+    }
     else{
       return  sails.services.userservice.profileUpdater(req,async (err,data)=>{
         if(err){

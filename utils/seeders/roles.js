@@ -23,6 +23,10 @@ module.exports = async ()=>{
         {
             name:sails.config.custom.roles.parent.name,
             weight:sails.config.custom.roles.parent.weight
+        },
+        {
+            name:sails.config.custom.roles.student.name,
+            weight:sails.config.custom.roles.student.weight
         }
         
         ]

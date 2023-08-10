@@ -63,8 +63,9 @@ module.exports.routes = {
   //forgetpassword
   'POST /api/v1/forgetpassword': 'AuthController.forgetPassword',
   'POST /api/v1/forgetpassword/verify': 'AuthController.validateCode',
-  
-  
+  //students
+  'POST /api/v1/students': 'StudentController.create',
+    
 
  
   
