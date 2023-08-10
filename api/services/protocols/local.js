@@ -166,8 +166,10 @@ exports.register = function (user,callback){
 }
 exports.login = function (req, identifier, password, next) {
       const configRoles =sails.config.custom.roles 
-      const undashboardRoles = Object.keys(configRoles).filter(k=>!configRoles[k].dashboardUser)
-      let {query,allowedRoles}   =req.dash_login?{query:{isDeleted:false,email:identifier},allowedRoles:{[Op.notIn]:undashboardRoles}}:{query:{[Op.and]:[{isDeleted:false},{[Op.or]:[{email:identifier},{phonenumber:identifier}]}]},allowedRoles:{[Op.in]:undashboardRoles}};
+      const undashboardRoles = Object.keys(configRoles).filter(k=>k!=="student"&&!configRoles[k].dashboardUser)
+      
+      let {query,allowedRoles}   =req.dash_login?{query:{isDeleted:false,email:identifier},allowedRoles:{[Op.notIn]:undashboardRoles}}:
+      (req.student_login?{query:{username:identifier,allowedRoles:[configRoles.student.name]}}:{query:{[Op.and]:[{isDeleted:false},{[Op.or]:[{email:identifier},{phonenumber:identifier}]}]},allowedRoles:{[Op.in]:undashboardRoles}});
        User.findOne({where:query,
       include:{
         model:Role,

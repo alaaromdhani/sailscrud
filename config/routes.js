@@ -66,6 +66,7 @@ module.exports.routes = {
   //students
   'POST /api/v1/students': 'StudentController.create',
   'GET /api/v1/students': 'StudentController.find',
+  'GET /api/v1/schoollevels': 'StudentController.getschoolLevels',
     
 
  

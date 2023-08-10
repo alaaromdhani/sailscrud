@@ -86,6 +86,16 @@ module.exports={
           }
 
 
+    },
+    getschoolLevels:async (req,res)=>{
+        try{
+            return DataHandlor(req,await NiveauScolaire.findAll({where:{
+                active:true
+            },attributes:['id','name_ar']}),res)
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+
     }
 
 
