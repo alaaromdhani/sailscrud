@@ -24,7 +24,7 @@ module.exports.policies = {
 
   },
   StudentController:{
-    'create':['lang','passport','role','tokenVerifier','parent','ppUploader']
+    '*':['lang','passport','role','tokenVerifier','parent','ppUploader']
   },
   BlogController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
