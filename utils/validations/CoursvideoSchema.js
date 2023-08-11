@@ -1,7 +1,7 @@
 const joi = require('joi')
 const CoursVideoShema = joi.object({
     name: joi.string().required(),
-    description:joi.string().required(),
+    description:joi.string(),
     status: joi.string().valid('public','private'),
     source: joi.string().valid('vimeo','youtube').required(),
     url:joi.string().uri().required(),

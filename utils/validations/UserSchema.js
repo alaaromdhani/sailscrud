@@ -36,6 +36,17 @@ const updateUserSchema= joi.object({
     country_id:joi.number().integer(),
     state_id:joi.number().integer(),
 })
+const updateNormalUserProfile= joi.object({
+    birthDate:joi.string(),
+    firstName:joi.string(),
+    lastName:joi.string(),
+    email: joi.string(),
+    sex:joi.string().valid('M','F'),    
+    newPassword: joi.string(),
+    oldPassword:joi.string(),
+    country_id:joi.number().integer(),
+    state_id:joi.number().integer(),
+})
 const profileUpdate= joi.object({
     
     sex:joi.string().valid('M','F'),    
@@ -50,4 +61,4 @@ const profileUpdate= joi.object({
     country_id:joi.number(),
     state_id:joi.number(),
 })
-module.exports = {UserShema,updateUserSchema,registerSchema,profileUpdate}
+module.exports = {UserShema,updateUserSchema,registerSchema,profileUpdate,updateNormalUserProfile}

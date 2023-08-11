@@ -14,7 +14,7 @@ const schemaValidation = require('../../utils/validations');
 const { profileUpdate, updateUserSchema } = require('../../utils/validations/UserSchema');
 const generateCode = require('../../utils/generateCode');
 const { ValidateSchema } = require('../../utils/validations/VerificationCodeSchema');
-const { resolve } = require('path');
+
 
 
 
@@ -218,9 +218,9 @@ module.exports = {
 
       })
   },
-  update: (req, callback) => {
+  update: (req, callback,validation) => {
     let bodyData = {}
-
+    validation = validation?validation:updateUserSchema
     if(req.body.isDeleted && typeof(req.body.isDeleted)==='string'){
       req.body.isDeleted=req.body.isDeleted==='true'?true:false
     }
@@ -228,8 +228,8 @@ module.exports = {
     Object.keys(req.body).filter(k=>k!='pp').forEach(k=>{
         bodyData[k] = req.body[k]
     })
-    console.log(bodyData)
-    const bodyDataValidation= schemaValidation(updateUserSchema)(bodyData)
+    
+    const bodyDataValidation= schemaValidation(validation)(bodyData)
     if(bodyDataValidation.isValid){
       User.findByPk(req.params.id,{
         include:{
@@ -568,15 +568,15 @@ module.exports = {
 
   },
 
-  profileUpdater: (req, callback) => {
+  profileUpdater: (req, callback,validation) => {
 
     let dat = {};
-      
+      validation = validation?validation:profileUpdate
     Object.keys(req.body).filter(key => key !== 'pp').forEach(key => { //emtying the requestbody from the pp parameter to be ready for validation
       dat[key] = req.body[key];
     });
     
-    const updateProfileSchema = schemaValidation(profileUpdate)(dat);//validation for schema
+    const updateProfileSchema = schemaValidation(validation)(dat);//validation for schema
     if (updateProfileSchema.isValid) { //
 
         let u
@@ -1008,6 +1008,110 @@ module.exports = {
         return callback(new ValidationError({message:validation.message}))
        }
        
+  },
+  
+  updatePhoneNumber:(req,callback)=>{
+    let foundCode
+   let generatedNumber
+    let {phonenumber} =req.body 
+    let {otpconf} = sails.config.custom
+    return new Promise((resolve,reject)=>{
+      if(phonenumber){
+          return resolve()
+      }
+      else{
+          return reject(new ValidationError({message:'phonenumber is required'}))
+      }
+    }).then(()=>{
+      return Country.findByPk(req.user.country_id)
+    }).then(c=>{
+      return new Promise((resolve,reject)=>{
+          let tel_code = c.tel_code.startsWith('+')?c.tel_code.substring(1):c.tel_code
+          if(!phonenumber.startsWith(tel_code)){
+            return reject(new ValidationError({message:'a valid phonenumber is required'}))
+          }
+          phonenumber = '+'+phonenumber
+          return resolve()
+
+      })
+    }).then(()=>{
+      console.log('userid = ',req.user.id)
+      // we must check if the user has already an authcode not validated !!!!
+      return AuthCode.findOne({
+       where:{
+        user_id:req.user.id,
+        type:'ACCOUNT_ACTIVATION'
+       }
+      })
+     
+  }).then(authcode=>{
+    return new Promise((resolve,reject)=>{
+      if(authcode){
+        foundCode = authcode
+        //here we verify if if the user has used his all attemps to resend else he will have the ability to send smss everytime he updates hi phonenumber
+        if(authcode.numberAttempsResend>otpconf.activationCode.maxSend){
+          return  reject(new UnauthorizedError({specific:'you did reach the max resend attemps please contact the administrator to update your password'}))
+         
+        }
+        else{
+          return resolve()
+        }
+      }
+      else{
+        resolve()
+      }
+    })
+  }).then(()=>{
+    req.user.phonenumber = phonenumber
+    req.user.active =false
+    return  req.user.save()
+    
+
+  }).then(()=>{
+    generatedNumber = generateCode()
+    return Sms.create({
+      content:'your validation code is '+generatedNumber,
+      reciever_type:'single',
+      reciever_id:req.user.id,
+      type:'ACCOUNT_ACTIVATION'
+    })       
+  }).then(message=>{
+        if(foundCode){
+          foundCode.value =generatedNumber
+          foundCode.resendTime = dayjs().add(otpconf.resend.time.value,otpconf.resend.time.unit)
+          foundCode.expiredDate = dayjs().add(otpconf.expires.value,otpconf.expires.unit)
+         foundCode.numberAttempsResend++
+          foundCode.numberAttempsRetry=0
+          return foundCode.save()
+        }
+        else{
+          return AuthCode.create({
+            value:generatedNumber,
+            expiredDate:dayjs().add(otpconf.expires.value,otpconf.expires.unit).toISOString(),
+            user_id:req.user.id,
+            type:'ACCOUNT_ACTIVATION'
+           })
+        }
+    }).then(async sd=>{
+      if(sd){
+        callback(null,{message:'a verification code was sent to your new phonenumber successfully'})    
+ 
+       }
+      else{
+        callback(null,{message:'phonenumber updated successfully'})    
+      }
+
+  }).catch(e=>{
+    console.log(e)
+    if(e instanceof ValidationError){
+        callback(e,null)
+    }
+    else{
+      callback(new SqlError(e),null)
+    }
+  })
+
+
   }
 
 

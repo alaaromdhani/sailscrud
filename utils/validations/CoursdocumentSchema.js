@@ -2,7 +2,7 @@ const joi = require('joi')
 
 const CoursDocumentShema = joi.object({
     name: joi.string().required(),
-    description:joi.string().allow(''),
+    description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number().required(),
     forTeacher:joi.boolean(),
@@ -10,7 +10,7 @@ const CoursDocumentShema = joi.object({
 })
 const CoursDocumentShemaWithFile = joi.object({
     name: joi.string().required(),
-    description:joi.string().allow(''),
+    description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number().required(),
     document:joi.number().required(),

@@ -58,6 +58,9 @@ module.exports = {
             bodyData.username = bodyData.firstName+' '+bodyData.lastName+uuidv4()
             bodyData.email = bodyData.firstName+'.'+bodyData.lastName+uuidv4()+'@madar.tn'
             bodyData.addedBy = req.user.id
+            bodyData.country_id = req.user.country_id
+            bodyData.state_id = req.user.state_id
+            
             return User.create(bodyData)   
         }).then(u=>{
             callback(null,u)

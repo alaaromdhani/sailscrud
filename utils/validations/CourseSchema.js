@@ -7,7 +7,7 @@ const CourseShema = joi.object({
   order:joi.number(),
 
   niveau_scolaire_id:joi.number().required(),
-  description:joi.string().required()
+  description:joi.string()
 })
 const UpdateCourseShema = joi.object({
   name: joi.string(),

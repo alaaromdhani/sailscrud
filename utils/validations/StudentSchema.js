@@ -5,7 +5,9 @@ module.exports={
         lastName:joi.string().required(),
         sex:joi.string().valid('M','F').required(),
         niveau_scolaire_id:joi.number().integer().required(),
-       password:joi.string().required() 
+        birthDate:joi.string().required(),
+       password:joi.string().required(),
+
         
     })
 

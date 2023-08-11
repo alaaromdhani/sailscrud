@@ -23,11 +23,7 @@ module.exports.policies = {
     profileUpdater:['lang','passport','role','auth','ppUploader'],
 
   },
-  StudentController:{
-    'create':['lang','passport','role','tokenVerifier','parent','ppUploader'],
-    'find':['lang','passport','role','tokenVerifier','parent'],
-    'getschoolLevels':['lang','passport','role','tokenVerifier']
-  },
+  
   BlogController:{
     '*':['lang','passport','role','tokenVerifier','permissions'],
     'create':['lang','passport','role','tokenVerifier','permissions','blogfileUploader']
@@ -189,6 +185,16 @@ module.exports.policies = {
     
     'rateCourse':['lang','passport','role','tokenVerifier'],
    },
+   //normal user
+   HomeController:{
+    'updateProfile':['lang','passport','role','auth','ppUploadernormalUser'],
+    'updatePhoneNumber':['lang','passport','role','auth'],
+   },
+   StudentController:{
+    'create':['lang','passport','role','tokenVerifier','parent','ppUploader'],
+    'find':['lang','passport','role','tokenVerifier','parent'],
+    'getschoolLevels':['lang','passport','role','tokenVerifier']
+  },
 
 
 

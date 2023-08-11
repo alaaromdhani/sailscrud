@@ -67,6 +67,10 @@ module.exports.routes = {
   'POST /api/v1/students': 'StudentController.create',
   'GET /api/v1/students': 'StudentController.find',
   'GET /api/v1/schoollevels': 'StudentController.getschoolLevels',
+  //normal user profile 
+  'PATCH /api/v1/profile':'HomeController.updateProfile',
+  
+  'PATCH /api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',
     
 
  
