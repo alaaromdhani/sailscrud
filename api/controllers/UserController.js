@@ -113,19 +113,23 @@ module.exports = {
 
   async findOne(req, res) {
     try {
+        const {withChildren} = req.query 
+        let include = [{
+          model:Role,
+          foreignKey:'role_id',
+          attributes:['name']
+        }]
+        if(withChildren && typeof (withChildren)=='string' &&withChildren=='true'){
+          include.push({
+            model:User,
+            as:'addedUsers',
+            foreignKey:'addedBy'
+          })
+        }
+      
+      
       const data = await User.findByPk(req.params.id,{
-          include:[{
-            model:Permission,
-            through:'users_permissions',
-            include:{
-              model:Model,
-              attributes: ['name']
-            }
-          },{
-            model:Role,
-            foreignKey:'role_id',
-            attributes:['name']
-          }],
+          include,
 
 
       });
@@ -135,6 +139,7 @@ module.exports = {
 
       return DataHandlor(req,data,res)
     } catch (err) {
+      console.log(err)
       return ErrorHandlor(req,new SqlError(err),res);
     }
   },
@@ -159,7 +164,6 @@ module.exports = {
         }
 
       }else{
-        console.log('there is not update user')
           sails.services.userservice.update(req,(err,data)=>{
             if(err){
               return ErrorHandlor(req,err,res)
