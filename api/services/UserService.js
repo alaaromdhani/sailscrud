@@ -238,13 +238,23 @@ module.exports = {
         }
       }).then((data) => {
           return new Promise((resolve,reject)=>{
+            const configRoles=sails.config.custom.roles
+            const noDashoardRoles = Object.keys(k=>!configRoles[k].dashboardUser).map(k=>configRoles[k].name)
             if(data){
-                if(req.role.weight>=data.Role.weight && req.user.id!=data.addedBy){
-                    return reject(new UnauthorizedError({specific:'you canot update a higher user than you'}))
+                if(noDashoardRoles.includes(req.role.name)){
+                   if(req.user.id!=data.addedBy){
+                    return reject(new UnauthorizedError({specific:'you cannot update this'}))
+                  } 
                 }
                 else{
-                    return resolve(data)
+                  if(req.role.weight>=data.Role.weight && req.user.id!=data.addedBy){
+                    return reject(new UnauthorizedError({specific:'you canot update a higher user than you'}))
+                  }
                 }
+                return resolve()
+                /*else{
+                    return resolve(data)
+                }*/
             }
             else{
               reject(new RecordNotFoundErr())
@@ -1102,7 +1112,7 @@ module.exports = {
       }
 
   }).catch(e=>{
-    console.log(e)
+    //console.log(e)
     if(e instanceof ValidationError){
         callback(e,null)
     }

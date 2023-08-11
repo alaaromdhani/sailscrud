@@ -2,7 +2,8 @@ const multer = require('multer');
 const path = require('path');
 const SqlError = require('../../utils/errors/sqlErrors')
 const {ErrorHandlor} = require('../../utils/translateResponseMessage');
-const UnkownError = require('../../utils/errors/UnknownError')
+const UnkownError = require('../../utils/errors/UnknownError');
+const { updateStudentSchema } = require('../../utils/validations/StudentSchema');
 async function optionsValidator(req,file,cb){
   console.log(req.body)
   if(!req.operation){
@@ -27,8 +28,21 @@ async function optionsValidator(req,file,cb){
               }
         })
     }
-    
-    else if(req.url.includes("students")){
+    else if(req.url.includes("students")&&req.method=="PATCH"){
+      return sails.services.userservice.update(req,(err,data)=>{
+        req.upload = fileOptions    
+        if(err){
+             
+              req.operation = {error:err}
+                  return cb(null,false);
+            }
+            else{
+              req.operation = {data}
+              return cb(null,true);
+            }
+      },updateStudentSchema)
+    }
+    else if(req.url.includes("students")&&req.method=="POST"){
       if(req.body.niveau_scolaire_id){
         req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
       }

@@ -193,7 +193,10 @@ module.exports.policies = {
    StudentController:{
     'create':['lang','passport','role','tokenVerifier','parent','ppUploader'],
     'find':['lang','passport','role','tokenVerifier','parent'],
-    'getschoolLevels':['lang','passport','role','tokenVerifier']
+    'getschoolLevels':['lang','passport','role','tokenVerifier'],
+    'updateStudent':['lang','passport','role','tokenVerifier','parent','ppUploader']
+
+
   },
 
 

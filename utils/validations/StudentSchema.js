@@ -9,7 +9,16 @@ module.exports={
        password:joi.string().required(),
 
         
+    }),
+    updateStudentSchema:joi.object({
+        firstName:joi.string(),
+        lastName:joi.string(),
+        sex:joi.string().valid('M','F'),
+        niveau_scolaire_id:joi.number().integer(),
+        birthDate:joi.string(),
+        password:joi.string(),
     })
+
 
 
 }

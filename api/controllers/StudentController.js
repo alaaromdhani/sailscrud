@@ -1,5 +1,6 @@
 const SqlError = require("../../utils/errors/sqlErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
+const { updateStudentSchema } = require("../../utils/validations/StudentSchema")
 
 module.exports={
     create:async (req,res)=>{
@@ -66,7 +67,12 @@ module.exports={
             // Perform the database query with pagination, filtering, sorting, and ordering
             const { count, rows } = await User.findAndCountAll({
               where,
-            
+              include:{
+                model:NiveauScolaire,
+                foreignKey:'niveau_scolaire_id',
+                attributes:['name_ar']
+              },
+
       
               order,
               limit: parseInt(limit, 10),
@@ -96,7 +102,41 @@ module.exports={
             return ErrorHandlor(req,new SqlError(e),res)
         }
 
-    }
+    },
+    updateStudent:async (req,res)=>{
+        if(req.operation){
+            if(req.operation.error){
+              return ErrorHandlor(req,req.operation.error,res)
+            }
+            else{
+                try{
+                  let upload = await Upload.create(req.upload) 
+                let  user = req.operation.data
+                user.profilePicture  = upload.link
+                return DataHandlor(req,await user.save(),res)
+                } 
+                catch(e){
+                    return ErrorHandlor(req,new SqlError(e),res)
+                } 
+    
+            }
+    
+          }else{
+              sails.services.userservice.update(req,(err,data)=>{
+                if(err){
+                  return ErrorHandlor(req,err,res)
+                }
+                else{
+                  return DataHandlor(req,data,res)
+                }
+    
+    
+              })
+          }
+          
+
+
+    },
 
 
 

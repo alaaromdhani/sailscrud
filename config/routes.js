@@ -65,14 +65,14 @@ module.exports.routes = {
   'POST /api/v1/forgetpassword/verify': 'AuthController.validateCode',
   //students
   'POST /api/v1/students': 'StudentController.create',
+  'PATCH /api/v1/students/:id': 'StudentController.updateStudent',
   'GET /api/v1/students': 'StudentController.find',
   'GET /api/v1/schoollevels': 'StudentController.getschoolLevels',
   //normal user profile 
   'PATCH /api/v1/profile':'HomeController.updateProfile',
-  
   'PATCH /api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',
-    
-
+  //normal user profile 
+  
  
   
 
