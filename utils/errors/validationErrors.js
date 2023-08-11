@@ -13,7 +13,7 @@ function ValidationError (error) {
         }
         this.code = 'validation Error';
         this.status = 400;
-        this.message = message;
+        this.message = 'خطأ في البيانات يرجى التحقق';
         this.lockout = error;
         this.extrafields = extrafields
 }

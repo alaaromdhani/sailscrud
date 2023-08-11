@@ -15,6 +15,7 @@ async function optionsValidator(req,file,cb){
     // eslint-disable-next-line handle-callback-err
     fileOptions.addedBy = req.user.id;
     if(req.options &&req.options.model=="user"&&req.method=="PATCH"){
+      console.log(req.body)
         return sails.services.userservice.update(req,(err,data)=>{
           req.upload = fileOptions    
           if(err){
@@ -62,6 +63,7 @@ async function optionsValidator(req,file,cb){
 
     }
     else{
+    
       return  sails.services.userservice.profileUpdater(req,async (err,data)=>{
         if(err){
           req.operation = {
@@ -116,6 +118,7 @@ const upload = multer({
 module.exports=(req,res,next)=>{
   return  upload.fields([{ name: 'pp', maxCount: 1 }])(req,res,(err)=>{
       if(err){
+        console.log(err)
          return  ErrorHandlor(req,new UnkownError(),res)
       }else{
         return next()

@@ -9,6 +9,7 @@ const {
 } = require('sequelize');
 
 const bcrypt = require('bcrypt');
+const ValidationError = require('../../utils/errors/validationErrors');
 
 
 module.exports = {
@@ -58,6 +59,12 @@ module.exports = {
               
           }
           user.password = await bcrypt.hash(user.password, 10);
+        }
+        if(user.changed('state_id')){
+          let state = await State.findByPk(user.state_id)
+          if(state && state.country_id!=user.country_id){
+            throw new ValidationError({message:'a valid country is required'})
+          }
         }
       },
 

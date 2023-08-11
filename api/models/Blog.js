@@ -14,10 +14,7 @@ module.exports = {
     collate: 'utf8mb4_general_ci',
     scopes: {},
     indexes:[
-      {
-        unique: true,
-        fields: ['title']
-      },
+      
       {
         unique: true,
         fields: ['slug']
@@ -25,19 +22,12 @@ module.exports = {
     ],
     tableName: 'blogs',
     hooks:{
-
-
       beforeSave:async (blog, options)=>{
         if(blog.isNewRecord){
             blog.status =true
-
-          }
-        blog.slug = getSlug(blog.title)
-
+        }
+        blog.slug = getSlug(blog.title)+''+(Math.flour)
       },
-
-
-
     }
   },
   datastore: 'default',

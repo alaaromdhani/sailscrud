@@ -18,10 +18,7 @@ const {
         unique:true,
         fields:['phone_number']
       },
-      {
-        unique:true,
-        fields:['name']
-      }],
+      ],
     },
     datastore: 'default',
     tableName: 'sellers',

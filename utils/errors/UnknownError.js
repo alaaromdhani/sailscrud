@@ -1,8 +1,8 @@
 function UnkownError () {
-  this.code = 'Unkown Error';
+  this.code = 'حدث خطأ ما اتصل بمدير مدار';
   this.status = 500;
-  this.message = 'some error accured come back later';
-  this.lockout = 'some error accured come back later';
+  this.message = 'حدث خطأ ما اتصل بمدير مدار';
+  this.lockout = 'حدث خطأ ما اتصل بمدير مدار';
 }
 UnkownError.prototype.toJSON =
 function () {

@@ -159,6 +159,7 @@ module.exports = {
         }
 
       }else{
+        console.log('there is not update user')
           sails.services.userservice.update(req,(err,data)=>{
             if(err){
               return ErrorHandlor(req,err,res)

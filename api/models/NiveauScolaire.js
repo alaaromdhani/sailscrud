@@ -17,12 +17,7 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
-    indexes:[{
-      unique:true,
-      fields:['name_fr'],
-      unique:true,
-      fields:['name_ar']
-    }],
+   
     tableName: 'niveau_scolaires',
     hooks: {
       beforeSave(ns,options){

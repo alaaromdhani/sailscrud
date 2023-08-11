@@ -2,6 +2,7 @@ const { updateNormalUserProfile } = require("../../utils/validations/UserSchema"
 const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessage');
 const SqlError = require("../../utils/errors/sqlErrors");
 const UnkownError = require("../../utils/errors/UnknownError");
+const ValidationError = require("../../utils/errors/validationErrors");
 module.exports={
     updateProfile:async (req,res)=>{
       //console.log(req.body)
@@ -27,8 +28,10 @@ module.exports={
                           return DataHandlor(req,await data.save(),res)
                         }
                         catch(e){
+                          if( e instanceof ValidationError){
+                            return ErrorHandlor(req,e,res)
+                          }
                           return ErrorHandlor(req,new SqlError(e),res)
-      
                         }
                     }
                 },updateNormalUserProfile)

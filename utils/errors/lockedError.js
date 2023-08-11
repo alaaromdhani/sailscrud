@@ -6,18 +6,18 @@ const util = require('util')
  * @constructor {SAPassportLockedError}
  */
 function SAPassportLockedError (lockout) {
-    let m ="your account will be unlocked in" 
+    let m ="سيتم فتح حسابك في" 
     let extra = []
     if(lockout.expires.seconds){
-      m +=" seconds"
+      m +=" ثواني"  
       extra.push(lockout.expires.seconds)
     }
     if(lockout.expires.minutes){
-      m +=" minutes"
+      m +=" دقائق"
       extra.push(lockout.expires.minutes)
     }
     if(lockout.expires.hours){
-      m +=" hours"
+      m +=" ساعات"
       extra.push(lockout.expires.hours)
     }
     
@@ -46,10 +46,10 @@ function SAPassportLockedError (lockout) {
     };
     
 function BadCredentialsError (lockout) {
-    this.code = 'BAD_CREDENTIALS';
+    this.code = 'بيانات غير صحيحة';
 
     this.status = 403;
-    this.message = `Bad Credentials`;
+    this.message = `بيانات غير صحيحة`;
     this.lockout = lockout;
 }  
 util.inherits(BadCredentialsError, Error);

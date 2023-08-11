@@ -19,10 +19,7 @@ module.exports = {
       tableName: 'themes',
       options: {
         tableName: 'themes',
-        indexes:[{
-          unique:true,
-          fields:['name']
-        }],
+      
 
       },
 

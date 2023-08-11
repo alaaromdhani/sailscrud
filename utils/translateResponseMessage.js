@@ -23,6 +23,7 @@ const translateReponseMessage = (translate,message,parameters)=>{
 const ErrorHandlor = (req,err,res)=>{
 
   if(err instanceof SAPassportLockedError){
+    
     err.message =translateReponseMessage(req.__,err.message,err.extrafields);
 
     return res.status(err.status).send(err);
@@ -30,8 +31,8 @@ const ErrorHandlor = (req,err,res)=>{
   }
   if(err instanceof UnauthorizedError){
 
-    err.message =translateReponseMessage(req.__,err.message,err.extrafields);
-
+ //   err.message =translateReponseMessage(req.__,err.message,err.extrafields);
+    err.message = ''
     return res.status(err.status).send(err);
   }
   if(err instanceof SqlError){
@@ -60,7 +61,7 @@ const ErrorHandlor = (req,err,res)=>{
   }
   else{
     const error = new UnkownError();
-    error.message = translateReponseMessage(req.__,'some error accured come back later');
+    error.message = translateReponseMessage(req.__,'حدث خطأ ما');
     return res.status(500).send(error);
   }
 
@@ -70,7 +71,7 @@ const ErrorHandlor = (req,err,res)=>{
 const DataHandlor=(req,dat,res,message,extrafields)=>{
   let data = {};
   if(!message){
-    data.message = translateReponseMessage(req.__,'operation succeeded');
+    data.message = translateReponseMessage(req.__,'تمت العملية بنجاح');
   }
   else{
     if(extrafields && Array.isArray(extrafields)){

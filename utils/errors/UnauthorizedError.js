@@ -1,7 +1,7 @@
 function UnauthorizedError (err) {
-    this.code = 'Unauthorized error';
+    this.code = 'أنت غير مصرح لك للوصول إلى هذا المورد';
     this.status = 403;
-    this.message = 'you are not authorized to access this  ressourse';
+    this.message = 'أنت غير مصرح لك للوصول إلى هذا المورد';
     this.lockout = err;
 }
 UnauthorizedError.prototype.toJSON =

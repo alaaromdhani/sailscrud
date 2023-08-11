@@ -83,37 +83,7 @@ module.exports = {
        }
     });
   },
-  activateAccount:(req,res)=>{
-      sails.services.userservice.activateAccount(req,(err,data)=>{
-          if(err){
-            return ErrorHandlor(req,err,res)
-          }
-          else{
-            return DataHandlor(req,data,res)
-          }
-      })
-  },
-  resendCallback:(req,res)=>{
-    let type = req.params.type   
-      console.log(type)
-      console.log(req.user.active)
-    if(type==="account_activation" && !req.user.active){
-        req.operation = {type:'ACCOUNT_ACTIVATION'}
-        sails.services.userservice.resendNotification(req,(err,data)=>{
-            if(err){
-                return ErrorHandlor(req,err,res)
-            }
-            else{
-                return DataHandlor(req,data,res)
-            }
-        })
-    }
-    else{
-      return ErrorHandlor(req,new ValidationError({message:'a valid type is required'}),res)
-    }
-      
-  },
-
+ 
   logout:(req,res)=>{
     
     req.logout(async (err) => {
@@ -130,7 +100,7 @@ module.exports = {
           },
         })
       
-        return DataHandlor(req,{},res,'logged out successfully');
+        return DataHandlor(req,{},res,'تم تسجيل الخروج بنجاح');
       }
     });
 
@@ -138,35 +108,6 @@ module.exports = {
 
 
   },
-//forget password
-  forgetPassword:(req,res)=>{
-
-    
-      sails.services.userservice.forgetPassword(req,(err,data)=>{
-        if(err){
-          console.log(err);
-          ErrorHandlor(req,err,res);
-
-        }
-        else{
-          DataHandlor(req,data,res);
-
-        }
-       });
-  },
-  validateCode:(req,res)=>{
-      sails.services.userservice.validateCode(req,(err,data)=>{
-        if(err){
-          return ErrorHandlor(req,err,res)
-        }
-        else{
-            return DataHandlor(req,data,res)
-        }
-      })
-    
-
-  },
-  //user profile
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
   },
@@ -204,6 +145,8 @@ module.exports = {
 
 
   },
+  
+  //front routes
   getCounteries:async (req,res)=>{
     const countries = await Country.findAll({where:{
       active:true
@@ -235,6 +178,67 @@ module.exports = {
 
 
   },
+  activateAccount:(req,res)=>{
+    sails.services.userservice.activateAccount(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+    })
+  },
+  resendCallback:(req,res)=>{
+    let type = req.params.type   
+      console.log(type)
+      console.log(req.user.active)
+    if(type==="account_activation" && !req.user.active){
+        req.operation = {type:'ACCOUNT_ACTIVATION'}
+        sails.services.userservice.resendNotification(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+        })
+    }
+    else{
+      return ErrorHandlor(req,new ValidationError({message:'a valid type is required'}),res)
+    }
+      
+  },
+
+  
+//forget password
+  forgetPassword:(req,res)=>{
+
+    
+      sails.services.userservice.forgetPassword(req,(err,data)=>{
+        if(err){
+          console.log(err);
+          ErrorHandlor(req,err,res);
+
+        }
+        else{
+          DataHandlor(req,data,res);
+
+        }
+       });
+  },
+  validateCode:(req,res)=>{
+      sails.services.userservice.validateCode(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+            return DataHandlor(req,data,res)
+        }
+      })
+    
+
+  },
+  //user profile
   
  
 

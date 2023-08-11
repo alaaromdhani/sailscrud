@@ -11,10 +11,7 @@ module.exports = {
   options: {
     tableName: 'features'
   },
-  indexes:[{
-    unique:true,
-    fields:['identity']
-  },
+  indexes:[
   {
     unique:true,
     fields:['name']

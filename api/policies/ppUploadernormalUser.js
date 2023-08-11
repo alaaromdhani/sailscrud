@@ -4,6 +4,7 @@ const SqlError = require('../../utils/errors/sqlErrors')
 const {ErrorHandlor} = require('../../utils/translateResponseMessage');
 const UnkownError = require('../../utils/errors/UnknownError');
 const { updateNormalUserProfile } = require('../../utils/validations/UserSchema');
+const ValidationError = require('../../utils/errors/validationErrors');
 async function optionsValidator(req,file,cb){
  
   if(!req.operation){
@@ -36,7 +37,7 @@ async function optionsValidator(req,file,cb){
                 
                  }catch(e){
                 req.operation = {
-                  error:new SqlError(err)
+                  error:e instanceof ValidationError?e : new SqlError(e)
                 }
                 return cb(null,false)
               }

@@ -1,7 +1,7 @@
 function RecordNotFoundErr (err) {
-    this.code = 'RECORD NOT Found';
+    this.code = 'السجل الذي تبحث عنه غير موجود';
     this.status = 404;
-    this.message = 'the record you are looking for is not found';
+    this.message = 'السجل الذي تبحث عنه غير موجود';
     this.lockout = err;
 }
 RecordNotFoundErr.prototype.toJSON =

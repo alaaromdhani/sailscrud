@@ -17,10 +17,7 @@ module.exports = {
     indexes:[{
       unique:true,
       fields:['url']
-    },{
-      unique:true,
-      fields:['name']
-    }],
+    },],
     hooks: {
       beforeSave:(course,options)=>{
         if(course.isNewRecord){

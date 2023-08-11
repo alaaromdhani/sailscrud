@@ -10,10 +10,7 @@ const {
       collate: 'utf8_general_ci',
       scopes: {},
       tableName: 'packs',
-      indexes:[{
-        unique:true,
-        fields:['name']
-      }],
+      
       
     },
     datastore: 'default',

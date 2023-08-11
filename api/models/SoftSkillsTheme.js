@@ -19,10 +19,7 @@ module.exports = {
       tableName: 'skills_themes',
       options: {
         tableName: 'skills_themes',
-        indexes:[{
-          unique:true,
-          fields:['name']
-        }],
+       
 
       },
 

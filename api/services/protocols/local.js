@@ -52,7 +52,7 @@ exports.register = function (user,callback){
           role_name = sails.config.custom.roles.teacher.name              
         }
         if(!role_name){
-          return callback(new ValidationError({message:'a valid role name is required'}))
+          return callback(new ValidationError({message:'a valid اسم الدور is required'}))
         }
         
         //countryvalidation must come first 
@@ -67,13 +67,13 @@ exports.register = function (user,callback){
                 //validating the phonenumber is related to the country 
                 let tel_code = s.Country.tel_code.startsWith('+')?s.Country.tel_code.substring(1):s.Country.tel_code
                  if(!user.phonenumber.startsWith(tel_code)){
-                  return reject(new ValidationError({message:'a valid phonenumber is required'}))
+                  return reject(new ValidationError({message:'a valid رقم الهاتف is required'}))
                  } 
                 user.phonenumber = '+'+user.phonenumber
                 return resolve()
               }
               else{
-                  return reject(new ValidationError({message:' a valid state and country is required'}))
+                  return reject(new ValidationError({message:' a valid اسم الدولة is required'}))
               }
 
            })
@@ -96,7 +96,7 @@ exports.register = function (user,callback){
                       return resolve(roles)
                     }
                     else{
-                      return reject(new ValidationError({message:'a valid role is required'})) 
+                      return reject(new ValidationError({message:'a valid دور is required'})) 
                     }
               })
 
@@ -141,12 +141,12 @@ exports.register = function (user,callback){
         }).then(async sd=>{
             if(sd){
                 const type = notification.email?'email':'phonenumber'
-                callback(null,{message:'a verification code was sent to your '+type+' successfully',user:createdUser})    
+                callback(null,{message:'تم إرسال رمز التحقق إلى هاتفك بنجاح',user:createdUser})    
              }
             else{
               createdUser.active = true
               await createdUser.save()  
-              callback(null,{message:'registration completed successfully',user:createdUser})    
+              callback(null,{message:'اكتمل التسجيل بنجاح',user:createdUser})    
             }
 
         }).catch(e=>{
@@ -182,7 +182,7 @@ exports.login = function (req, identifier, password, next) {
          
       if (!user) {
         
-        next(err=new BadCredentialsError(),user=null,info='Bad Credentials');
+        next(err=new BadCredentialsError(),user=null,info='بيانات خاطئة');
       }
       else{
           UserAuthSettings.findOrCreate({where:{
@@ -196,7 +196,7 @@ exports.login = function (req, identifier, password, next) {
                 }
                 else{
                   if(authenticated){
-                    next(null,{user,authetication:true},info='user authentificated');
+                    next(null,{user,authetication:true},info='مصادقة المستخدم');
                   }
                   else{
                      next(err=new BadCredentialsError());

@@ -15,10 +15,7 @@ module.exports = {
   options: {
     charset: 'utf8',
     collate: 'utf8_general_ci',
-    indexes:[{
-      unique:true,
-      fields:['name']
-    }],
+    
     scopes: {},
     tableName: 'domaines',
     hooks: {

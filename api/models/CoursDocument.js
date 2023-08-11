@@ -11,10 +11,7 @@ module.exports = {
   options: {
     tableName: 'c_documents',
     charset: 'utf8',
-    indexes:[{
-      unique:true,
-      fields:['name']
-    }],
+   
     collate: 'utf8_general_ci',
     scopes: {},
     hooks: {

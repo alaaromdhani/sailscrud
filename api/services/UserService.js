@@ -170,11 +170,11 @@ module.exports = {
         }
         const otpconf = sails.config.custom.otpconf.activationCode
         if(c.numberAttempsResend>otpconf.maxSend){
-          return reject(new UnauthorizedError({specific:'you reached the maximum number of sms sent please contact the administrator to activate your account'}))
+          return reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى لعدد الرسائل القصيرة المرسلة ، يرجى الاتصال بالمسؤول لتفعيل حسابك'}))
         }
         if(new Date()<new Date(c.resendTime)){
           //i should comeback to this to add the specific date and time
-          return reject(new UnauthorizedError({specific:'your resend time is sill going please try again later'})) 
+          return reject(new UnauthorizedError({specific:'لا يزال وقت إعادة الإرسال الخاص بك مستمرًا ، يرجى المحاولة مرة أخرى لاحقًا'})) 
         } 
         
         return resolve(c)
@@ -197,7 +197,7 @@ module.exports = {
       }).then(c=>{
         updatedCode = c
         return Sms.create({
-          content:'your validation code is '+c.value,
+          content:'رمز التحقق الخاص بك هو '+c.value,
           reciever_type:'single',
           reciever_id:req.user.id,
           type
@@ -205,7 +205,7 @@ module.exports = {
       }).then(sms=>{
           return updatedCode.save()
       }).then(c=>{
-          callback(null,{message:'a verification code was sent to your phone successfully'})
+          callback(null,{message:'تم إرسال رمز التحقق إلى هاتفك بنجاح'})
 
       }).catch(err=>{
         console.log(err)
@@ -243,15 +243,15 @@ module.exports = {
             if(data){
                 if(noDashoardRoles.includes(req.role.name)){
                    if(req.user.id!=data.addedBy){
-                    return reject(new UnauthorizedError({specific:'you cannot update this'}))
+                    return reject(new UnauthorizedError({specific:'لا يمكنك تحديث هذا المستخدم'}))
                   } 
                 }
                 else{
                   if(req.role.weight>=data.Role.weight && req.user.id!=data.addedBy){
-                    return reject(new UnauthorizedError({specific:'you canot update a higher user than you'}))
+                    return reject(new UnauthorizedError({specific:'لا يمكنك تحديث مستخدم أعلى منك'}))
                   }
                 }
-                return resolve()
+                return resolve(data)
                 /*else{
                     return resolve(data)
                 }*/
@@ -269,7 +269,7 @@ module.exports = {
       }).then(data=>{
           callback(null,data)
       }).catch(err=>{
-
+        console.log(err)
         callback(err,null)
       })
   
@@ -579,7 +579,12 @@ module.exports = {
   },
 
   profileUpdater: (req, callback,validation) => {
-
+    if(req.body.country_id){
+      req.body.country_id = parseInt(req.body.country_id)
+    }
+    if(req.body.state_id){
+      req.body.state_id = parseInt(req.body.state_id)
+    }
     let dat = {};
       validation = validation?validation:profileUpdate
     Object.keys(req.body).filter(key => key !== 'pp').forEach(key => { //emtying the requestbody from the pp parameter to be ready for validation
@@ -608,7 +613,7 @@ module.exports = {
           if (dat.oldPassword && dat.newPassword) {
             return resolve(user);
           }
-          return reject(new UnauthorizedError({ specific: 'you have to specify both the old and the new password' }));
+          return reject(new UnauthorizedError({ specific: 'يجب عليك تحديد كلمة المرور القديمة والجديدة' }));
         });
       }).then(user => {
 
@@ -627,7 +632,7 @@ module.exports = {
             resolve(u);
           }
           else {
-            return reject(new UnauthorizedError({ specific: 'passwords do not match' }));
+            return reject(new UnauthorizedError({ specific: 'كلمة المرور غير مطابقة' }));
           }
 
 
@@ -713,13 +718,13 @@ module.exports = {
         let nowDate =new Date()
         const otpconf = sails.config.custom.otpconf
         if(code.numberAttempsRetry>otpconf.activationCode.maxRetry){
-          return  reject(new UnauthorizedError({specific:'you did reach the max retries attemps please hit resend to have a new one'}))
+          return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى لمحاولات إعادة المحاولة ، يرجى النقر فوق إعادة الإرسال للحصول على رمز جديد'}))
         }
         if(code.numberAttempsResend>otpconf.activationCode.maxSend){
-          return  reject(new UnauthorizedError({specific:'you did reach the max resend attemps please contact the administrator to activate your account'}))
+          return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى من محاولات الإرسال ، يرجى الاتصال بالمسؤول لتفعيل حسابك'}))
         }
         if(nowDate>new Date(code.expiredDate)){
-          return  reject(new UnauthorizedError({specific:'your activation code is expired please hit resend to have a new one'}))
+          return  reject(new UnauthorizedError({specific:'رمز التفعيل الخاص بك منتهي الصلاحية ، الرجاء الضغط على "إعادة إرسال" للحصول على رمز جديد'}))
         }
         
         return resolve(code)
@@ -745,7 +750,7 @@ module.exports = {
             return resolve()
           }
           else{
-            return reject(new UnauthorizedError({specific:'wrong validation code'}))
+            return reject(new UnauthorizedError({specific:'رمز التحقق الخاطئ'}))
           }
         })
 
@@ -756,7 +761,7 @@ module.exports = {
       }})
      
     }).then((sd=>{
-      callback(null,{message:'your account is activated successfully'})
+      callback(null,{message:'تم تفعيل حسابك بنجاح'})
     })).catch(e=>{
       console.log(e)
       if(e instanceof UnauthorizedError || e instanceof ValidationError){
@@ -793,7 +798,7 @@ module.exports = {
           if(requiredSettings.type.sms_verification.active){
             generatedNumber  =generateCode()
             return Sms.create({
-              content:'your validation code is '+generatedNumber,
+              content:'رمز التحقق الخاص بك هو '+generatedNumber,
               reciever_type:'single',
               reciever_id:createdUser.id,
               type:'ACCOUNT_ACTIVATION'
@@ -803,7 +808,7 @@ module.exports = {
             generatedNumber  =generateCode()
             
             return sails.services.emailservice.sendEmail({
-              content:'your validation code is '+generatedNumber,
+              content:'رمز التحقق الخاص بك هو '+generatedNumber,
               reciever:createdUser,
               type:'ACCOUNT_ACTIVATION'
             })  
@@ -833,7 +838,7 @@ module.exports = {
     let validationCode
     const {phonenumber} = req.body
     if(!phonenumber){
-      return callback(new ValidationError({message:'phonenumber is required'}))
+      return callback(new ValidationError({message:'رقم الهاتف is required'}))
     }
     User.findOne({where:{
 
@@ -846,7 +851,7 @@ module.exports = {
           return resolve(u)
         }
         else{
-          return reject(new UnauthorizedError({specific:'the phonenumber you entred does not belong to any user'}))  
+          return reject(new UnauthorizedError({specific:'رقم الهاتف الذي أدخلته لا يخص أي مستخدم'}))  
         }
 
 
@@ -867,11 +872,11 @@ module.exports = {
         }
         const otpconf = sails.config.custom.otpconf.activationCode
         if(c.numberAttempsResend>otpconf.maxSend){
-          return reject(new UnauthorizedError({specific:'you reached the maximum number of sms sent please contact the administrator to activate your account'}))
+          return reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى لعدد الرسائل القصيرة المرسلة ، يرجى الاتصال بالمسؤول لتفعيل حسابك'}))
         }
         if(new Date()<new Date(c.resendTime)){
           //i should comeback to this to add the specific date and time
-          return reject(new UnauthorizedError({specific:'your resend time is sill going please try again later'})) 
+          return reject(new UnauthorizedError({specific:'لا يزال وقت إعادة الإرسال الخاص بك مستمرًا ، يرجى المحاولة مرة أخرى لاحقًا'})) 
         } 
         
         return resolve(c)
@@ -916,7 +921,7 @@ module.exports = {
     
 
     }).then(c=>{
-      callback(null,{message:'a verifcation code was sent to your phonenumber successfully'})
+      callback(null,{message:'تم إرسال رمز التحقق إلى رقم هاتفك بنجاح'})
 
     }).catch(e=>{
       if(e instanceof UnauthorizedError ){
@@ -936,7 +941,7 @@ module.exports = {
        if(validation.isValid){
           const {password,conf_pass,phonenumber,code} = req.body
           if(password!==conf_pass){
-            callback(new ValidationError('the password and confirm password aren t the same')) 
+            callback(new ValidationError('كلمة المرور وتأكيد كلمة المرور ليست هي نفسها')) 
           }
           User.findOne({where:{
             phonenumber:'+'+phonenumber
@@ -947,7 +952,7 @@ module.exports = {
                 return resolve(u)
               }
               else{
-                return reject(new UnauthorizedError('this phonenumber does not belong to any user'))
+                return reject(new UnauthorizedError('رقم الهاتف هذا لا ينتمي إلى أي مستخدم'))
               }
             })
           }).then(u=>{
@@ -958,18 +963,18 @@ module.exports = {
           }).then(c=>{
             return new Promise((resolve,reject)=>{
               if(!c){
-                return reject(new UnauthorizedError('you cannot access this ressourese'))
+                return reject(new UnauthorizedError('لا يمكنك الوصول إلى هذه الموارد'))
               }
               let nowDate =new Date()
               const otpconf = sails.config.custom.otpconf
               if(c.numberAttempsRetry>otpconf.activationCode.maxRetry){
-                return  reject(new UnauthorizedError({specific:'you did reach the max retries attemps please hit resend to have a new one'}))
+                return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى لمحاولات إعادة المحاولة ، يرجى النقر فوق إعادة الإرسال للحصول على رمز جديد'}))
               }
               if(c.numberAttempsResend>otpconf.activationCode.maxSend){
-                return  reject(new UnauthorizedError({specific:'you did reach the max resend attemps please contact the administrator to update your password'}))
+                return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى من محاولات الإرسال ، يرجى الاتصال بالمسؤول لتحديث كلمة المرور الخاصة بك'}))
               }
               if(nowDate>new Date(c.expiredDate)){
-                return  reject(new UnauthorizedError({specific:'your activation code is expired please hit resend to have a new one'}))
+                return  reject(new UnauthorizedError({specific:'رمز التفعيل الخاص بك منتهي الصلاحية ، الرجاء الضغط على "إعادة إرسال" للحصول على رمز جديد'}))
               }
               
               return resolve(c)
@@ -991,7 +996,7 @@ module.exports = {
                   return resolve()
               }
               else{
-                  return reject(new UnauthorizedError({specific:'invalid code'}))
+                  return reject(new UnauthorizedError({specific:'الرمز غير صحيح'}))
               }
             })
           }).then(()=>{
@@ -1000,7 +1005,7 @@ module.exports = {
                 type:'FORGET_PASSWORD'
               }})
             }).then(sd=>{
-            callback(null,{message:'your password is updated successfully'})
+            callback(null,{message:'تم تحديث كلمة مرورك بنجاح'})
           }).catch(e=>{
             console.log(e)
             if(e instanceof UnauthorizedError || e instanceof ValidationError){
@@ -1030,7 +1035,7 @@ module.exports = {
           return resolve()
       }
       else{
-          return reject(new ValidationError({message:'phonenumber is required'}))
+          return reject(new ValidationError({message:'رقم الهاتف is required'}))
       }
     }).then(()=>{
       return Country.findByPk(req.user.country_id)
@@ -1038,14 +1043,14 @@ module.exports = {
       return new Promise((resolve,reject)=>{
           let tel_code = c.tel_code.startsWith('+')?c.tel_code.substring(1):c.tel_code
           if(!phonenumber.startsWith(tel_code)){
-            return reject(new ValidationError({message:'a valid phonenumber is required'}))
+            return reject(new ValidationError({message:'a valid رقم الهاتف is required'}))
           }
           phonenumber = '+'+phonenumber
           return resolve()
 
       })
     }).then(()=>{
-      console.log('userid = ',req.user.id)
+      //console.log('userid = ',req.user.id)
       // we must check if the user has already an authcode not validated !!!!
       return AuthCode.findOne({
        where:{
@@ -1060,7 +1065,7 @@ module.exports = {
         foundCode = authcode
         //here we verify if if the user has used his all attemps to resend else he will have the ability to send smss everytime he updates hi phonenumber
         if(authcode.numberAttempsResend>otpconf.activationCode.maxSend){
-          return  reject(new UnauthorizedError({specific:'you did reach the max resend attemps please contact the administrator to update your password'}))
+          return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى من محاولات الإرسال ، يرجى الاتصال بالمسؤول لتحديث كلمة المرور الخاصة بك'}))
          
         }
         else{
@@ -1080,7 +1085,7 @@ module.exports = {
   }).then(()=>{
     generatedNumber = generateCode()
     return Sms.create({
-      content:'your validation code is '+generatedNumber,
+      content:'رمز التحقق الخاص بك هو '+generatedNumber,
       reciever_type:'single',
       reciever_id:req.user.id,
       type:'ACCOUNT_ACTIVATION'
@@ -1104,11 +1109,11 @@ module.exports = {
         }
     }).then(async sd=>{
       if(sd){
-        callback(null,{message:'a verification code was sent to your new phonenumber successfully'})    
+        callback(null,{message:'تم إرسال رمز التحقق إلى رقم هاتفك الجديد بنجاح'})    
  
        }
       else{
-        callback(null,{message:'phonenumber updated successfully'})    
+        callback(null,{message:'تم تحديث رقم الهاتف بنجاح'})    
       }
 
   }).catch(e=>{
