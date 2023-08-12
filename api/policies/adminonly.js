@@ -3,7 +3,8 @@ const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports = (req,res,next)=>{
     const {roles} = sails.config.custom  
-    const test = Object.keys(roles).filter(k=>roles[k].name===req.role.name).at(0)
+    const test = Object.keys(roles).filter(k=>roles[k].name===req.role.name).map(k=>roles[k]).at(0)
+    console.log(test)
     if(test &&!test.dashboardUser){
       sails.services.userservice.logout(req,(err,data)=>{
         if(err){
