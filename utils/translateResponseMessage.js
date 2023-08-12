@@ -32,7 +32,7 @@ const ErrorHandlor = (req,err,res)=>{
   if(err instanceof UnauthorizedError){
 
  //   err.message =translateReponseMessage(req.__,err.message,err.extrafields);
-    err.message = ''
+   
     return res.status(err.status).send(err);
   }
   if(err instanceof SqlError){

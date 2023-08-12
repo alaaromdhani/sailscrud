@@ -840,9 +840,20 @@ module.exports = {
     if(!phonenumber){
       return callback(new ValidationError({message:'رقم الهاتف is required'}))
     }
+    const {roles} =sails.config.custom
+    let allowedRoles = Object.keys(k=>!roles[k].dashboardUser).map(k=>roles[k].name)
+
     User.findOne({where:{
 
-      phonenumber:'+'+phonenumber
+      phonenumber:'+'+phonenumber,
+      include:{
+        model:Role,
+        where:{
+          name:{
+            [Op.in]:allowedRoles
+          }
+        }
+      }
     }}).then(u=>{
         
       return new Promise((resolve,reject)=>{
@@ -1125,6 +1136,27 @@ module.exports = {
       callback(new SqlError(e),null)
     }
   })
+
+
+  },
+  logout:async (req,callback)=>{
+    req.logout(async (err) => {
+      if (err) {  return callback(new UnkownError(),null) }
+      else{
+        const currentSession = req.sessionID
+        req.session.authenticated = false;
+        delete req.user;
+        let Session = sails.config.custom.database.session.store.Session
+        await Session.destroy({
+          where:{
+              session_id:currentSession
+
+          },
+        })
+      
+        return callback(null,{})
+      }
+    });
 
 
   }

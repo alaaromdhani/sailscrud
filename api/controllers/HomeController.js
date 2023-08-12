@@ -4,6 +4,9 @@ const SqlError = require("../../utils/errors/sqlErrors");
 const UnkownError = require("../../utils/errors/UnknownError");
 const ValidationError = require("../../utils/errors/validationErrors");
 module.exports={
+  profileCallback:(req,res)=>{
+    DataHandlor(req,req.user,res);
+  },
     updateProfile:async (req,res)=>{
       //console.log(req.body)
         if(req.operation){

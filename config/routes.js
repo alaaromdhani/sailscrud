@@ -58,20 +58,22 @@ module.exports.routes = {
   'PUT /lrs/other/activities/state':'OtherLrsController.putState',
   'PUT /lrs/other/statements':'OtherLrsController.putStatement',
   //front_routes 
-  'POST /api/v1/activate_account': 'AuthController.activateAccount',
-  'GET /api/v1/resend/:type': 'AuthController.resendCallback',
+  'POST /front/api/v1/activate_account': 'AuthController.activateAccount',
+  'GET /front/api/v1/resend/:type': 'AuthController.resendCallback',
   //forgetpassword
-  'POST /api/v1/forgetpassword': 'AuthController.forgetPassword',
-  'POST /api/v1/forgetpassword/verify': 'AuthController.validateCode',
+  'POST /front/api/v1/forgetpassword': 'AuthController.forgetPassword',
+  'POST /front/api/v1/forgetpassword/verify': 'AuthController.validateCode',
   //students
-  'POST /api/v1/students': 'StudentController.create',
-  'PATCH /api/v1/students/:id': 'StudentController.updateStudent',
-  'GET /api/v1/students': 'StudentController.find',
-  'GET /api/v1/schoollevels': 'StudentController.getschoolLevels',
+  'POST /front/api/v1/students': 'StudentController.create',
+  'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',
+  'GET /front/api/v1/students': 'StudentController.find',
+  'GET /front/api/v1/schoollevels': 'StudentController.getschoolLevels',
   //normal user profile 
-  'PATCH /api/v1/profile':'HomeController.updateProfile',
-  'PATCH /api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',
-  //normal user profile 
+  'GET /front/api/v1/profile':'HomeController.profileCallback',
+ 
+  'PATCH /front/api/v1/profile':'HomeController.updateProfile',
+  'PATCH /front/api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',
+  
   
  
   
