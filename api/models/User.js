@@ -47,10 +47,9 @@ module.exports = {
               let lastId =await  User.findAll({
                 attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'maxId']],
               });
-              console.log(lastId)
               let rand =Math.floor(Math.random()*10)
               let secretNumber = (rand>0?rand:1)*(10**5)
-              if(!lastId.length){
+              if(!lastId || !lastId[0].dataValues || !lastId[0].dataValues.maxId){
                   user.username = user.firstName+"."+user.lastName+""+secretNumber+(Math.floor(Math.random()*10))
               }
               else{

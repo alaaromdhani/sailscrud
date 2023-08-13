@@ -32,7 +32,8 @@ module.exports = async ()=>{
             delete superUser.role
             superUser.role_id = role.id
             User.findOrCreate({where:{
-                username:superUser.username
+               
+                email:superUser.email
 
             },include:[{
                 model:Permission
@@ -41,6 +42,7 @@ module.exports = async ()=>{
                 model:Feature
 
             }],defaults:superUser}).then(([user,created])=>{
+               
 
                 user.setPermissions(role.Permissions)
                 user.setFeatures(role.Features)

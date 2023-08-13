@@ -1035,12 +1035,9 @@ module.exports = {
        }
        
   },
-  
-  updatePhoneNumber:(req,callback)=>{
-    let foundCode
-   let generatedNumber
+  validatePhoneNumber:async (req)=>{
     let {phonenumber} =req.body 
-    let {otpconf} = sails.config.custom
+    
     return new Promise((resolve,reject)=>{
       if(phonenumber){
           return resolve()
@@ -1057,85 +1054,94 @@ module.exports = {
             return reject(new ValidationError({message:'a valid رقم الهاتف is required'}))
           }
           phonenumber = '+'+phonenumber
-          return resolve()
-
-      })
-    }).then(()=>{
-      //console.log('userid = ',req.user.id)
-      // we must check if the user has already an authcode not validated !!!!
-      return AuthCode.findOne({
-       where:{
-        user_id:req.user.id,
-        type:'ACCOUNT_ACTIVATION'
-       }
-      })
-     
-  }).then(authcode=>{
-    return new Promise((resolve,reject)=>{
-      if(authcode){
-        foundCode = authcode
-        //here we verify if if the user has used his all attemps to resend else he will have the ability to send smss everytime he updates hi phonenumber
-        if(authcode.numberAttempsResend>otpconf.activationCode.maxSend){
-          return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى من محاولات الإرسال ، يرجى الاتصال بالمسؤول لتحديث كلمة المرور الخاصة بك'}))
-         
-        }
-        else{
-          return resolve()
-        }
-      }
-      else{
-        resolve()
-      }
+          return resolve(phonenumber)
+        })
     })
-  }).then(()=>{
-    req.user.phonenumber = phonenumber
-    req.user.active =false
-    return  req.user.save()
-    
-
-  }).then(()=>{
-    generatedNumber = generateCode()
-    return Sms.create({
-      content:'رمز التحقق الخاص بك هو '+generatedNumber,
-      reciever_type:'single',
-      reciever_id:req.user.id,
-      type:'ACCOUNT_ACTIVATION'
-    })       
-  }).then(message=>{
-        if(foundCode){
-          foundCode.value =generatedNumber
-          foundCode.resendTime = dayjs().add(otpconf.resend.time.value,otpconf.resend.time.unit)
-          foundCode.expiredDate = dayjs().add(otpconf.expires.value,otpconf.expires.unit)
-         foundCode.numberAttempsResend++
-          foundCode.numberAttempsRetry=0
-          return foundCode.save()
+  },
+  updatePhoneNumber: (req,callback)=>{
+    let foundCode
+   let generatedNumber
+    let phonenumber
+    let {otpconf} = sails.config.custom
+  
+    return sails.services.userservice.validatePhoneNumber(req).then(pn=>{
+      phonenumber = pn
+      return 
+      }).then(()=>{
+        return sails.services.settingsservice.getAccountActivationSettings()
+      }).then((sett)=>{
+        if(sett.active){
+          return  AuthCode.findOne({
+            where:{
+             user_id:req.user.id,
+             type:'ACCOUNT_ACTIVATION'
+            }
+           }).then(authcode=>{
+            return new Promise((resolve,reject)=>{
+              if(authcode){
+                foundCode = authcode
+                //here we verify if if the user has used his all attemps to resend else he will have the ability to send smss everytime he updates hi phonenumber
+                if(authcode.numberAttempsResend>otpconf.activationCode.maxSend){
+                  return  reject(new UnauthorizedError({specific:'لقد وصلت إلى الحد الأقصى من محاولات الإرسال ، يرجى الاتصال بالمسؤول لتحديث كلمة المرور الخاصة بك'}))
+                 
+                }
+                else{
+                  return resolve()
+                }
+              }
+              else{
+                resolve()
+              }
+            })
+          }).then(()=>{
+            req.user.phonenumber = phonenumber
+            req.user.active =false
+            return  req.user.save()
+            
+        
+          }).then(()=>{
+            generatedNumber = generateCode()
+            return Sms.create({
+              content:'رمز التحقق الخاص بك هو '+generatedNumber,
+              reciever_type:'single',
+              reciever_id:req.user.id,
+              type:'ACCOUNT_ACTIVATION'
+            })       
+          }).then(message=>{
+                if(foundCode){
+                  foundCode.value =generatedNumber
+                  foundCode.resendTime = dayjs().add(otpconf.resend.time.value,otpconf.resend.time.unit)
+                  foundCode.expiredDate = dayjs().add(otpconf.expires.value,otpconf.expires.unit)
+                 foundCode.numberAttempsResend++
+                  foundCode.numberAttempsRetry=0
+                  return foundCode.save()
+                }
+                else{
+                  return AuthCode.create({
+                    value:generatedNumber,
+                    expiredDate:dayjs().add(otpconf.expires.value,otpconf.expires.unit).toISOString(),
+                    user_id:req.user.id,
+                    type:'ACCOUNT_ACTIVATION'
+                   })
+                }
+            }).then(async sd=>{
+                return {message:'تم إرسال رمز التحقق إلى رقم هاتفك الجديد بنجاح'}    
+             })
         }
         else{
-          return AuthCode.create({
-            value:generatedNumber,
-            expiredDate:dayjs().add(otpconf.expires.value,otpconf.expires.unit).toISOString(),
-            user_id:req.user.id,
-            type:'ACCOUNT_ACTIVATION'
-           })
+            req.user.phonenumber = phonenumber
+            req.user.active=true
+            return  req.user.save().then(user=>{
+              return {message:'تم تحديث رقم الهاتف بنجاح'}
+            })
         }
-    }).then(async sd=>{
-      if(sd){
-        callback(null,{message:'تم إرسال رمز التحقق إلى رقم هاتفك الجديد بنجاح'})    
- 
-       }
-      else{
-        callback(null,{message:'تم تحديث رقم الهاتف بنجاح'})    
-      }
-
-  }).catch(e=>{
-    //console.log(e)
-    if(e instanceof ValidationError){
+        
+     }).then(result=>{
+        callback(null,result)
+      }).catch(e=>{
         callback(e,null)
-    }
-    else{
-      callback(new SqlError(e),null)
-    }
-  })
+     })
+
 
 
   },
@@ -1159,7 +1165,8 @@ module.exports = {
     });
 
 
-  }
+  },
+
 
 
 

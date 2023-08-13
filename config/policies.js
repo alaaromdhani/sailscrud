@@ -195,7 +195,9 @@ module.exports.policies = {
     'create':['lang','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly
     'find':['lang','passport','role','tokenVerifier','parent'],//normaluseronly
     'getschoolLevels':['lang','passport','role','tokenVerifier'],//normaluseronly
-    'updateStudent':['lang','passport','role','tokenVerifier','parent','ppUploader']//normaluseronly
+    'updateStudent':['lang','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly,
+    'findOneStudent':['lang','passport','role','tokenVerifier','parent']
+    
 
 
   },

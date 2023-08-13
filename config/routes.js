@@ -68,6 +68,7 @@ module.exports.routes = {
   'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',
   'GET /front/api/v1/students': 'StudentController.find',
   'GET /front/api/v1/schoollevels': 'StudentController.getschoolLevels',
+  'GET /front/api/v1/students/:id': 'StudentController.findOneStudent',
   //normal user profile 
   'GET /front/api/v1/profile':'HomeController.profileCallback',
  

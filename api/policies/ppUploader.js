@@ -44,9 +44,7 @@ async function optionsValidator(req,file,cb){
       },updateStudentSchema)
     }
     else if(req.url.includes("students")&&req.method=="POST"){
-      if(req.body.niveau_scolaire_id){
-        req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
-      }
+      
       sails.services.studentservice.createStudent(req,(err,data)=>{
         
         req.upload = fileOptions    

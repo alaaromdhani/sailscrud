@@ -12,9 +12,21 @@ module.exports = {
     createStudent:(req,callback)=>{
       
         let bodyData={}
+        if(req.body.niveau_scolaire_id){
+            req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
+        }
+        if(req.body.birthDate){
+            if(isNaN(new Date(req.body.birthDate))){
+                return callback(new ValidationError({message:'a valid birthdate is required'}))
+            }
+            else{
+                req.body.birthDate = new Date(req.body.birthDate).toISOString()
+            }
+        }
         Object.keys(req.body).filter(k=>k!='pp').forEach(key => {
                 bodyData[key] = req.body[key]
         });
+
         return new Promise((resolve,reject)=>{
                 const createStudentValidation = schemaValidation(createStudentSchema)(bodyData)
                 if(createStudentValidation.isValid){

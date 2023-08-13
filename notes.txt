@@ -26,5 +26,8 @@ endpoint:{
 
         defferenciate between the admin routes and the normaluser routes(middleware)
         //must delete all authcodes for activation and activate all users when the settings for account activation are disabled
-    
+    students:{
+        the parent must update only his children
+
+    }   
 }

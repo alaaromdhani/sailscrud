@@ -1,3 +1,4 @@
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
 const { updateStudentSchema } = require("../../utils/validations/StudentSchema")
@@ -23,9 +24,7 @@ module.exports={
                 }
             }
         }else{
-            if(req.body.niveau_scolaire_id){
-                req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
-            }
+            
             sails.services.studentservice.createStudent(req,(err,data)=>{
                 if(err){
                     return ErrorHandlor(req,err,res)
@@ -131,12 +130,30 @@ module.exports={
                 }
     
     
-              })
+              },updateStudentSchema)
           }
           
 
 
     },
+    findOneStudent:async (req,res)=>{
+      try{
+        const data = await User.findOne({where:{
+        
+          id:req.params.id,
+          addedBy:req.user.id,
+        },
+        attributes:['firstName','lastName','niveau_scolaire_id','birthDate','email','sex'],})
+         if(!data){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+         } 
+         return DataHandlor(req,data,res)
+      }catch(e){
+        ErrorHandlor(req,new SqlError(e),res)
+      }
+
+    }
+
 
 
 
