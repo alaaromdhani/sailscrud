@@ -123,7 +123,10 @@ module.exports= {
     },
   updateMatiere:(req,bodyData,callback,upload)=>{
     let relatedNs
+    if(bodyData.active){
+      bodyData.active =bodyData.active==='true'?true:false 
 
+    }
     let subject
     let schema
     if(upload){
@@ -134,6 +137,8 @@ module.exports= {
     }
     new Promise((resolve, reject) => {
       const updateMatiereSchema =schemaValidation(schema)(bodyData)
+     
+      
       if(updateMatiereSchema.isValid){
         return resolve(bodyData)
       }

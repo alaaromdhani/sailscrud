@@ -201,6 +201,9 @@ module.exports.policies = {
 
 
   },
+  StudentHomeController:{
+    '*':['lang','passport','role','tokenVerifier','student']
+  }
 
 
 

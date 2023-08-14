@@ -74,7 +74,8 @@ module.exports.routes = {
  
   'PATCH /front/api/v1/profile':'HomeController.updateProfile',
   'PATCH /front/api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',
-  
+  //student endpoints,
+  'GET /front/student/api/v1/matieres':'StudentHomeController.getMatieres'
   
  
   

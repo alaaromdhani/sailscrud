@@ -143,7 +143,7 @@ module.exports={
           id:req.params.id,
           addedBy:req.user.id,
         },
-        attributes:['firstName','lastName','niveau_scolaire_id','birthDate','email','sex'],})
+        attributes:['firstName','lastName','niveau_scolaire_id','birthDate','email','sex','profilePicture'],})
          if(!data){
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
          } 

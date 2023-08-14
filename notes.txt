@@ -29,5 +29,15 @@ endpoint:{
     students:{
         the parent must update only his children
 
-    }   
+    } 
+    courses:{
+        adding a subject with two modules
+        one module is on the trimestre 1 and the other for trimestre 2
+        adiding 4 courses {
+                2 courses on the module 1 , one of them is active
+                2 courses on the module 2 , one of them is active
+        }
+
+    }  
+    
 }

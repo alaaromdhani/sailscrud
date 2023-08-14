@@ -13,6 +13,10 @@ module.exports = async ()=>{
             weight:1000
         },
         {
+            name:sails.config.custom.roles.inspector.name,
+            weight:sails.config.custom.roles.inspector.weight
+        },
+        {
             name:sails.config.custom.roles.intern_teacher.name,
             weight:sails.config.custom.roles.intern_teacher.weight
         },
