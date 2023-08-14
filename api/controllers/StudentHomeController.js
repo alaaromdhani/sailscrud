@@ -1,5 +1,7 @@
+const { countBy } = require("lodash")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
+const getCurrentTrimestre = require("../../utils/getCurrentTrimestre")
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports={
@@ -9,7 +11,7 @@ module.exports={
             include:{
                 model:Matiere,
                 through:MatiereNiveau,
-                attributes:['name','color'],
+                attributes:['name','color','description'],
                 include:{
                     model:Upload,
                     foreignkey:'image',
@@ -35,10 +37,12 @@ module.exports={
     getCourses:async(req,res)=>{
         //const trimestre_id
         const {MatiereId} = req.params 
-        const {TrimestreId} = req.query
+        const TrimestreId = req.query.TrimestreId
+        
         let includeOptions = [{
             model:Course,
             foreignkey:'module_id',
+            attributes:['name','rating','description'],
             where:{
                 active:true
 
@@ -86,9 +90,52 @@ module.exports={
 
 
     },
-    getChildren:(req,res)=>{
+    getChildren:async (req,res)=>{
+        const  {courseId} = req.params
         
+        const course = await Course.findByPk(courseId,{
+            attributes:['id','niveau_scolaire_id','active'],
+            include:[{
+                model:CoursInteractive,
+                
+                foreignkey:'parent',
+                attributes:['name','description','thumbnail','rating'],
+                where:{
+                   validity:true,
+                   active:true 
+                },
+                required:false
+            },
+            {
+               attributes:['name','description','source','rating'],
+                 model:CoursVideo,
+                foreignkey:'parent',
+                where:{
+                   validity:true,
+                   active:true 
+                },
+                required:false
+            },
+            {
+                model:CoursDocument,
+                foreignkey:'parent',
+                attributes:['name','description','rating'],
+        
+                where:{
+                   validity:true,
+                   active:true 
+                },
+                required:false
+            }],
 
+        })
+        //console.log(course)
+        if(!course || course.niveau_scolaire_id!=req.user.niveau_scolaire_id || !course.active){
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        else{
+            return DataHandlor(req,{CoursDocuments:course.CoursDocuments,CoursVideos:course.CoursVideos,CoursInteractives:course.CoursInteractives},res)
+        }
 
 
     }
