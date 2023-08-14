@@ -63,19 +63,23 @@ module.exports.routes = {
   //forgetpassword
   'POST /front/api/v1/forgetpassword': 'AuthController.forgetPassword',
   'POST /front/api/v1/forgetpassword/verify': 'AuthController.validateCode',
-  //students
+  //parent space
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',
   'GET /front/api/v1/students': 'StudentController.find',
   'GET /front/api/v1/schoollevels': 'StudentController.getschoolLevels',
   'GET /front/api/v1/students/:id': 'StudentController.findOneStudent',
+  'GET /front/parent/api/v1/themes/:id': 'StudentController.getThemes',
+  'GET /front/parent/api/v1/coachingvideos/:id': 'StudentController.getCoachingVideos',
+ 
   //normal user profile 
   'GET /front/api/v1/profile':'HomeController.profileCallback',
  
   'PATCH /front/api/v1/profile':'HomeController.updateProfile',
   'PATCH /front/api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',
   //student endpoints,
-  'GET /front/student/api/v1/matieres':'StudentHomeController.getMatieres'
+  'GET /front/student/api/v1/matieres':'StudentHomeController.getMatieres',
+  'GET /front/student/api/v1/courses':'StudentHomeController.getCourses'
   
  
   

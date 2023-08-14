@@ -17,6 +17,7 @@ module.exports={
         niveau_scolaire_id:joi.number().integer(),
         birthDate:joi.string(),
         password:joi.string(),
+        username:joi.string()
     })
 
 
