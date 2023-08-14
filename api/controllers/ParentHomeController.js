@@ -5,9 +5,6 @@ module.exports={
     getThemes:async (req,res)=>{
         try{
             const themes = await Theme.findAll({
-                where:{
-                    isDeleted:false
-                }
             })
             return DataHandlor(req,themes,res)
         }catch(e){

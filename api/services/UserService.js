@@ -224,6 +224,9 @@ module.exports = {
     if(req.body.isDeleted && typeof(req.body.isDeleted)==='string'){
       req.body.isDeleted=req.body.isDeleted==='true'?true:false
     }
+    if(req.body.niveau_scolaire_id && typeof(req.body.niveau_scolaire_id)==='string'){
+      req.body.niveau_scolaire_id=parseInt(req.body.niveau_scolaire_id)
+    }
 
     Object.keys(req.body).filter(k=>k!='pp').forEach(k=>{
         bodyData[k] = req.body[k]
