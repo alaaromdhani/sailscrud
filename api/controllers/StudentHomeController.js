@@ -42,7 +42,7 @@ module.exports={
         let includeOptions = [{
             model:Course,
             foreignkey:'module_id',
-            attributes:['name','rating','description'],
+            attributes:['id','name','rating','description'],
             where:{
                 active:true
 
@@ -55,7 +55,7 @@ module.exports={
             model:Trimestre,
             through:'trimestres_modules',
             where:{
-                id:TrimestreId   
+                id:TrimestreId    
             },
             attributes:[],
 
@@ -67,13 +67,17 @@ module.exports={
                   MatiereId,
                   NiveauScolaireId:req.user.niveau_scolaire_id
                 },
-                include:  {
+                include:  [{
                   model:Module,
                   foreignkey:'matiere_niveau_id',
                   include:includeOptions,
                  required:false
                   
-                },
+                },{
+                    model:Matiere,
+                    foreignkey:'MatiereId'
+
+                }],
                 
            })
            if(metiere_niveau){
