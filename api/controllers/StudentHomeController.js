@@ -80,8 +80,9 @@ module.exports={
                 }],
                 
            })
+
            if(metiere_niveau){
-                return DataHandlor(req,metiere_niveau.Modules,res)  
+                return DataHandlor(req,{modules:metiere_niveau.Modules,matiere:metiere_niveau.Matiere},res)  
            }
            else{
               return DataHandlor(req,[],res) 
