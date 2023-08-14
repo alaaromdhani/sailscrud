@@ -35,7 +35,7 @@ module.exports={
     getCourses:async(req,res)=>{
         //const trimestre_id
         const {MatiereId} = req.params 
-        const TrimestreId = req.query
+        const {TrimestreId} = req.query
         let includeOptions = [{
             model:Course,
             foreignkey:'module_id',
@@ -43,6 +43,7 @@ module.exports={
                 active:true
 
             },
+            
             required:false
         }]
         if(TrimestreId){
@@ -51,7 +52,8 @@ module.exports={
             through:'trimestres_modules',
             where:{
                 id:TrimestreId   
-            }
+            },
+            attributes:[],
 
           })  
         }
@@ -65,9 +67,10 @@ module.exports={
                   model:Module,
                   foreignkey:'matiere_niveau_id',
                   include:includeOptions,
+                 required:false
                   
-                  
-                }
+                },
+                
            })
            if(metiere_niveau){
                 return DataHandlor(req,metiere_niveau.Modules,res)  
@@ -76,6 +79,7 @@ module.exports={
               return DataHandlor(req,[],res) 
           }
         }catch(e){
+            console.log(e)
             return ErrorHandlor(req,new SqlError(e),res)
         }   
 

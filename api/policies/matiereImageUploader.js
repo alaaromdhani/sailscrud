@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const ValidationError = require('../../utils/errors/validationErrors');
 const fileFilerOptions = async (req,file,cb)=>{
-    console.log('wowowow')
+   
     try{
         if(!req.operation){
             req.operation = {}
