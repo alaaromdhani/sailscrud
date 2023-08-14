@@ -11,7 +11,7 @@ module.exports={
             include:{
                 model:Matiere,
                 through:MatiereNiveau,
-                attributes:['name','color','description'],
+                attributes:['id','name','color','description'],
                 include:{
                     model:Upload,
                     foreignkey:'image',
