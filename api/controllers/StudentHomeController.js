@@ -104,7 +104,7 @@ module.exports={
                 model:CoursInteractive,
                 
                 foreignkey:'parent',
-                attributes:['name','description','thumbnail','rating'],
+                attributes:['id','name','description','thumbnail','rating'],
                 where:{
                    validity:true,
                    active:true 
@@ -112,7 +112,7 @@ module.exports={
                 required:false
             },
             {
-               attributes:['name','description','source','rating'],
+               attributes:['id','name','description','source','rating'],
                  model:CoursVideo,
                 foreignkey:'parent',
                 where:{
@@ -124,7 +124,7 @@ module.exports={
             {
                 model:CoursDocument,
                 foreignkey:'parent',
-                attributes:['name','description','rating'],
+                attributes:['id','name','description','rating'],
         
                 where:{
                    validity:true,
