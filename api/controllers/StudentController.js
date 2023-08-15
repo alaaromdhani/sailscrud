@@ -108,14 +108,19 @@ module.exports={
                 model:AnneeNiveauUser,
                 foreignKey:'user_id',
                 attributes:['niveau_scolaire_id'],
-                include:{
+                include:[{
                 
                   model:AnneeScolaire,
                   foreignKey:'annee_scolaire_id',
                   where:{active:true},
                   attributes:[]
-                },
+                },{
                 
+                  model:NiveauScolaire,
+                  foreignKey:'niveau_scolaire_id',
+                  attributes:['name_ar','id']
+                },
+                ]
                 
               },
 
