@@ -1,5 +1,6 @@
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
+const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
 const { updateStudentSchema } = require("../../utils/validations/StudentSchema")
 
@@ -14,6 +15,15 @@ module.exports={
                 try{
                 let user = req.operation.data
                 user.profilePicture = (await Upload.create(req.upload)).link
+                
+                
+                  await AnneeNiveauUser.create({
+                    niveau_scolaire_id:user.niveau_scolaire_id,
+                    user_id:user.id,
+                    annee_scolaire_id:req.operation.activeSchoolYear.id
+                  })
+
+                
                 return DataHandlor(req,await user.save(),res)
                 }catch(e){
                     
@@ -37,6 +47,33 @@ module.exports={
 
 
 
+    },
+    schoolYearsHistory:async (req,res)=>{
+      let u = await User.findOne({
+        where:{
+          id:req.params.id,
+          addedBy:req.user.id
+        },
+        attributes:[],
+        include:{
+          model:AnneeNiveauUser,
+          foreignKey:'user_id',
+          include:[{
+            model:NiveauScolaire,
+            foreignKey:'niveau_scolaire_id',
+          },{
+            model:AnneeScolaire,
+            foreignKey:'annee_scolaire_id'
+          }]
+
+        }
+      })
+      if(u){
+        return DataHandlor(req,u,res)
+      }
+      else{
+        return ErrorHandlor(req,new RecordNotFoundErr(),res)
+      }
     },
     find:async (req,res)=>{
         try {

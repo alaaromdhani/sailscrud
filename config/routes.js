@@ -69,6 +69,9 @@ module.exports.routes = {
   'GET /front/api/v1/students': 'StudentController.find',
   'GET /front/api/v1/schoollevels': 'StudentController.getschoolLevels',
   'GET /front/api/v1/students/:id': 'StudentController.findOneStudent',
+  //schoolYearsHistory
+  'GET /front/api/v1/students/years-history/:id': 'StudentController.schoolYearsHistory',
+  
   'GET /front/parent/api/v1/themes': 'ParentHomeController.getThemes',
   'GET /front/parent/api/v1/coachingvideos': 'ParentHomeController.getCoachingVideos',
  

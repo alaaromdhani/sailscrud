@@ -196,7 +196,8 @@ module.exports.policies = {
     'find':['lang','passport','role','tokenVerifier','parent'],//normaluseronly
     'getschoolLevels':['lang','passport','role','tokenVerifier'],//normaluseronly
     'updateStudent':['lang','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly,
-    'findOneStudent':['lang','passport','role','tokenVerifier','parent']
+    'findOneStudent':['lang','passport','role','tokenVerifier','parent'],
+    'schoolYearsHistory':['lang','passport','role','tokenVerifier','parent']
     
 
 

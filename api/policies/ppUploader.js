@@ -4,6 +4,7 @@ const SqlError = require('../../utils/errors/sqlErrors')
 const {ErrorHandlor} = require('../../utils/translateResponseMessage');
 const UnkownError = require('../../utils/errors/UnknownError');
 const { updateStudentSchema } = require('../../utils/validations/StudentSchema');
+const ValidationError = require('../../utils/errors/validationErrors');
 async function optionsValidator(req,file,cb){
   console.log(req.body)
   if(!req.operation){
@@ -44,6 +45,13 @@ async function optionsValidator(req,file,cb){
       },updateStudentSchema)
     }
     else if(req.url.includes("students")&&req.method=="POST"){
+      const activeSchoolYear = await AnneeScolaire.findOne({
+        where:{active:true}
+      })
+      if(!activeSchoolYear){
+        req.operation.error = new ValidationError({message:' one active school year is required'})
+        return cb(null,false)
+      }
       
       sails.services.studentservice.createStudent(req,(err,data)=>{
         
@@ -54,7 +62,8 @@ async function optionsValidator(req,file,cb){
                   return cb(null,false);
             }
             else{
-              req.operation = {data}
+              
+              req.operation = {data,activeSchoolYear}
               return cb(null,true);
             }
         })

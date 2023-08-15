@@ -10,6 +10,7 @@ const {
 
 const bcrypt = require('bcrypt');
 const ValidationError = require('../../utils/errors/validationErrors');
+const UnkownError = require('../../utils/errors/UnknownError');
 
 
 module.exports = {
@@ -36,6 +37,7 @@ module.exports = {
     hooks:{
       beforeSave: async (user, options) => {
         if (user.changed('password') || user.isNewRecord) {
+
            if(user.isNewRecord){
 
               if(!user.isDeleted){
@@ -65,6 +67,7 @@ module.exports = {
             throw new ValidationError({message:'a valid country is required'})
           }
         }
+        
       },
 
       beforeCreate:async (user, options)=>{
@@ -221,6 +224,11 @@ module.exports = {
     User.hasMany(Rate,{
       foreignKey:'ratedBy'
     })
+    User.hasMany(AnneeNiveauUser,{
+      foreignKey:'user_id'
+    })
+   
+    
   }
   // Can be omitted, so default sails.config.models.connection will be used
 };

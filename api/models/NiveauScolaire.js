@@ -64,6 +64,7 @@ module.exports = {
     NiveauScolaire.belongsToMany(CType,{
       through:'types_ns'
     })
+    
   }
 
 

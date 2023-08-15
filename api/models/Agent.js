@@ -23,7 +23,7 @@ const {
       
     },
     datastore: 'default',
-    tableName: 'agents',
+   
     attributes: {
       id:{
         type:DataTypes.INTEGER,
