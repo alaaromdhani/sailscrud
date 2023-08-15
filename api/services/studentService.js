@@ -1,4 +1,6 @@
+const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const UnkownError = require("../../utils/errors/UnknownError");
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
 const generateCode = require("../../utils/generateCode");
@@ -89,6 +91,40 @@ module.exports = {
 
 
     },
+    removeStudent:(req,callback)=>{
+        let user
+        User.findByPk(req.params.id).then(s=>{
+            return new Promise((resolve,reject)=>{
+                if(s){
+                    if(req.user.id===s.addedBy){
+                        return resolve(s)
+                    }else{
+                        return reject(new UnauthorizedError({specific:'لا يمكنك حذف مستخدم لم تقم بإنشائه'}))
+                    }
+    
+                }
+                else{
+                    return reject(new RecordNotFoundErr())
+                }
+            })
+        }).then(s=>{
+            user =s
+            return AnneeNiveauUser.findOne({where:{
+                user_id:s.id
+            }})
+        }).then(sd=>{
+            return user.destroy()
+
+        }).then(sd=>{
+            callback(null,{})
+
+        }).catch(e=>{
+            (e instanceof RecordNotFoundErr || e instanceof UnauthorizedError)? callback(e):callback(new SqlError(e)) 
+
+        })
+
+
+    }
    
 
 

@@ -1,14 +1,11 @@
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
-const SqlError = require("../../utils/errors/sqlErrors")
 const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports = (req,res,next)=>{
-    if(req.role.name === sails.config.custom.roles.student.name){
-        if(!req.user.AnneeNiveauUsers || !req.user.AnneeNiveauUsers.length){
-            return ErrorHandlor(req,new SqlError({message:'لا يُنسب هذا المستخدم إلى عام دراسي ساري'}),res)
-        }
-        req.current_niveau_scolaire = req.user.AnneeNiveauUsers[0].niveau_scolaire_id
-        return next()
+    if(req.role.name === sails.config.custom.roles.teacher.name || req.role.name === sails.config.custom.roles.parent.name){
+          //  console.log('parent passed by here')
+            return next()
+
     }
     else{
         sails.services.userservice.logout(req,(err,data)=>{

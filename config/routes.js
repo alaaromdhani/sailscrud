@@ -67,6 +67,7 @@ module.exports.routes = {
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',
   'GET /front/api/v1/students': 'StudentController.find',
+  'DELETE /front/api/v1/students/:id': 'StudentController.destroy',
   'GET /front/api/v1/schoollevels': 'StudentController.getschoolLevels',
   'GET /front/api/v1/students/:id': 'StudentController.findOneStudent',
   //schoolYearsHistory
@@ -83,8 +84,9 @@ module.exports.routes = {
   //student endpoints,
   'GET /front/student/api/v1/matieres':'StudentHomeController.getMatieres',
   'GET /front/student/api/v1/courses/:MatiereId':'StudentHomeController.getCourses',
-  'GET /front/student/api/v1/courses/children/:courseId':'StudentHomeController.getChildren'
-  
+  'GET /front/student/api/v1/courses/children/:courseId':'StudentHomeController.getChildren',
+  'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback'
+  //destroy
  
   
 

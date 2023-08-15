@@ -49,8 +49,19 @@ module.exports = {
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
       const attributes = Object.keys(User.sequelize.models.User.rawAttributes);
       let role_name
+      let type
+      
+      let undashboardRoles  
       if(req.query.role){
           role_name = req.query.role
+      }
+      else if(req.query.type){
+          type=req.query.type
+          if(type!='user' && type!='staff' ){
+            return ErrorHandlor(req,new ValidationError({message:'a valid user type is required'}),res)
+          }        
+          let roleConf  = sails.config.custom.roles
+          undashboardRoles = Object.keys(roleConf).filter(k=>!roleConf[k].dashboardUser).map(k=>roleConf[k].name)
       }
       // Create the filter conditions based on the search query
       let where = search
@@ -77,9 +88,17 @@ module.exports = {
           attributes:['name','weight']
 
        }
-       if(role_name){
-          role_options.where.name = role_name
-       }
+        if(role_name){
+            role_options.where.name = role_name
+        }
+        if(type){
+          if(type==='staff'){
+            role_options.where.name = {[Op.notIn]:undashboardRoles}
+          }
+          else{
+            role_options.where.name = {[Op.in]:undashboardRoles}
+          }
+        }
 
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await User.findAndCountAll({

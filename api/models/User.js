@@ -148,10 +148,7 @@ module.exports = {
       foreignKey:'role_id'
 
     });
-    User.belongsTo(NiveauScolaire,{
-      foreignKey:'niveau_scolaire_id'
-
-    });
+    
 
     User.hasMany(User,{
       as:'updatedUsers',

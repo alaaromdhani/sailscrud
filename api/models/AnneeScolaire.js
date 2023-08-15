@@ -11,14 +11,9 @@ module.exports = {
                as.active=false   
             }
             else if(as.changed('active') && as.active){
-               const activeAnne = await AnneeScolaire.findOne({
-                where:{
-                  active:true
-                }
-               })
-               if(activeAnne){
-                throw new ValidationError('يسمح فقط بسنة دراسية واحدة صالحة')
-               }
+              await AnneeScolaire.update({active:false},{where:{
+                  active:true 
+              }})
                
             }
 

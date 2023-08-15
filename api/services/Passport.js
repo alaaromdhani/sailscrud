@@ -2,6 +2,7 @@ const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const ValidationError = require('../../utils/errors/validationErrors');
 const { ErrorHandlor } = require('../../utils/translateResponseMessage');
 
+
 if(sails.services.Passport){
 
     module.exports = sails.services.passport;
@@ -63,32 +64,62 @@ else{
           }))
     };
     passport.serializeUser(function (user, next) {
+
             next(null, user.id);
     });
   
-    passport.deserializeUser(function (id, next) {
-       return User.findOne({where:{id: id,isDeleted:false},
-        attributes:['id','email','profilePicture','firstName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt','country_id','state_id','niveau_scolaire_id']
-        ,include:[{
+    passport.deserializeUser(function (req,id, next) {
+      
+      let includeOptions = [{
         model:Role,
-        foreighKey:'role_id'
-      },
-      {
-
-        model:Permission,
-        attributes:['id','action'],
-        through:'users_permissions',
-        include:{
-            model:Model,
-            attributes:['name'],
-            foreighKey:'model_id'
+        foreighKey:'role_id',
+        attributes:['name','weight','id']
       }
-
-
-      }]})
-        .then(function (user) {
-          next(null, user || null);
-          return user;
+      ]
+        if(req.pass){
+          if(req.pass.studentRoute){
+            includeOptions.push({
+              model:AnneeNiveauUser,
+              
+              foreighKey:'user_id',
+              attributes:['niveau_scolaire_id'],
+              include:[
+              {
+                model:AnneeScolaire,
+                attributes:[],
+                where:{
+                  active:true
+                }
+              
+              },
+             
+              
+            ],
+           })
+          }
+            
+          else if(req.pass.dashboardRoute){
+         
+            includeOptions.push({
+              model:Permission,
+              attributes:['id','action'],
+              through:'users_permissions',
+              include:{
+                  model:Model,
+                  attributes:['name'],
+                  foreighKey:'model_id'
+            }
+           })
+          }
+          
+        }
+        
+      return User.findOne({where:{id: id,isDeleted:false},
+        attributes:['id','email','profilePicture','firstName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt','country_id','state_id']
+        ,include:includeOptions}).then(function (user) {
+          
+          return next(null, user || null);
+          
         })
         .catch(next);
   

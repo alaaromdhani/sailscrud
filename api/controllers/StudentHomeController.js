@@ -5,9 +5,13 @@ const getCurrentTrimestre = require("../../utils/getCurrentTrimestre")
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports={
+    profileCallback:(req,res)=>{
+        return DataHandlor(req,req.user,res)
+
+    },
     getMatieres:async (req,res)=>{
-        //console.log("niveau_scolaire :",req.user.niveau_scolaire_id)
-       const data = await NiveauScolaire.findByPk(req.user.niveau_scolaire_id,{
+        //console.log("niveau_scolaire :",req.current_niveau_scolaire)
+       const data = await NiveauScolaire.findByPk(req.current_niveau_scolaire,{
             include:{
                 model:Matiere,
                 through:MatiereNiveau,
@@ -65,7 +69,7 @@ module.exports={
             let metiere_niveau = await MatiereNiveau.findOne({
                 where:{
                   MatiereId,
-                  NiveauScolaireId:req.user.niveau_scolaire_id
+                  NiveauScolaireId:req.current_niveau_scolaire
                 },
                 include:  [{
                   model:Module,
@@ -135,7 +139,7 @@ module.exports={
 
         })
         //console.log(course)
-        if(!course || course.niveau_scolaire_id!=req.user.niveau_scolaire_id || !course.active){
+        if(!course || course.niveau_scolaire_id!=req.current_niveau_scolaire || !course.active){
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
         else{

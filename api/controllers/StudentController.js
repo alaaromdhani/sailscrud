@@ -18,7 +18,7 @@ module.exports={
                 
                 
                   await AnneeNiveauUser.create({
-                    niveau_scolaire_id:user.niveau_scolaire_id,
+                    niveau_scolaire_id:req.body.niveau_scolaire_id,
                     user_id:user.id,
                     annee_scolaire_id:req.operation.activeSchoolYear.id
                   })
@@ -103,10 +103,20 @@ module.exports={
             // Perform the database query with pagination, filtering, sorting, and ordering
             const { count, rows } = await User.findAndCountAll({
               where,
+              attributes:{exclude: ['password','addedBy','updatedBy']},
               include:{
-                model:NiveauScolaire,
-                foreignKey:'niveau_scolaire_id',
-                attributes:['name_ar']
+                model:AnneeNiveauUser,
+                foreignKey:'user_id',
+                attributes:['niveau_scolaire_id'],
+                include:{
+                
+                  model:AnneeScolaire,
+                  foreignKey:'annee_scolaire_id',
+                  where:{active:true},
+                  attributes:[]
+                },
+                
+                
               },
 
       
@@ -180,7 +190,22 @@ module.exports={
           id:req.params.id,
           addedBy:req.user.id,
         },
-        attributes:['firstName','lastName','niveau_scolaire_id','birthDate','username','sex','profilePicture'],})
+        attributes:{exclude: ['password','addedBy','updatedBy']},
+        include:{
+          model:AnneeNiveauUser,
+          foreignKey:'user_id',
+          attributes:['niveau_scolaire_id'],
+          include:{
+          
+            model:AnneeScolaire,
+            foreignKey:'annee_scolaire_id',
+            where:{active:true},
+            attributes:[]
+          },
+          
+          
+        },
+        attributes:['firstName','lastName','birthDate','username','sex','profilePicture'],})
          if(!data){
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
          } 
@@ -189,6 +214,16 @@ module.exports={
         ErrorHandlor(req,new SqlError(e),res)
       }
 
+    },
+    destroy:async (req,res)=>{
+      sails.services.studentservice.removeStudent(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+      })
     }
 
 
