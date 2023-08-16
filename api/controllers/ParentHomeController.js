@@ -19,7 +19,12 @@ module.exports={
                 where.theme_id = theme_id
             }
             return DataHandlor(req,await CoachingVideo.findAll({
-                where
+                where,
+                include:{
+                    model:Theme,
+                    foreignKey:'theme_id',
+                    attributes:['id','name']
+                }
             }),res)
     
         }catch(e){
