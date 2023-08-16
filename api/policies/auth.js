@@ -6,6 +6,6 @@ module.exports = (req,res,next)=>{
         return next()
     }
     else{
-        return ErrorHandlor(req,new UnauthorizedError(),res)
+        return ErrorHandlor(req,new UnauthorizedError({specific:'you are not connected'},true),res)
     }
 }

@@ -1,8 +1,8 @@
-function UnauthorizedError (err) {
+function UnauthorizedError (err,connection) {
     this.code = 'أنت غير مصرح لك للوصول إلى هذا المورد';
     this.status = 403;
     this.message = 'أنت غير مصرح لك للوصول إلى هذا المورد';
-    this.lockout = err;
+    this.lockout = (connection==true)?{specific:'connection'}:err;
 }
 UnauthorizedError.prototype.toJSON =
 function () {
