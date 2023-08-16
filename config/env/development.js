@@ -384,7 +384,7 @@ module.exports = {
           saveUninitialized: true,
           store:sequelizeSessionStore,
           cookie:{
-            sameSite:'none',
+        //    sameSite:'none',
           secure:sails.config.environment==="production"
           }
           
