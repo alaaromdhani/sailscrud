@@ -16,6 +16,7 @@ module.exports = {
         } if(req.body.parent){
             req.body.parent = parseInt(req.body.parent)     
         }
+        console.log(req.body)
         if(req.body.document){
             req.body.document = parseInt(req.body.document)     
         }

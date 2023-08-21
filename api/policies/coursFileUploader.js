@@ -24,7 +24,11 @@ const optionsVerifier= async (req,file,cb)=>{
            coursDocument[k] = req.body[k]
        })
        try{
+            if(coursDocument.order){
+                coursDocument.order = parseInt(coursDocument.order)
+            }
             if(coursDocument.parent){
+                
                 coursDocument.parent = parseInt(coursDocument.parent)     
             }
            const createDocCoursValidation = schemaValidation(CoursDocumentShema)(coursDocument)
