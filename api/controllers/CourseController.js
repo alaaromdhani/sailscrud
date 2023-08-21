@@ -345,7 +345,7 @@ module.exports = {
   },
   examView:async (req,res)=>{
     const {NiveauScolaireId,TrimestreId} = req.query
-    
+      
     if(NiveauScolaireId && TrimestreId){
       
     let data = await  NiveauScolaire.findByPk(NiveauScolaireId,{
@@ -357,7 +357,11 @@ module.exports = {
                 model:Course,
                 where:{
                   type:'exam',
-                  trimestre_id:TrimestreId
+                  trimestre_id:TrimestreId,
+                  where:{
+                    niveau_scolaire_id:NiveauScolaireId
+                  }
+                  
                 },
                 include:[{
                   model:CoursInteractive,
