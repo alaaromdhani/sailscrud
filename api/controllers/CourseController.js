@@ -358,9 +358,8 @@ module.exports = {
                 where:{
                   type:'exam',
                   trimestre_id:TrimestreId,
-                  where:{
-                    niveau_scolaire_id:NiveauScolaireId
-                  }
+                 
+                  niveau_scolaire_id:NiveauScolaireId
                   
                 },
                 include:[{
