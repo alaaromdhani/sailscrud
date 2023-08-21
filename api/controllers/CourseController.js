@@ -194,8 +194,8 @@ module.exports = {
      const page = parseInt(req.query.page)+1 || 1;
      const limit = req.query.limit || 10;
      const search = req.query.search;
-     const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
-     const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
+     const sortBy = req.query.sortBy || 'order'; // Set the default sortBy attribute
+     const sortOrder = req.query.sortOrder || 'ASC'; // Set the default sortOrder
      const order = [[sortBy, sortOrder]];
      let ModelReference 
      let attributes
@@ -341,6 +341,50 @@ module.exports = {
         return ErrorHandlor(req,new ValidationError('the subject level combination is required'),res)
       }
 
+
+  },
+  examView:async (req,res)=>{
+    const {NiveauScolaireId,TrimestreId} = req.query
+    
+    if(NiveauScolaireId && TrimestreId){
+      
+    let data = await  NiveauScolaire.findByPk(NiveauScolaireId,{
+            include:{
+              model:Matiere,
+              through:MatiereNiveau,
+              
+              include:{
+                model:Course,
+                where:{
+                  type:'exam',
+                  trimestre_id:TrimestreId
+                },
+                include:[{
+                  model:CoursInteractive,
+                  foreignKey:'parent'
+                },
+                {
+                  model:CoursDocument,
+                  foreignKey:'parent'
+                },
+                {
+                  model:CoursVideo,
+                  foreignKey:'parent'
+                }]
+              }
+            }
+      })
+      if(!data){
+        return ErrorHandlor(req,[],res)
+      }
+      else{
+        return DataHandlor(req,data.Matieres,res)
+      }
+
+    }
+    else{
+      return ErrorHandlor(req, new ValidationError({message:'Trimestre and NiveauScolaire are required'}),res)
+    }  
 
   }
 

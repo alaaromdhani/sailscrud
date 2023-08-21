@@ -74,6 +74,10 @@ module.exports = {
       allowNull:false,  
       defaultValue: false
     },
+    order:{
+      type: DataTypes.INTEGER,
+      allowNull:false
+    },
 
   },
   associations:()=>{

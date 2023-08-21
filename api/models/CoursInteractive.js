@@ -113,6 +113,13 @@ module.exports = {
       allowNull:false,  
       defaultValue: false
     },
+    order:{
+      type: DataTypes.INTEGER,
+      allowNull:false
+    },
+
+    
+
 
 
   },
@@ -129,6 +136,7 @@ module.exports = {
     CoursInteractive.hasMany(CoursComment,{
       foreignKey:'c_interactive_id'
     })
+    
 
   }
 

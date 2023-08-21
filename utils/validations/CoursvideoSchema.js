@@ -4,6 +4,7 @@ const CoursVideoShema = joi.object({
     description:joi.string(),
     status: joi.string().valid('public','private'),
     source: joi.string().valid('vimeo','youtube').required(),
+    order: joi.number().integer().required(),
     url:joi.string().uri().required(),
     parent:joi.number().required()
 })
@@ -12,6 +13,7 @@ const UpdateCoursVideoShema = joi.object({
     description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number(),
+    order: joi.number().integer(),
     validity:joi.boolean(),
     source: joi.string().valid('vimeo','youtube'),
     url:joi.string().uri(),

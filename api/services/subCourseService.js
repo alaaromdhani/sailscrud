@@ -11,7 +11,9 @@ const { UpdateCoursVideoShema } = require("../../utils/validations/CoursvideoSch
 module.exports = {
     createDocumentCourse:(req,callback)=>{
         console.log('adding without file')
-        if(req.body.parent){
+        if(req.body.order){
+            req.body.order = parseInt(req.body.order)     
+        } if(req.body.parent){
             req.body.parent = parseInt(req.body.parent)     
         }
         if(req.body.document){

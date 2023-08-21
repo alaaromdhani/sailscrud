@@ -168,6 +168,7 @@ module.exports.policies = {
     '*':['lang','dashboardPassport','passport','role','tokenVerifier','permissions']//adminonly
    },
    OtherCourseController:{
+    examView:['lang','dashboardPassport','passport','role','tokenVerifier','adminonly'],
     findChildren:['lang','dashboardPassport','passport','role','tokenVerifier','adminonly'],//adminonly
     '*':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions']//adminonly
    },

@@ -5,7 +5,10 @@ const CoursDocumentShema = joi.object({
     description:joi.string(),
     status: joi.string().valid('public','private'),
     parent:joi.number().required(),
+    order:joi.number().required(),
+    
     forTeacher:joi.boolean(),
+    
    
 })
 const CoursDocumentShemaWithFile = joi.object({
@@ -15,6 +18,8 @@ const CoursDocumentShemaWithFile = joi.object({
     parent:joi.number().required(),
     document:joi.number().required(),
     forTeacher:joi.boolean(),
+    order:joi.number(),
+ 
 })
 
 const UpdateCoursDocumentShema = joi.object({

@@ -42,6 +42,7 @@ module.exports.routes = {
   'POST /api/v1/softskillsdocuments/rate/:id':'SoftSkillsDocumentController.rateSoftSkill',
   'POST /api/v1/softskillsvideos/rate/:id':'SoftSkillsVideosController.rateSoftSkill',
   'GET /api/v1/courses_tree':'CourseController.treeView',
+  'GET /api/v1/exam_tree':'CourseController.examView',
   //rating
   'POST /api/v1/rateotherdocuments/:id':'OtherDocumentController.rateCourse',
   'POST /api/v1/rateothervideos/:id':'OtherVideoController.rateCourse',

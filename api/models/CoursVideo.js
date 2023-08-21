@@ -76,6 +76,10 @@ module.exports = {
         type: DataTypes.STRING,
         required: true,
     },
+    order:{
+      type: DataTypes.INTEGER,
+      allowNull:false
+    },
 
 
   },
@@ -92,6 +96,7 @@ module.exports = {
     CoursVideo.hasMany(CoursComment,{
       foreignKey:'c_video_id'
     })
+    
 
   }
 

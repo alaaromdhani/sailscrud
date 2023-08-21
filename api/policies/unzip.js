@@ -10,6 +10,9 @@ const optionsValidator = async (req,file,cb)=>{
    }
    try{
         let fileOptions = await sails.services.uploadservice.zipFileOptions(file,{type:"zipfiles"})
+        if(req.body.order){
+            req.body.order = parseInt(req.body.order)   
+        }
         if(req.body.parent){
             req.body.parent = parseInt(req.body.parent)   
         }
