@@ -1,9 +1,24 @@
 const { DataTypes } = require("sequelize")
+const ValidationError = require("../../utils/errors/validationErrors")
 
 module.exports = {
     options: {
         tableName: 'annee_niveaux_users',
         datastore: 'default',
+        hooks:{
+            beforeSave: async (ann_niveau_user,options)=>{
+               let existing = await AnneeNiveauUser.findOne({where:{
+                  annee_scolaire_id:ann_niveau_user.annee_scolaire_id,
+                  niveau_scolaire_id:ann_niveau_user.niveau_scolaire_id,
+                  user_id:ann_niveau_user.user_id
+
+               }}) 
+               if(existing){
+                  throw new ValidationError({message:'خطئ في التحقق'})
+               }
+            }
+
+        }
       },
       tableName: 'annee_niveaux_users',
       attributes: {
@@ -12,6 +27,10 @@ module.exports = {
               primaryKey: true,
               autoIncrement: true
           },
+          type:{
+            type: DataTypes.ENUM('trial','paid','halfpaid','archive'),
+            required: true,
+          }
           
       },
       associations : function(){
@@ -23,6 +42,9 @@ module.exports = {
          })
          AnneeNiveauUser.belongsTo(User,{
             foreignKey:'user_id'
+         })
+         AnneeNiveauUser.hasMany(Order,{
+            foreignKey:'annee_niveau_user_id'
          })
         
   

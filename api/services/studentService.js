@@ -14,9 +14,7 @@ module.exports = {
     createStudent:(req,callback)=>{
       
         let bodyData={}
-        if(req.body.niveau_scolaire_id){
-            req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
-        }
+        
         if(req.body.birthDate){
             if(isNaN(new Date(req.body.birthDate))){
                 return callback(new ValidationError({message:'a valid birthdate is required'}))
@@ -32,28 +30,12 @@ module.exports = {
         return new Promise((resolve,reject)=>{
                 const createStudentValidation = schemaValidation(createStudentSchema)(bodyData)
                 if(createStudentValidation.isValid){
-                    resolve()
-                }
-                else{
-                    reject(new ValidationError({message:createStudentValidation.message}))
-                }
-       }).then(()=>{
-    
-            return NiveauScolaire.findOne({where:{
-                    id:bodyData.niveau_scolaire_id,
-                    active:true
-            }})
-       }).then(ns=>{
-        console.log('niveau scolaire found ')
-            return new Promise((resolve,reject)=>{
-                if(ns){
                     return resolve()
                 }
                 else{
-                    return reject(new ValidationError({message:'a valid niveau scolaire is required'}))
+                    return     reject(new ValidationError({message:createStudentValidation.message}))
                 }
-            })
-        }).then(()=>{
+       }).then(()=>{
             return Role.findOne({where:{name:sails.config.custom.roles.student.name}})
         }).then(r=>{
             
@@ -68,7 +50,7 @@ module.exports = {
              })
         }).then(r=>{
             bodyData.role_id = r.id
-            bodyData.phonenumber = uuidv4()+' '+uuidv4()
+            bodyData.phonenumber = uuidv4()+'-'+uuidv4()
             bodyData.username = bodyData.firstName+' '+bodyData.lastName+uuidv4()
             bodyData.email = bodyData.firstName+'.'+bodyData.lastName+uuidv4()+'@madar.tn'
             bodyData.addedBy = req.user.id
@@ -109,9 +91,7 @@ module.exports = {
             })
         }).then(s=>{
             user =s
-            return AnneeNiveauUser.findOne({where:{
-                user_id:s.id
-            }})
+            
         }).then(sd=>{
             return user.destroy()
 

@@ -46,6 +46,9 @@ module.exports = {
     Trimestre.belongsToMany(Module,{
       through:'trimestres_modules'
     })
+    Trimestre.belongsToMany(Pack,{
+      through:'trimestres_packs'
+    })
   }
 
 

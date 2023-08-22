@@ -359,7 +359,7 @@ module.exports = {
                   type:'exam',
                   trimestre_id:TrimestreId,
                  
-                  niveau_scolaire_id:NiveauScolaireId
+                    niveau_scolaire_id:NiveauScolaireId
                   
                 },
                 include:[{

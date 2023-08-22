@@ -79,22 +79,9 @@ else{
         if(req.pass){
           if(req.pass.studentRoute){
             includeOptions.push({
-              model:AnneeNiveauUser,
               
-              foreighKey:'user_id',
-              attributes:['niveau_scolaire_id'],
-              include:[
-              {
-                model:AnneeScolaire,
-                attributes:[],
-                where:{
-                  active:true
-                }
               
-              },
-             
-              
-            ],
+            
            })
           }
             

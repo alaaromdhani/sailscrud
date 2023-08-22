@@ -17,11 +17,7 @@ module.exports={
                 user.profilePicture = (await Upload.create(req.upload)).link
                 
                 
-                  await AnneeNiveauUser.create({
-                    niveau_scolaire_id:req.body.niveau_scolaire_id,
-                    user_id:user.id,
-                    annee_scolaire_id:req.operation.activeSchoolYear.id
-                  })
+                  
 
                 
                 return DataHandlor(req,await user.save(),res)
@@ -114,12 +110,7 @@ module.exports={
                   foreignKey:'annee_scolaire_id',
                   where:{active:true},
                   attributes:[]
-                },{
-                
-                  model:NiveauScolaire,
-                  foreignKey:'niveau_scolaire_id',
-                  attributes:['name_ar','id']
-                },
+                }
                 ]
                 
               },
@@ -141,6 +132,10 @@ module.exports={
           } catch (error) {
             return res.serverError(error);
           }
+
+
+    },
+    addSchoolLevel:()=>{
 
 
     },

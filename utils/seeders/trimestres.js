@@ -1,8 +1,8 @@
 const data = [
 
-  { name_ar: 'الثلاثي الأول',name_fr:'premiere trimestre'},
-  { name_ar: 'الثلاثي الثاني',name_fr:'deuxieme trimestre'},
-  {name_ar:  'الثلاثي الثالث',name_fr:'troisieme trimestre'}
+  { id:1,name_ar: 'الثلاثي الأول',name_fr:'premiere trimestre'},
+  { id:2,name_ar: 'الثلاثي الثاني',name_fr:'deuxieme trimestre'},
+  {id:3,name_ar:  'الثلاثي الثالث',name_fr:'troisieme trimestre'}
 ]
 const verify = async ()=>{
      return  (await Trimestre.findAll()).length>0
