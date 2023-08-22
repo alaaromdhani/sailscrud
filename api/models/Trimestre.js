@@ -40,6 +40,10 @@ module.exports = {
       type: DataTypes.STRING,
       required: true,
 
+    },
+    isSummerSchool:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
     }
   },
   associations:()=>{

@@ -24,8 +24,8 @@ const fileFilerOptions = async (req,file,cb)=>{
     if(req.body.price){
         req.body.price = parseFloat(req.body.price)
      }
-     if(req.body.duration){
-        req.body.duration = parseInt(req.body.duration)
+     if(req.body.nbTrimestres){
+        req.body.nbTrimestres = parseInt(req.body.nbTrimestres)
     }
     
     if(req.body.pack_id){

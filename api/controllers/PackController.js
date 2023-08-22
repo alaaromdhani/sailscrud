@@ -40,8 +40,8 @@ module.exports = {
           if(req.body.price){
             req.body.price = parseInt(req.body.price)
             }
-            if(req.body.duration){
-                req.body.duration = parseInt(req.body.duration)
+            if(req.body.nbTrimestres){
+                req.body.nbTrimestres = parseInt(req.body.nbTrimestres)
             }
             const PackValidation = schemaValidation(PackShemaWithoutFile)(req.body)
               let pack = req.body 
@@ -148,8 +148,8 @@ module.exports = {
         if(req.body.price){
           req.body.price = parseFloat(req.body.price)
        }
-       if(req.body.duration){
-          req.body.duration = parseInt(req.body.duration)
+       if(req.body.nbTrimestres){
+          req.body.nbTrimestres = parseInt(req.body.nbTrimestres)
       }
       
       if(req.body.pack_id){

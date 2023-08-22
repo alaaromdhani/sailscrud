@@ -30,10 +30,12 @@ const {
             type: DataTypes.FLOAT,
             allowNull:false
         },
-        duration:{
-          type: DataTypes.INTEGER,
-          allowNull:false
-        },
+        nbTrimestres:{
+          type:DataTypes.INTEGER,
+          allowNull:false,
+          defaultValue:1
+        }
+       
     },
     associations : function(){
        Pack.belongsTo(Upload,{
