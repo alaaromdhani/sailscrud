@@ -29,7 +29,8 @@ const UpdatePackShemaWithoutFile = joi.object({
     
     name: joi.string(),
     price: joi.number(),
-  photo:joi.number()
+  photo:joi.number(),
+  nbTrimestres:joi.number().integer()
     
 })
 module.exports = {PackShema,PackShemaWithoutFile,UpdatePackShema,UpdatePackShemaWithoutFile}

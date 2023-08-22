@@ -50,10 +50,10 @@ const {
         
     },
     associations : function(){
-       Order.belongsToMany(Pack,{
-        through:'orders_packs'
+       Order.belongsTo(Pack,{
+        foreignKey:'pack_id'
        })
-       Order.belongsTo(Trimestre,{
+       Order.belongsToMany(Trimestre,{
         through:'orders_trimestres'
        })
       

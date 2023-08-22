@@ -68,7 +68,7 @@ module.exports.routes = {
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',
   'GET /front/api/v1/students/schoollevels/:id': 'StudentController.getStudentSchoolLevels',
-  'GET /front/api/v1/students/trimestres': 'StudentController.getTrimestres',
+  'GET /front/api/v1/students/trimestres': 'ParentHomeController.getTrimestres',
   
   'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',
   'GET /front/api/v1/students': 'StudentController.find',
