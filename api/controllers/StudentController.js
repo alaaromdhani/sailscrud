@@ -135,8 +135,41 @@ module.exports={
 
 
     },
-    addSchoolLevel:()=>{
-
+    addSchoolLevel:async (req,res)=>{
+      sails.services.studentservice.addSchoolLevel(req,(err,data)=>{
+        if(err){
+          return ErrorHandlor(req,err,res)
+        }
+        else{
+          return DataHandlor(req,data,res)
+        }
+      })
+    },
+    getStudentSchoolLevels :async (req,res)=>{
+      
+      try{
+        const data = await AnneeNiveauUser.findAll({where:{
+          user_id:req.params.id
+        },include:[{
+          model:User,
+          attributes:['addedBy'],
+          where:{
+            addedBy:req.user.id
+          },
+          required:true  
+        },{
+          model:AnneeScolaire, 
+          foreignKey:'annee_scolaire_id'
+        },{
+          model:NiveauScolaire,
+          foreignKey:'niveau_scolaire_id'
+        }]
+        })
+        return DataHandlor(req,data,res)
+      }
+      catch(e){
+        return ErrorHandlor(req, new SqlError(e),res)
+      }
 
     },
     getschoolLevels:async (req,res)=>{

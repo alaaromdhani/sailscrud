@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const UnkownError = require("../../utils/errors/UnknownError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
@@ -104,7 +105,72 @@ module.exports = {
         })
 
 
+    },
+    addSchoolLevel:(req,callback)=>{
+     
+        return new Promise((resolve,reject)=>{
+            const {niveau_scolaire_id} = req.body
+            if(niveau_scolaire_id){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError())
+            }
+        }).then(()=>{
+            return User.findByPk(req.params.id,{
+                include:{
+                    model:AnneeNiveauUser,
+                    foreignKey:'user_id',
+                    
+                }   
+            })
+        }).then(u=>{
+           if(u){
+            if(u.addedBy===req.user.id){
+                return AnneeScolaire.findOne({where:{
+                    active:true
+                }})    
+            }
+            else{
+               return Promise.reject(new UnauthorizedError())   
+            }
+           }
+           else{
+            return Promise.reject(new RecordNotFoundErr())
+           }
+        }).then(n=>{
+            if(n){
+                 
+                return AnneeNiveauUser.create({
+                    user_id:req.params.id,
+                    annee_scolaire_id:n.id,
+                    niveau_scolaire_id:req.body.niveau_scolaire_id,
+                    type:'trial'
+
+                }) 
+                 
+            }
+            else{
+                return Promise.reject(new ValidationError())
+            }
+        }).then(sd=>{
+            return AnneeNiveauUser.update({type:'archive'},{where:{
+                id:{
+                    [Op.ne]:sd.id
+                },
+                user_id:req.params.id
+            }})
+
+
+        }).then(()=>{
+            callback(null,{message:'تمت إضافة مستوى دراسي بنجاح'})
+        }).catch(e=>{
+            (e instanceof RecordNotFoundErr || e instanceof UnauthorizedError|| e instanceof ValidationError)? callback(e):callback(new SqlError(e)) 
+        })
+
+
     }
+    
    
 
 

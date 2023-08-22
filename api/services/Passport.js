@@ -104,8 +104,8 @@ else{
       return User.findOne({where:{id: id,isDeleted:false},
         attributes:['id','email','profilePicture','firstName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt','country_id','state_id']
         ,include:includeOptions}).then(function (user) {
-          
-          return next(null, user || null);
+         
+          next(null, user || null);
           
         })
         .catch(next);

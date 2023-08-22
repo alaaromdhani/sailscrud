@@ -3,7 +3,7 @@ const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports = (req,res,next)=>{
     if(req.role.name === sails.config.custom.roles.parent.name){
-          //  console.log('parent passed by here')
+           //console.log('parent passed by here')
             return next()
 
     }

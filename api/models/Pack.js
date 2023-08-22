@@ -46,9 +46,7 @@ const {
         foreignKey:'pack_id'
 
        })
-       Pack.belongsToMany(Trimestre,{
-        through:'trimestres_packs'
-       })
+       
        Pack.belongsToMany(Order,{
         through:'orders_packs'
        })

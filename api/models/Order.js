@@ -9,7 +9,7 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-      
+
       tableName: 'orders',
       indexes:[{
         unique:true,
@@ -48,6 +48,9 @@ const {
     associations : function(){
        Order.belongsToMany(Pack,{
         through:'orders_packs'
+       })
+       Order.belongsTo(Trimestre,{
+        through:'orders_trimestres'
        })
       
        Order.belongsTo(PayConfig,{
