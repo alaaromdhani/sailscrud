@@ -223,22 +223,13 @@ module.exports={
           id:req.params.id,
           addedBy:req.user.id,
         },
-        attributes:{exclude: ['password','addedBy','updatedBy']},
         include:{
           model:AnneeNiveauUser,
-          foreignKey:'user_id',
-          attributes:['niveau_scolaire_id'],
-          include:{
-          
-            model:AnneeScolaire,
-            foreignKey:'annee_scolaire_id',
-            where:{active:true},
-            attributes:[]
-          },
+         
           
           
         },
-        attributes:['firstName','lastName','birthDate','username','sex','profilePicture'],})
+        attributes:['id','firstName','lastName','birthDate','username','sex','profilePicture'],})
          if(!data){
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
          } 
