@@ -148,7 +148,9 @@ module.exports={
     getStudentSchoolLevels :async (req,res)=>{
       
       try{
-        const data = await AnneeNiveauUser.findAll({where:{
+        const data = await AnneeNiveauUser.findAll({
+         
+          where:{
           user_id:req.params.id
         },include:[{
           model:User,
@@ -163,11 +165,34 @@ module.exports={
         },{
           model:NiveauScolaire,
           foreignKey:'niveau_scolaire_id'
+        },{
+          model:Trimestre,
+          foreignKey:'trimestre_id'
         }]
         })
-        return DataHandlor(req,data,res)
+        if(data){
+          
+          let tab = data.reduce((prev,curr)=>{
+            if(!prev.some(p=>p.id===curr.niveau_scolaire_id)){
+              
+              let object = {
+                ...curr.NiveauScolaire.dataValues,
+                type:data.every(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id&&d.type==='paid')?'paid':(data.some(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id && d.type==='paid')?'halfpaid':'trial')
+              }    
+
+              prev.push(object)
+            }
+            
+            return prev
+          },[])
+          return DataHandlor(req, tab,res)
+        }
+        else{
+          return DataHandlor(req, [],res)
+        }
       }
       catch(e){
+        console.log(e)
         return ErrorHandlor(req, new SqlError(e),res)
       }
 

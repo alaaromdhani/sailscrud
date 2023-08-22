@@ -53,9 +53,7 @@ const {
        Order.belongsTo(Pack,{
         foreignKey:'pack_id'
        })
-       Order.belongsToMany(Trimestre,{
-        through:'orders_trimestres'
-       })
+       
       
        Order.belongsTo(PayConfig,{
         foreignKey:'payment_type_id'
@@ -63,9 +61,7 @@ const {
        Order.belongsTo(User,{
         foreignKey:'addedBy'
        })
-       Order.belongsTo(AnneeNiveauUser,{
-        foreignKey:'annee_niveau_user_id'
-       })
+       
        
        
     }

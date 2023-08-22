@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize")
+const { DataTypes, Op } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
 
 module.exports = {
@@ -8,9 +8,11 @@ module.exports = {
         hooks:{
             beforeSave: async (ann_niveau_user,options)=>{
                let existing = await AnneeNiveauUser.findOne({where:{
-                  annee_scolaire_id:ann_niveau_user.annee_scolaire_id,
-                  niveau_scolaire_id:ann_niveau_user.niveau_scolaire_id,
-                  user_id:ann_niveau_user.user_id
+                  
+                     annee_scolaire_id:ann_niveau_user.annee_scolaire_id,
+                     user_id:ann_niveau_user.user_id,
+                     trimestre_id:ann_niveau_user.trimestre_id
+                  
 
                }}) 
                if(existing){
@@ -28,7 +30,7 @@ module.exports = {
               autoIncrement: true
           },
           type:{
-            type: DataTypes.ENUM('trial','paid','halfpaid','archive'),
+            type: DataTypes.ENUM('trial','archive','halfpaid','paid'),
             required: true,
           }
           
@@ -37,14 +39,17 @@ module.exports = {
          AnneeNiveauUser.belongsTo(NiveauScolaire,{
             foreignKey:'niveau_scolaire_id'
          })
-         AnneeNiveauUser.belongsTo(AnneeScolaire,{
+        AnneeNiveauUser.belongsTo(AnneeScolaire,{
             foreignKey:'annee_scolaire_id'
+         })
+         AnneeNiveauUser.belongsTo(Trimestre,{
+            foreignKey:'trimestre_id'
          })
          AnneeNiveauUser.belongsTo(User,{
             foreignKey:'user_id'
          })
-         AnneeNiveauUser.hasMany(Order,{
-            foreignKey:'annee_niveau_user_id'
+         AnneeNiveauUser.belongsTo(Order,{
+            foreignKey:'order_id'
          })
         
   

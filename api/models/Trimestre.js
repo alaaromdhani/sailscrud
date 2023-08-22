@@ -50,9 +50,7 @@ module.exports = {
     Trimestre.belongsToMany(Module,{
       through:'trimestres_modules'
     })
-    Trimestre.belongsToMany(Order,{
-      through:'orders_trimestres'
-    })
+    
   }
 
 

@@ -221,9 +221,9 @@ module.exports = {
     User.hasMany(Rate,{
       foreignKey:'ratedBy'
     })
-    User.hasMany(AnneeNiveauUser,{
+    /*User.hasMany(AnneeNiveauUser,{
       foreignKey:'user_id'
-    })
+    })*/
    
     
   }
