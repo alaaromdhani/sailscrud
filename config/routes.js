@@ -71,6 +71,7 @@ module.exports.routes = {
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
   'GET /front/api/v1/parent/orders':'ParentHomeController.getOrders',
+  'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
  
  
   //student management

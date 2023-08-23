@@ -19,11 +19,19 @@ module.exports = {
 
               },{
                 where:{
-                  annee_scolaire_id:{
-                    [Op.ne]:as.id
+                  startingYear:{
+                    [Op.lt]:as.startingYear
                   }
                 }
               })
+              let order_ids=(await AnneeNiveauUser.findAll({where:{
+                  annee_scolaire:{
+                    [Op.ne]:as.id
+                  }
+              }})).filter(a=>a.order_id!==null).map(a=>a.order_id)
+              await Order.update({status:'expired'},{where:{
+                [Op.in]:order_ids
+              }})
                
             }
 

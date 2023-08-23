@@ -121,7 +121,7 @@ module.exports={
                 return ErrorHandlor(req,err,res)
             }
             else{
-                return DataHandlor(req,data,res)
+                return DataHandlor(req,data.order,res,data.message)
             }
         })
     },
@@ -149,7 +149,11 @@ module.exports={
     getOrders:async (req,res)=>{
         try{
             return DataHandlor(req,await Order.findAll({
-            where:{addedBy:req.user.id}    
+            where:{addedBy:req.user.id,
+                status:{
+                    [Op.in]:['active','onhold']
+                }
+            }    
             }),res)
         }catch(e){
             return ErrorHandlor(req, new SqlError(e),res)
@@ -157,7 +161,14 @@ module.exports={
 
     },
     deleteOrder:(req,res)=>{
-        
+        sails.services.parenthomeservice.deleteOrder(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+        })
     }
     
 

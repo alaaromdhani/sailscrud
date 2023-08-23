@@ -32,127 +32,29 @@ let sequelizeSessionStore = new sessionStore({
 })
 
 module.exports = {
-  //cron : {
-  //  login: {
-  // schedule: '* */30 * * * *',      // [REQUIRED]
-  //  onTick: () => {               // [REQUIRED]
-  // sails.services.otpservice.login();
-  //},
-  // timezone: 'America/New_York', // [OPTIONAL] set timezone
-  //  runOnInit: true,              // [OPTIONAL] fire onTick function as soon as the cron is initialized
-  // start: true                   // [OPTIONAL] manually start the cron task (DEFAULT = true) See below for the example
-  //  },
-
-  //},
-
-
-  /**************************************************************************
-    *                                                                         *
-    * Tell Sails what database(s) it should use in production.                *
-    *                                                                         *
-    * (https://sailsjs.com/config/datastores)                                 *
-    *                                                                         *
-    **************************************************************************/
   datastores:datastores,
-    /*wow: {
-      user:databaseCredentials.user,
-      password:databaseCredentials.password,
-  
-      options:databaseCredentials.options,
-      database:'wow'
-  */
-      /***************************************************************************
-      *                                                                          *
-      * Want to use a different database during development?                     *
-      *                                                                          *
-      * 1. Choose an adapter:                                                    *
-      *    https://sailsjs.com/plugins/databases                                 *
-      *                                                                          *
-      * 2. Install it as a dependency of your Sails app.                         *
-      *    (For example:  npm install sails-mysql --save)                        *
-      *                                                                          *
-      * 3. Then pass it in, along with a connection URL.                         *
-      *    (See https://sailsjs.com/config/datastores for help.)                 *
-      *                                                                          *
-      ***************************************************************************/
-      // adapter: 'sails-mysql',
-      // url: 'mysql://user:password@host:port/database',
-  
-    //},
+    
  
 
 
 
   models: {
 
-    /***************************************************************************
-      *                                                                          *
-      * To help avoid accidents, Sails automatically sets the automigration      *
-      * strategy to "safe" when your app lifts in production mode.               *
-      * (This is just here as a reminder.)                                       *
-      *                                                                          *
-      * More info:                                                               *
-      * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
-      *                                                                          *
-      ***************************************************************************/
     migrate: 'safe',
 
-    /***************************************************************************
-      *                                                                          *
-      * If, in production, this app has access to physical-layer CASCADE         *
-      * constraints (e.g. PostgreSQL or MySQL), then set those up in the         *
-      * database and uncomment this to disable Waterline's `cascadeOnDestroy`    *
-      * polyfill.  (Otherwise, if you are using a databse like Mongo, you might  *
-      * choose to keep this enabled.)                                            *
-      *                                                                          *
-      ***************************************************************************/
-    // cascadeOnDestroy: false,
 
   },
 
 
 
-  /**************************************************************************
-    *                                                                         *
-    * Always disable "shortcut" blueprint routes.                             *
-    *                                                                         *
-    * > You'll also want to disable any other blueprint routes if you are not *
-    * > actually using them (e.g. "actions" and "rest") -- but you can do     *
-    * > that in `config/blueprints.js`, since you'll want to disable them in  *
-    * > all environments (not just in production.)                            *
-    *                                                                         *
-    ***************************************************************************/
   blueprints: {
     shortcuts: false,
   },
 
 
 
-  /***************************************************************************
-    *                                                                          *
-    * Configure your security settings for production.                         *
-    *                                                                          *
-    * IMPORTANT:                                                               *
-    * If web browsers will be communicating with your app, be sure that        *
-    * you have CSRF protection enabled.  To do that, set `csrf: true` over     *
-    * in the `config/security.js` file (not here), so that CSRF app can be     *
-    * tested with CSRF protection turned on in development mode too.           *
-    *                                                                          *
-    ***************************************************************************/
   security: {
-
-    /***************************************************************************
-      *                                                                          *
-      * If this app has CORS enabled (see `config/security.js`) with the         *
-      * `allowCredentials` setting enabled, then you should uncomment the        *
-      * `allowOrigins` whitelist below.  This sets which "origins" are allowed   *
-      * to send cross-domain (CORS) requests to your Sails app.                  *
-      *                                                                          *
-      * > Replace "https://example.com" with the URL of your production server.  *
-      * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
-      *                                                                          *
-      ***************************************************************************/
-    cors: {
+   cors: {
       allRoutes: true,
       allowCredentials: true, // Allows cookies and session through CORS from here
       allowOrigins: ['http://localhost:3000','https://madar-landing-page.vercel.app','http://localhost:4200', 'http://127.0.0.1:3000', 'http://127.0.0.1'], // Allows these origins through CORS
@@ -164,16 +66,6 @@ module.exports = {
 
 
 
-  /***************************************************************************
-    *                                                                          *
-    * Configure how your app handles sessions in production.                   *
-    *                                                                          *
-    * (https://sailsjs.com/config/session)                                     *
-    *                                                                          *
-    * > If you have disabled the "session" hook, then you can safely remove    *
-    * > this section from your `config/env/production.js` file.                *
-    *                                                                          *
-    ***************************************************************************/
   session: {
     name:'__session.id__',
     secret: '7c9b93a38b567fe0836335056ccb3bb8',

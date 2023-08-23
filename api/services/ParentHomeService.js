@@ -3,16 +3,19 @@ const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
 const { OrderShema } = require("../../utils/validations/OrderSchema")
 const resolveError = require("../../utils/errors/resolveError")
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
+const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 
 module.exports = {
     addOrder:(req,callback)=>{
+        let order
         let records
         return new Promise((resolve,reject)=>{
             const addOrderSchema = schemaValidation(OrderShema)(req.body)
             if(addOrderSchema.isValid){
                     req.body.trimestres = Array.from(new Set(req.body.trimestres))
                     if(req.body.trimestres.length===3){
-                        req.body.trimestres.push(4)
+                        req.body.trimestres=[1,2,3,4]
                     }
                     return resolve()
             }
@@ -72,13 +75,14 @@ module.exports = {
                 return Promise.reject(new ValidationError({message:'خطة تسعير غير صالحة'}))
             }
         }).then(o=>{
+            order = o
             return Promise.all(records.map(r=>{
                 r.order_id = o.id
                 return r.save()
             }))
         }).then(sd=>{
 
-            callback(null,{message:'تم تمرير الطلب بنجاح'})
+            callback(null,{message:'تم تمرير الطلب بنجاح',order})
 
         }).catch(e=>{
             console.log(e)
@@ -86,6 +90,27 @@ module.exports = {
 
         })
 
+    },
+    deleteOrder:(req,callback)=>{
+        Order.findOne({where:{
+            code:req.params.id,
+            addedBy:req.user.id,
+        }}).then(o=>{
+            if(!o){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            if(o.status==='active'){
+                return Promise.reject(new ValidationError({message:'لا يمكنك حذف هذا الطلب'}))
+            }
+            if(o.status==='expired'){
+                return Promise.reject(new ValidationError({message:'لا يمكنك حذف هذا الطلب'}))
+            }
+            return o.destroy()
+        }).then(o=>{
+            callback(null,{})
+        }).catch(e=>{
+            resolveError(e)
+        })
     }
 
 

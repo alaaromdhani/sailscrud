@@ -39,5 +39,9 @@ endpoint:{
         }
 
     }  
+    id_student
+    id_niveau_scolaire
+    id_annee_scolaire
+    
     
 }
