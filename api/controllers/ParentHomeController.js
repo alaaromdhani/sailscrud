@@ -169,7 +169,8 @@ module.exports={
                 return DataHandlor(req,data,res)
             }
         })
-    }
+    },
+    
     
 
    

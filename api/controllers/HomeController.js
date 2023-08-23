@@ -3,6 +3,7 @@ const {DataHandlor, ErrorHandlor} = require('../../utils/translateResponseMessag
 const SqlError = require("../../utils/errors/sqlErrors");
 const UnkownError = require("../../utils/errors/UnknownError");
 const ValidationError = require("../../utils/errors/validationErrors");
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 module.exports={
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
@@ -42,6 +43,25 @@ module.exports={
           }
       
         
+    },
+    getMatiereByNiveau:async (req,res)=>{
+      try{
+        let data  = await NiveauScolaire.findByPk(req.params.NiveauScolaireId,{
+          include:{
+            model:Matiere,
+            through:MatiereNiveau
+          }
+        })
+        if(!data){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        else{
+          return DataHandlor(req,data.Matieres,res)
+        }
+      }catch(e){
+        return ErrorHandlor(req,new SqlError(e),res)
+      }
+      
     },
    
     updatePhoneNumber:(req,res)=>{

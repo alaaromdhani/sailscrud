@@ -72,7 +72,7 @@ module.exports.routes = {
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
   'GET /front/api/v1/parent/orders':'ParentHomeController.getOrders',
   'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
- 
+  
  
   //student management
   'POST /front/api/v1/students': 'StudentController.create',
@@ -100,8 +100,10 @@ module.exports.routes = {
   'GET /front/student/api/v1/matieres':'StudentHomeController.getMatieres',
   'GET /front/student/api/v1/courses/:MatiereId':'StudentHomeController.getCourses',
   'GET /front/student/api/v1/courses/children/:courseId':'StudentHomeController.getChildren',
-  'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback'
-  //destroy
+  'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback',
+  //config
+  'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',
+ 
  
   
 
