@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize")
+const { DataTypes, Op } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
 
 module.exports = {
@@ -14,6 +14,16 @@ module.exports = {
               await AnneeScolaire.update({active:false},{where:{
                   active:true 
               }})
+              await AnneeNiveauUser.update({
+                type:'archive',
+
+              },{
+                where:{
+                  annee_scolaire_id:{
+                    [Op.ne]:as.id
+                  }
+                }
+              })
                
             }
 

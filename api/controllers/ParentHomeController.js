@@ -66,19 +66,13 @@ module.exports={
                                 where:{
                                     addedBy:req.user.id
                                 },
-                                required:true
+                                required:true,
+                                attributes:[]
                                 
                             },{
-                                model:Order,
-                                foreignKey:'annee_niveau_user_id',
-                                where:{
-                                    active:true
-                                },
-                                include:{
-                                    model:Trimestre,
-                                    through:'orders_trimestres'
-                                },
-                                required:false
+                                model:Trimestre,
+                                foreignKey:'trimestre_id',
+                                
                                 
                             }]
                          },)
@@ -96,6 +90,29 @@ module.exports={
                                     return ErrorHandlor(req,new SqlError(e),res)
             }
 
+
+    },
+    calculatePrice:async (req,res)=>{
+        let {nbTrimestres} = req.query
+        if(nbTrimestres){
+            try{
+                const data = await Pack.findOne({where:{
+                    nbTrimestres   
+                },include:{
+                    model:Upload,
+                    foreignKey:'photo',
+                    attributes:['link']
+                },})
+                
+                return DataHandlor(req,data?data:{},res)
+            }catch(e){
+               
+                return ErrorHandlor(req,new SqlError(e),res)
+            }
+        }
+        else{
+            return ErrorHandlor(req,new ValidationError(),res)
+        }        
 
     }
     

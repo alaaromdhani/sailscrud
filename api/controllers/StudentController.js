@@ -17,10 +17,10 @@ module.exports={
                 user.profilePicture = (await Upload.create(req.upload)).link
                 
                 
-                  
+                await user.save()
 
                 
-                return DataHandlor(req,await user.save(),res)
+                return DataHandlor(req,{message:'تم اضافة الطالب بنجاح'},res)
                 }catch(e){
                     
                     if(req.operation.data){
@@ -36,7 +36,8 @@ module.exports={
                     return ErrorHandlor(req,err,res)
                 }
                 else{
-                    return DataHandlor(req,data,res)
+                  return DataHandlor(req,{message:'تم اضافة الطالب بنجاح'},res)
+              
                 }
             })
         }
@@ -100,21 +101,7 @@ module.exports={
             const { count, rows } = await User.findAndCountAll({
               where,
               attributes:{exclude: ['password','addedBy','updatedBy']},
-              include:{
-                model:AnneeNiveauUser,
-                foreignKey:'user_id',
-                attributes:['niveau_scolaire_id'],
-                include:[{
-                
-                  model:AnneeScolaire,
-                  foreignKey:'annee_scolaire_id',
-                  where:{active:true},
-                  attributes:[]
-                }
-                ]
-                
-              },
-
+              
       
               order,
               limit: parseInt(limit, 10),
@@ -177,7 +164,8 @@ module.exports={
               
               let object = {
                 ...curr.NiveauScolaire.dataValues,
-                type:data.every(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id&&d.type==='paid')?'paid':(data.some(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id && d.type==='paid')?'halfpaid':'trial')
+                  AnneeScolaire:curr.AnneeScolaire,
+                type:data.filter(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id).every(d=>d.type==='archive')?'archive':(data.filter(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id).every(d=>d.type==='paid')?'paid':(data.some(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id && d.type==='paid')?'halfpaid':'trial'))
               }    
 
               prev.push(object)

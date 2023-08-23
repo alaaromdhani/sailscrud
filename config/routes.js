@@ -65,6 +65,9 @@ module.exports.routes = {
   'POST /front/api/v1/forgetpassword': 'AuthController.forgetPassword',
   'POST /front/api/v1/forgetpassword/verify': 'AuthController.validateCode',
   //parent space
+  //pursuase
+  'GET /front/api/v1/packs/calculate':'ParentHomeController.calculatePrice',
+  //student management
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',
   'GET /front/api/v1/students/schoollevels/:id': 'StudentController.getStudentSchoolLevels',

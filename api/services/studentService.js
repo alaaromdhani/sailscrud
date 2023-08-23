@@ -125,6 +125,9 @@ module.exports = {
             if(u.addedBy===req.user.id){
                 return AnneeNiveauUser.findAll({where:{
                     user_id:u.id,
+                    type:{
+                        [Op.ne]:'archive'
+                    }
                     
                 }})    
             }
@@ -145,7 +148,8 @@ module.exports = {
                     return AnneeScolaire.findAll({where:{
                         id:{
                             [Op.in]:annee_niveau_user.map(n=>n.annee_scolaire_id)
-                        }
+                        },
+                        
                     },orderBy:[['endingYear','DESC']]})
                 }
                 
