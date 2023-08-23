@@ -236,12 +236,7 @@ module.exports={
           id:req.params.id,
           addedBy:req.user.id,
         },
-        include:{
-          model:AnneeNiveauUser,
-         
-          
-          
-        },
+        
         attributes:['id','firstName','lastName','birthDate','username','sex','profilePicture'],})
          if(!data){
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
