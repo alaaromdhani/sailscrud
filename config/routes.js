@@ -67,6 +67,12 @@ module.exports.routes = {
   //parent space
   //pursuase
   'GET /front/api/v1/packs/calculate':'ParentHomeController.calculatePrice',
+   //orders 
+  'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
+  'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
+  'GET /front/api/v1/parent/orders':'ParentHomeController.getOrders',
+ 
+ 
   //student management
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',

@@ -114,6 +114,50 @@ module.exports={
             return ErrorHandlor(req,new ValidationError(),res)
         }        
 
+    },
+    addOrder:(req,res)=>{
+        sails.services.parenthomeservice.addOrder(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+        })
+    },
+    getOrder:async (req,res)=>{
+        try{
+            let order =await Order.findOne({
+                where:{
+                    code:req.params.id,
+                    addedBy:req.user.id,
+                    status:{
+                        [Op.in]:['active','onhold']
+                    }
+                }
+            })
+            if(!order){
+                return ErrorHandlor(req,new RecordNotFoundErr(),res)
+            } else{
+                return DataHandlor(req,order,res)
+            }
+    
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+    },
+    getOrders:async (req,res)=>{
+        try{
+            return DataHandlor(req,await Order.findAll({
+            where:{addedBy:req.user.id}    
+            }),res)
+        }catch(e){
+            return ErrorHandlor(req, new SqlError(e),res)
+        }
+
+    },
+    deleteOrder:(req,res)=>{
+        
     }
     
 

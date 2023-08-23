@@ -256,7 +256,18 @@ module.exports={
           return DataHandlor(req,data,res)
         }
       })
-    }
+    },
+    deleteSchoolLevel:(req,res)=>{
+        sails.services.studentservice.deleteSchoolLevel(req,(err,data)=>{
+          if(err){
+            return ErrorHandlor(req,err,res)
+          }else{
+            return DataHandlor(req,data,res)
+          }
+        })
+     },
+     
+    
 
 
 

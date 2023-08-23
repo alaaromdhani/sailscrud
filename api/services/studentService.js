@@ -8,6 +8,7 @@ const generateCode = require("../../utils/generateCode");
 const schemaValidation = require("../../utils/validations")
 const { createStudentSchema } = require("../../utils/validations/StudentSchema")
 const { v4: uuidv4 } = require('uuid');
+const resolveError = require("../../utils/errors/resolveError");
 
 
 
@@ -188,6 +189,59 @@ module.exports = {
         }).catch(e=>{
             (e instanceof RecordNotFoundErr || e instanceof UnauthorizedError|| e instanceof ValidationError)? callback(e):callback(new SqlError(e)) 
         })
+
+
+    },
+    deleteSchoolLevel:(req,callback)=>{
+        const {StudentId,NiveauScolaireId} = req.query
+        AnneeNiveauUser.findAll({
+            where:{
+                user_id:StudentId,
+                niveau_scolaire_id:NiveauScolaireId
+            },
+            include:{
+                model:User,
+                attributes:['addedBy'],
+                foreignKey:'user_id',
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            }
+        }).then(annee_niveau_user=>{
+           return new Promise((resolve,reject)=>{
+            if(annee_niveau_user.length){
+                return resolve(annee_niveau_user)
+            }
+            else{
+                return reject(new RecordNotFoundErr())
+            }
+            })
+        }).then(annee_niveau_user=>{
+            return new Promise((resolve,reject)=>{
+                if(annee_niveau_user.some(a=>a.type==='paid')){
+                    return reject(new ValidationError({message:'لقد دفعت لهذا المستوى المدرسي'}))
+                }
+                else{
+                    return resolve(annee_niveau_user)
+                }
+            })
+         }).then(annee_niveau_user=>{
+            return AnneeNiveauUser.destroy({
+                where:{
+                    id:{
+                        [Op.in]:annee_niveau_user.map(n=>n.id)
+                    }
+                }
+            })
+        }).then(sd=>{
+           
+            callback(null,{message:'تم حذف المستوى المدرسي بنجاح'})
+        }).catch(e=>{
+            let err = resolveError(e)
+            callback(err)
+        })
+
 
 
     }

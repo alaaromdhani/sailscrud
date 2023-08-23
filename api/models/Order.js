@@ -11,10 +11,10 @@ const {
       scopes: {},
 
       tableName: 'orders',
-      indexes:[{
+      indexes:[/*{
         unique:true,
         fields:['orderId']
-      },{
+      }*/,{
         unique:true,
         fields:['code']
       }],
@@ -35,16 +35,16 @@ const {
         },
         orderId:{
             type: DataTypes.STRING,
-            allowNull:false
+          //  allowNull:false
         },
         price:{
             type:DataTypes.FLOAT,
             allowNull:false
 
         },
-        active:{
-            type:DataTypes.BOOLEAN,
-            defaultValue:false
+        status:{
+            type:DataTypes.ENUM('active','onhold','expired'),
+            defaultValue:'onhold'
         }
 
         
