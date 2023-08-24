@@ -78,6 +78,7 @@ module.exports.routes = {
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',
   'GET /front/api/v1/students/schoollevels/:id': 'StudentController.getStudentSchoolLevels',
+  'DELETE /front/api/v1/students/schoollevels/:id/:NiveauScolaireId': 'StudentController.deleteSchoolLevel',
   'GET /front/api/v1/students/trimestres': 'ParentHomeController.getTrimestres',
   
   'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',
@@ -103,7 +104,7 @@ module.exports.routes = {
   'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback',
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',
- 
+  
  
   
 

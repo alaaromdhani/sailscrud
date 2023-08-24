@@ -141,9 +141,11 @@ module.exports = {
            }
         }).then(annee_niveau_user=>{
             if(annee_niveau_user.length){
+               // console.log(annee_niveau_user.filter(a=>a.niveau_scolaire_id===req.body.niveau_scolaire_id))
                 if(annee_niveau_user.some(a=>a.niveau_scolaire_id===req.body.niveau_scolaire_id)){
                    //school level already used
-                    return Promise.reject(new ValidationError({message:'مستوى دراسي غير صالح'}))    
+                    
+                   return Promise.reject(new ValidationError({message:'مستوى دراسي غير صالح'}))    
                 }else{
                     //finding the school years already used
                     return AnneeScolaire.findAll({where:{
@@ -172,7 +174,8 @@ module.exports = {
             } 
        }).then(anneescolaire=>{
             let annee_niveau_user=[]
-            for(let i=1;i<=4;i++){
+        //    return annee_niveau_user
+              for(let i=1;i<=4;i++){
                 annee_niveau_user.push({
                     user_id:req.params.id,
                     annee_scolaire_id:anneescolaire.id,
@@ -182,7 +185,7 @@ module.exports = {
                 })  
             }
             return AnneeNiveauUser.bulkCreate(annee_niveau_user)
-
+            
 
        }).then(()=>{
             callback(null,{message:'تمت إضافة مستوى دراسي بنجاح'})
@@ -193,10 +196,10 @@ module.exports = {
 
     },
     deleteSchoolLevel:(req,callback)=>{
-        const {StudentId,NiveauScolaireId} = req.query
+        const {id,NiveauScolaireId} = req.params
         AnneeNiveauUser.findAll({
             where:{
-                user_id:StudentId,
+                user_id:id,
                 niveau_scolaire_id:NiveauScolaireId
             },
             include:{
@@ -219,6 +222,9 @@ module.exports = {
             })
         }).then(annee_niveau_user=>{
             return new Promise((resolve,reject)=>{
+                if(annee_niveau_user.some(a=>a.order_id!=null)){
+                    return reject(new ValidationError({message:'يجب عليك حذف الطلبات لهذا المستوى المدرسي'}))
+                }
                 if(annee_niveau_user.some(a=>a.type==='paid')){
                     return reject(new ValidationError({message:'لقد دفعت لهذا المستوى المدرسي'}))
                 }
@@ -238,6 +244,7 @@ module.exports = {
            
             callback(null,{message:'تم حذف المستوى المدرسي بنجاح'})
         }).catch(e=>{
+            console.log(e)
             let err = resolveError(e)
             callback(err)
         })
