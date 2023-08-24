@@ -134,7 +134,8 @@ module.exports={
                     status:{
                         [Op.in]:['active','onhold']
                     }
-                }
+                },
+                
             })
             if(!order){
                 return ErrorHandlor(req,new RecordNotFoundErr(),res)
@@ -153,8 +154,16 @@ module.exports={
                 status:{
                     [Op.in]:['active','onhold']
                 }
+            },
+            include:{
+                model:Pack,
+                foreignKey:'pack_id',
+                include:{
+                    model:Upload,
+                    foreignKey:'photo'
+                }
             }    
-            }),res)
+            },),res)
         }catch(e){
             return ErrorHandlor(req, new SqlError(e),res)
         }
