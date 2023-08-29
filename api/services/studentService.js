@@ -151,13 +151,7 @@ module.exports = {
            if(u){
             //verfiying that it is the parent
             if(u.addedBy===req.user.id){
-                return AnneeNiveauUser.findAll({where:{
-                    user_id:u.id,
-                    type:{
-                        [Op.ne]:'archive'
-                    }
-                    
-                }})    
+               return sails.services.configservice.canAddSchoolLevel(u.id)  
             }
             else{
                return Promise.reject(new UnauthorizedError())   
@@ -166,62 +160,36 @@ module.exports = {
            else{
             return Promise.reject(new RecordNotFoundErr())
            }
-        }).then(annee_niveau_user=>{
-            if(annee_niveau_user.length){
-               // console.log(annee_niveau_user.filter(a=>a.niveau_scolaire_id===req.body.niveau_scolaire_id))
-                if(annee_niveau_user.some(a=>a.niveau_scolaire_id===req.body.niveau_scolaire_id)){
-                   //school level already used
-                    
-                   return Promise.reject(new ValidationError({message:'مستوى دراسي غير صالح'}))    
+        })
+        .then(anneescolaire=>{
+                if(anneescolaire){
+                    let annee_niveau_user=[]
+                    //    return annee_niveau_user
+                          for(let i=1;i<=4;i++){
+                            annee_niveau_user.push({
+                                user_id:req.params.id,
+                                annee_scolaire_id:anneescolaire.id,
+                                trimestre_id:i,
+                                niveau_scolaire_id:req.body.niveau_scolaire_id,
+                                type:'trial'
+                            })  
+                        }
+                        return AnneeNiveauUser.bulkCreate(annee_niveau_user)
+              
                 }else{
-                    //finding the school years already used
-                    return AnneeScolaire.findAll({where:{
-                        id:{
-                            [Op.in]:annee_niveau_user.map(n=>n.annee_scolaire_id)
-                        },
-                        
-                    },orderBy:[['endingYear','DESC']]})
+                    return []
                 }
-                
-            }
-            else{
-                return []
-            }
-        }).then(sd=>{
-            if(sd.length){
-             return AnneeScolaire.findOne({where:{
-                endingYear:sd[0].endingYear+1
-
-               }})     
-            }
-            else{
-                return AnneeScolaire.findOne({where:{
-                    active:true
-                 }})
-            } 
-       }).then(anneescolaire=>{
-            let annee_niveau_user=[]
-        //    return annee_niveau_user
-              for(let i=1;i<=4;i++){
-                annee_niveau_user.push({
-                    user_id:req.params.id,
-                    annee_scolaire_id:anneescolaire.id,
-                    trimestre_id:i,
-                    niveau_scolaire_id:req.body.niveau_scolaire_id,
-                    type:'trial'
-                })  
-            }
-            return AnneeNiveauUser.bulkCreate(annee_niveau_user)
-            
 
        }).then(()=>{
             callback(null,{message:'تمت إضافة مستوى دراسي بنجاح'})
         }).catch(e=>{
+            console.log(e);
             (e instanceof RecordNotFoundErr || e instanceof UnauthorizedError|| e instanceof ValidationError)? callback(e):callback(new SqlError(e)) 
         })
 
 
     },
+
     deleteSchoolLevel:(req,callback)=>{
         const {id,NiveauScolaireId} = req.params
         AnneeNiveauUser.findAll({

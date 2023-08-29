@@ -445,12 +445,7 @@ module.exports = {
     getCurrentTrimestres:(req,callback)=>{
       let today = new Date()
       return Trimestre.findOne({where:{
-        startDay:{
-            [Op.lte]:today.getDate()
-        },
-        endDay:{
-            [Op.gte]:today.getDate()
-        },
+        
         startMonth:{
             [Op.lte]:today.getMonth()
         },
@@ -465,16 +460,16 @@ module.exports = {
       let studentHistory
       return AnneeNiveauUser.findAll({where:{
         user_id:student_id,
-        include:{
-          model:AnneeScolaire,
-          foreignKey:'annee_scolaire_id'
-        },
+        
         type:{
           [Op.ne]:'archive'
         }
-      }}).then(annee_niveau_users=>{
+      },include:{
+        model:AnneeScolaire,
+        foreignKey:'annee_scolaire_id'
+      },}).then(annee_niveau_users=>{
          studentHistory =annee_niveau_users 
-        return  sails.services.config.service.getCurrentTrimestres()     
+        return  sails.services.configservice.getCurrentTrimestres()     
       }).then(t=>{
         if(studentHistory.length){
           if(t.id===3 && studentHistory.every(h=>h.AnneeScolaire.active)){
