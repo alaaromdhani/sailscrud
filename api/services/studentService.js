@@ -111,7 +111,7 @@ module.exports = {
      
         return new Promise((resolve,reject)=>{
             const {niveau_scolaire_id} = req.body
-            if(niveau_scolaire_id){
+            if(niveau_scolaire_id && typeof(niveau_scolaire_id)==='number'){
                 return resolve()
             }
             else{
@@ -200,7 +200,8 @@ module.exports = {
         AnneeNiveauUser.findAll({
             where:{
                 user_id:id,
-                niveau_scolaire_id:NiveauScolaireId
+                niveau_scolaire_id:NiveauScolaireId,
+
             },
             include:{
                 model:User,
@@ -228,6 +229,9 @@ module.exports = {
                 if(annee_niveau_user.some(a=>a.type==='paid')){
                     return reject(new ValidationError({message:'لقد دفعت لهذا المستوى المدرسي'}))
                 }
+                if(annee_niveau_user.some(a=>a.type==='archieve')){
+                    return reject(new ValidationError({message:'لقد دفعت لهذا المستوى المدرسي'}))
+                }
                 else{
                     return resolve(annee_niveau_user)
                 }
@@ -251,7 +255,8 @@ module.exports = {
 
 
 
-    }
+    },
+    
     
    
 

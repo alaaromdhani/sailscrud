@@ -99,7 +99,7 @@ module.exports = {
         }
       }
       else{
-          return ErrorHandlor(req,new ValidationError({message:updateTrimestre.message}))
+          return ErrorHandlor(req,new ValidationError({message:updateTrimestre.message}),res)
       }
   },
 

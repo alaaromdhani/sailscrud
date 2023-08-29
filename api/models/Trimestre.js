@@ -19,7 +19,10 @@ module.exports = {
     tableName: 'trimesters',
     indexes:[{
       unique:true,
-      fields:['name_fr','name_ar']
+      fields:['name_fr']
+    },{
+      unique:true,
+      fields:['name_ar']
     }],
 
   },
@@ -44,7 +47,23 @@ module.exports = {
     isSummerSchool:{
       type:DataTypes.BOOLEAN,
       defaultValue:false
+    },
+    startDay:{
+      type:DataTypes.INTEGER,
+    },
+    endDay:{
+      type:DataTypes.INTEGER,
+    },
+    startMonth:{
+      type:DataTypes.INTEGER,
+    },
+    endMonth:{
+      type:DataTypes.INTEGER,
+    },
+    active:{
+      type:DataTypes.BOOLEAN
     }
+
   },
   associations:()=>{
     Trimestre.belongsToMany(Module,{
