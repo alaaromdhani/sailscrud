@@ -62,6 +62,10 @@ module.exports = {
     },
     active:{
       type:DataTypes.BOOLEAN
+    },
+    order:{
+      type:DataTypes.INTEGER,
+      
     }
 
   },

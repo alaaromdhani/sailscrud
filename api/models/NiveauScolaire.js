@@ -49,6 +49,9 @@ module.exports = {
     active: {
       type: DataTypes.BOOLEAN,
       required: true,
+    },
+    order: {
+      type: DataTypes.INTEGER,
     }
   },
   associations:()=>{

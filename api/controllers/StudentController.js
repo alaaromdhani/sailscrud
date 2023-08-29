@@ -135,6 +135,8 @@ module.exports={
     getStudentSchoolLevels :async (req,res)=>{
       
       try{
+        let canAdd 
+        
         const data = await AnneeNiveauUser.findAll({
          
           where:{
@@ -158,7 +160,13 @@ module.exports={
         }]
         })
         if(data){
-          
+          try{
+            await sails.services.configservice.canAddSchoolLevel()
+            canAdd = true
+          }
+          catch(e){
+            canAdd=false
+          }
           let tab = data.reduce((prev,curr)=>{
             if(!prev.some(p=>p.id===curr.niveau_scolaire_id)){
               
@@ -173,10 +181,10 @@ module.exports={
             
             return prev
           },[])
-          return DataHandlor(req, tab,res)
+          return DataHandlor(req, {niveau_scolaires:tab,canAdd},res)
         }
         else{
-          return DataHandlor(req, [],res)
+          return DataHandlor(req, {niveau_scolaires:[],canAdd},res)
         }
       }
       catch(e){

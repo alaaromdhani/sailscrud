@@ -442,5 +442,57 @@ module.exports = {
 
 
     },
+    getCurrentTrimestres:(req,callback)=>{
+      let today = new Date()
+      return Trimestre.findOne({where:{
+        startDay:{
+            [Op.lte]:today.getDate()
+        },
+        endDay:{
+            [Op.gte]:today.getDate()
+        },
+        startMonth:{
+            [Op.lte]:today.getMonth()
+        },
+        endMonth:{
+          [Op.gte]:today.getMonth()
+        }
+
+      }})
+
+    },
+    canAddSchoolLevel:async (student_id)=>{
+      let studentHistory
+      return AnneeNiveauUser.findAll({where:{
+        user_id:student_id,
+        include:{
+          model:AnneeScolaire,
+          foreignKey:'annee_scolaire_id'
+        },
+        type:{
+          [Op.ne]:'archive'
+        }
+      }}).then(annee_niveau_users=>{
+         studentHistory =annee_niveau_users 
+        return  sails.services.config.service.getCurrentTrimestres()     
+      }).then(t=>{
+        if(studentHistory.length){
+          if(t.id===3 && studentHistory.every(h=>h.AnneeScolaire.active)){
+            return AnneeScolaire.findOne({where:{
+              startingYear:(studentHistory.map(h=>h.AnneeScolaire).filter(a=>a.active).map(a=>a.startingYear).at(0))+1
+            }})
+          }
+        }
+        else{
+          return AnneeScolaire.findOne({where:{
+            active:true
+          }}) 
+        }
+
+
+      })
+
+
+    }
     
 }

@@ -1,10 +1,10 @@
 const data = [
 
-  { id:1,name_ar: 'الثلاثي الأول',name_fr:'premiere trimestre',startDay:15,endDay:31,startMonth:8,endMonth:11,active:true},
-  { id:2,name_ar: 'الثلاثي الثاني',name_fr:'deuxieme trimestre',startDay:1,endDay:15,startMonth:0,endMonth:2,active:true},
-  {id:3,name_ar:  'الثلاثي الثالث',name_fr:'troisieme trimestre',startDay:16,endDay:30,startMonth:2,endMonth:5,active:true},
+  { id:1,name_ar: 'الثلاثي الأول',name_fr:'premiere trimestre',startDay:15,endDay:31,startMonth:8,endMonth:11,active:true,order:1},
+  { id:2,name_ar: 'الثلاثي الثاني',name_fr:'deuxieme trimestre',startDay:1,endDay:15,startMonth:0,endMonth:2,active:true,order:2},
+  {id:3,name_ar:  'الثلاثي الثالث',name_fr:'troisieme trimestre',startDay:16,endDay:30,startMonth:2,endMonth:5,active:true,order:3},
   
-  {id:4,name_ar:  'المدرسة الصيفية',name_fr:"l'école d'été",isSummerSchool:true,startDay:1,endDay:14,startMonth:6,endMonth:8,active:false}
+  {id:4,name_ar:  'المدرسة الصيفية',name_fr:"l'école d'été",isSummerSchool:true,startDay:1,endDay:14,startMonth:6,endMonth:8,active:false,order:0}
 ]
 /*const verify = async ()=>{
   return  databaseTrimestres.length>0 && data.length===databaseTrimestres.length &&  !data.some(t=>databaseTrimestres.map(dt=>dt.id).some(dt=>dt.id===t.id))
@@ -24,10 +24,10 @@ module.exports=async ()=>{
 
   });  
   if(trimestresToAdd.length){
-    return (await Trimestre.bulkCreate(trimestresToAdd))
+     (await Trimestre.bulkCreate(trimestresToAdd))
   }
   if(trimestresToUpdate.length){
-    return await Promise.all(trimestresToUpdate.map(t=>t.save()))
+     await Promise.all(trimestresToUpdate.map(t=>t.save()))
   }
   return 
 

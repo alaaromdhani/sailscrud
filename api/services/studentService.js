@@ -14,7 +14,7 @@ const resolveError = require("../../utils/errors/resolveError");
 
 module.exports = {
     createStudent:(req,callback)=>{
-        let role
+        let createdUser
         let bodyData={}
         
         if(req.body.birthDate){
@@ -24,6 +24,9 @@ module.exports = {
             else{
                 req.body.birthDate = new Date(req.body.birthDate).toISOString()
             }
+        }
+        if(req.body.niveau_scolaire_id){
+            req.body.niveau_scolaire_id = parseInt(req.body.niveau_scolaire_id)
         }
         Object.keys(req.body).filter(k=>k!='pp').forEach(key => {
                 bodyData[key] = req.body[key]
@@ -51,7 +54,8 @@ module.exports = {
                 }
              })
         }).then(r=>{
-            bodyData.role_id = role.id
+            delete bodyData.niveau_scolaire_id
+            bodyData.role_id = r.id
             bodyData.phonenumber = uuidv4()+'-'+uuidv4()
             bodyData.username = bodyData.firstName+' '+bodyData.lastName+uuidv4()
             bodyData.email = bodyData.firstName+'.'+bodyData.lastName+uuidv4()+'@madar.tn'
@@ -61,17 +65,30 @@ module.exports = {
             
             return User.create(bodyData)   
         }).then(u=>{
-            
+            createdUser = u
             return AnneeScolaire.findOne({where:{
                 active:true
             }})
-         }).then(c=>{
-
-
-
+         }).then(as=>{
+            if(as){
+                let records=[]
+                for(let i=1;i<=4;i++){
+                    records.push({
+                        niveau_scolaire_id:req.body.niveau_scolaire_id,
+                        annee_scolaire_id:as.id,
+                        user_id:createdUser.id,
+                        trimestre_id:i,
+                        type:'trial'
+                    })
+                }
+                return AnneeNiveauUser.bulkCreate(records)
+            }
+            else{
+                return Promise.reject(new UnkownError())
+            }
         }).
         then(as=>{
-
+            callback(null,{message:'تم اضافة الطالب بنجاح'})
         }).catch(e=>{
             console.log(e)
             if(e instanceof UnkownError || e instanceof ValidationError){
