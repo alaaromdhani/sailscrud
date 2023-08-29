@@ -11,6 +11,7 @@ const UpdateTrimestreShema = joi.object({
   startDay: joi.number().integer(),
   endMonth: joi.number().integer(),
   startMonth: joi.number().integer(),
-  isSummerSchool:joi.boolean()
+  isSummerSchool:joi.boolean(),
+  active:joi.boolean()
 })
 module.exports = {TrimestreShema,UpdateTrimestreShema}

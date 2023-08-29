@@ -14,7 +14,7 @@ const resolveError = require("../../utils/errors/resolveError");
 
 module.exports = {
     createStudent:(req,callback)=>{
-      
+        let role
         let bodyData={}
         
         if(req.body.birthDate){
@@ -47,11 +47,11 @@ module.exports = {
                     return resolve(r)
                 }
                 else{
-                   return reject(new UnkownError())     
+                   return reject(new SqlError({message:'the student role is inactive'}))     
                 }
              })
         }).then(r=>{
-            bodyData.role_id = r.id
+            bodyData.role_id = role.id
             bodyData.phonenumber = uuidv4()+'-'+uuidv4()
             bodyData.username = bodyData.firstName+' '+bodyData.lastName+uuidv4()
             bodyData.email = bodyData.firstName+'.'+bodyData.lastName+uuidv4()+'@madar.tn'
@@ -61,7 +61,17 @@ module.exports = {
             
             return User.create(bodyData)   
         }).then(u=>{
-            callback(null,u)
+            
+            return AnneeScolaire.findOne({where:{
+                active:true
+            }})
+         }).then(c=>{
+
+
+
+        }).
+        then(as=>{
+
         }).catch(e=>{
             console.log(e)
             if(e instanceof UnkownError || e instanceof ValidationError){
