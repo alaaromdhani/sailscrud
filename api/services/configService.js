@@ -477,6 +477,9 @@ module.exports = {
               startingYear:(studentHistory.map(h=>h.AnneeScolaire).filter(a=>a.active).map(a=>a.startingYear).at(0))+1
             }})
           }
+          else{
+             return Promise.reject(new ValidationError({message:'you cannot do that'})) 
+          }
         }
         else{
           return AnneeScolaire.findOne({where:{
