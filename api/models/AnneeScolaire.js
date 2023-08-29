@@ -7,32 +7,44 @@ module.exports = {
         datastore: 'default',
         hooks:{
           beforeSave:async (as,options)=>{
-            if(as.isNewRecord){
-               as.active=false   
-            }
-            else if(as.changed('active') && as.active){
-              await AnneeScolaire.update({active:false},{where:{
-                  active:true 
-              }})
-              await AnneeNiveauUser.update({
-                type:'archive',
-
-              },{
-                where:{
-                  startingYear:{
-                    [Op.lt]:as.startingYear
-                  }
-                }
-              })
-              let order_ids=(await AnneeNiveauUser.findAll({where:{
-                  annee_scolaire:{
+            try{
+              if(as.isNewRecord){
+                as.active=false   
+             }
+             else if(as.changed('active') && as.active){
+               await AnneeScolaire.update({active:false},{where:{
+                   active:true,
+                   id:{
                     [Op.ne]:as.id
-                  }
-              }})).filter(a=>a.order_id!==null).map(a=>a.order_id)
-              await Order.update({status:'expired'},{where:{
-                [Op.in]:order_ids
-              }})
-               
+                   } 
+               }})
+               await AnneeNiveauUser.update({
+                 type:'archive',
+ 
+               },{
+                 where:{
+                   annee_scolaire_id:{
+                     [Op.ne]:as.id
+                   }
+                 }
+               })
+               /*let order_ids=(await AnneeNiveauUser.findAll({where:{
+                   annee_scolaire_id:{
+                     [Op.ne]:as.id,
+
+                   },
+                   order_id:{
+                    [Op.ne]:null,
+                   }
+               }}))
+               await Order.update({status:'expired'},{where:{
+                 [Op.in]:order_ids.map(o=>o.id)
+               }})*/
+                
+             }
+            }catch(e){
+
+              console.log(e)
             }
 
 

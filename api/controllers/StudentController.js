@@ -161,10 +161,11 @@ module.exports={
         })
         if(data){
           try{
-            await sails.services.configservice.canAddSchoolLevel()
+            await sails.services.configservice.canAddSchoolLevel(req.params.id)
             canAdd = true
           }
           catch(e){
+          //  console.log(e)
             canAdd=false
           }
           let tab = data.reduce((prev,curr)=>{

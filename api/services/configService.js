@@ -478,6 +478,7 @@ module.exports = {
             }})
           }
           else{
+            console.log('error here')
              return Promise.reject(new ValidationError({message:'you cannot do that'})) 
           }
         }
