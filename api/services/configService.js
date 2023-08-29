@@ -443,17 +443,18 @@ module.exports = {
 
     },
     getCurrentTrimestres:(req,callback)=>{
-      let today = new Date()
-      return Trimestre.findOne({where:{
+      let today =new Date(2001,2,16)
+      return Trimestre.findAll({where:{
         
         startMonth:{
             [Op.lte]:today.getMonth()
         },
-        endMonth:{
-          [Op.gte]:today.getMonth()
-        }
+        startDay:{
+          [Op.lte]:today.getDate()
+        },
+       
 
-      }})
+      },order:[['startMonth','DESC']],limit:1})
 
     },
     canAddSchoolLevel:async (student_id)=>{

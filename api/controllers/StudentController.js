@@ -132,6 +132,10 @@ module.exports={
         }
       })
     },
+  /*  getCurrentSemestre:(req,res)=>{
+      0
+
+    },*/
     getStudentSchoolLevels :async (req,res)=>{
       
       try{
