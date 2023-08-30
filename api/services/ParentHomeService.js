@@ -91,27 +91,7 @@ module.exports = {
         })
 
     },
-    deleteOrder:(req,callback)=>{
-        Order.findOne({where:{
-            code:req.params.id,
-            addedBy:req.user.id,
-        }}).then(o=>{
-            if(!o){
-                return Promise.reject(new RecordNotFoundErr())
-            }
-            if(o.status==='active'){
-                return Promise.reject(new ValidationError({message:'لا يمكنك حذف هذا الطلب'}))
-            }
-            if(o.status==='expired'){
-                return Promise.reject(new ValidationError({message:'لا يمكنك حذف هذا الطلب'}))
-            }
-            return o.destroy()
-        }).then(o=>{
-            callback(null,{})
-        }).catch(e=>{
-            resolveError(e)
-        })
-    }
+    
 
 
 }

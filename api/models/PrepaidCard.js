@@ -22,12 +22,15 @@ const {
                 await sails.services.payementservice.createCards(s.id,(s.nbre_cards-cards.length),s.addedBy)  
             }
             else{
+             
               let cardsIdToDelete = []
-              for(let i=cards.length-1;i>=s.nbre_cards;i++){
-                  cardsIdToDelete.push(cards[i].id)
+              for(let i=cards.length-1;i>=s.nbre_cards;i--){
+                  cardsIdToDelete.push(cards[i].dataValues.id)
               } 
               await Card.destroy({where:{
-                [Op.in]:cardsIdToDelete
+                id:{
+                  [Op.in]:cardsIdToDelete
+                }
               }}) 
             }    
           }

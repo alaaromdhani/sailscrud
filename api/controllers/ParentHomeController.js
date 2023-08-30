@@ -169,16 +169,7 @@ module.exports={
         }
 
     },
-    deleteOrder:(req,res)=>{
-        sails.services.parenthomeservice.deleteOrder(req,(err,data)=>{
-            if(err){
-                return ErrorHandlor(req,err,res)
-            }
-            else{
-                return DataHandlor(req,data,res)
-            }
-        })
-    },
+  
     
     
 
