@@ -49,7 +49,13 @@ module.exports={
         let data  = await NiveauScolaire.findByPk(req.params.NiveauScolaireId,{
           include:{
             model:Matiere,
-            through:MatiereNiveau
+            through:MatiereNiveau,
+            include:{
+              model:Upload,
+              foreignKey:'image',
+              attributes:'link'
+
+            }
           }
         })
         if(!data){
