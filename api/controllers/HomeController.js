@@ -53,7 +53,7 @@ module.exports={
             include:{
               model:Upload,
               foreignKey:'image',
-              attributes:'link'
+              attributes:['link']
 
             }
           }
@@ -65,6 +65,7 @@ module.exports={
           return DataHandlor(req,data.Matieres,res)
         }
       }catch(e){
+        console.log(e)
         return ErrorHandlor(req,new SqlError(e),res)
       }
       
