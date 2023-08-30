@@ -12,8 +12,9 @@ module.exports={
                 return ErrorHandlor(req,req.operation.error,res)
             }
             else{
+              let user
                 try{
-                let user = req.operation.data
+                 user = req.operation.data
                 user.profilePicture = (await Upload.create(req.upload)).link
                 
                 
