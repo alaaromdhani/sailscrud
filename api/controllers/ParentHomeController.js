@@ -169,6 +169,19 @@ module.exports={
         }
 
     },
+    getPaybleTrimestres:(req,res)=>{
+        return sails.services.parenthomeservice.getPaybleTrimestres(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+
+        })
+
+
+    }
   
     
     

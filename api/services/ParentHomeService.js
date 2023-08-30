@@ -91,6 +91,48 @@ module.exports = {
         })
 
     },
+    getPaybleTrimestres:(req,callback)=>{
+        const {student_id,niveau_scolaire_id} = req.params
+        User.findOne({where:{
+            id:student_id,
+            addedBy:req.user.id
+        }}).then(u=>{
+            console.log(u)
+            if(u){
+                return u
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+        }).then(u=>{
+            return AnneeNiveauUser.findAll({where:{
+                user_id:u.id,
+                niveau_scolaire_id,
+                order_id:null,
+                type:{
+                    [Op.ne]:'archive'
+                }
+            },include:{
+                model:Trimestre,
+                foreignKey:'trimestre_id',
+                attributes:['id','name_ar']
+            }})
+
+
+        }).then(annee_niveau_users=>{
+            if(annee_niveau_users.length){
+                callback(null,annee_niveau_users.map(a=>a.Trimestre))
+            }
+            else{
+                callback(null,[])
+            }
+            //  
+        }).catch(e=>{
+            //console.log(e)
+            callback(resolveError(e))
+         })
+
+    }
     
 
 

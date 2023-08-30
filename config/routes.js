@@ -66,6 +66,7 @@ module.exports.routes = {
   'POST /front/api/v1/forgetpassword/verify': 'AuthController.validateCode',
   //parent space
   //pursuase
+  'GET /front/api/v1/purchase/trimestres/:student_id/:niveau_scolaire_id':'ParentHomeController.getPaybleTrimestres',
   'GET /front/api/v1/packs/calculate':'ParentHomeController.calculatePrice',
    //orders 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
