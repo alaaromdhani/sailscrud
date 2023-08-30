@@ -6,6 +6,7 @@ const ValidationError = require("../../utils/errors/validationErrors")
 const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 const schemaValidation = require("../../utils/validations")
 const UpdateCardShema = require("../../utils/validations/CardSchema")
+const { UpdateCouponShema } = require("../../utils/validations/CouponSchema")
 const { UpdatePayconfigShema } = require("../../utils/validations/PayconfigSchema")
 
 module.exports = {
@@ -145,6 +146,88 @@ module.exports = {
     },
     deleteCard:(req,callback)=>{
         Card.findByPk(req.params.id,   
+            {include:{
+            model:User,
+            foreignKey:'addedBy',
+            attributes:['addedBy'],
+            include:{
+                model:Role,
+                foreignKey:'role_id',
+                attributes:['weight']
+            }
+        }}).then(c=>{
+            if(c){
+                if(c.User && c.User.Role.weight<=req.role.weight && c.addedBy!=req.user.id){
+                    return Promise.reject(new UnauthorizedError())
+                }
+                else{
+                    return c
+                }
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+        }).then(c=>{
+            return c.destroy()
+
+        }).then(()=>{
+            callback(null,{})
+        }).catch(e=>{
+            callback(resolveError(e))
+
+        })
+
+    },
+    updateCoupon:(req,callback)=>{
+        return new Promise((resolve,reject)=>{
+            const bodyValidaion = schemaValidation(UpdateCouponShema)(req.body)
+            if(bodyValidaion.isValid){
+                return reject(new ValidationError({message:bodyValidaion.message}))
+            }
+            else{
+                return resolve()
+            }
+
+        }).then(()=>{
+            return Coupon.findByPk(req.params.id,{
+                include:{
+                    model:User,
+                    foreignKey:'addedBy',
+                    attributes:['addedBy'],
+                    include:{
+                        model:Role,
+                        foreignKey:'role_id',
+                        attributes:['weight']
+                    }
+                }
+    
+            })
+        })
+        .then(c=>{
+            if(c){
+                if(c.User && c.User.Role.weight<=req.role.weight && c.addedBy!=req.user.id){
+                    return Promise.reject(new UnauthorizedError())
+                }
+                else{
+                    return c
+                }
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+        }).then(c=>{
+            return c.update(req.body)
+        }).then(c=>{
+            callback(null,c)
+
+        }).catch(e=>{
+            callback(resolveError(e))
+        })
+
+
+    },
+    deleteCoupon:(req,callback)=>{
+        Coupon.findByPk(req.params.id,   
             {include:{
             model:User,
             foreignKey:'addedBy',

@@ -121,7 +121,7 @@ module.exports = {
 
         }).then(annee_niveau_users=>{
             if(annee_niveau_users.length){
-                callback(null,annee_niveau_users.map(a=>a.Trimestre))
+                callback(null,annee_niveau_users.map(a=>a.Trimestre.id))
             }
             else{
                 callback(null,[])
