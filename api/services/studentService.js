@@ -88,7 +88,7 @@ module.exports = {
             }
         }).
         then(as=>{
-            callback(null,{message:'تم اضافة الطالب بنجاح'})
+            callback(null,createdUser)
         }).catch(e=>{
             console.log(e)
             if(e instanceof UnkownError || e instanceof ValidationError){
