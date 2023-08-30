@@ -23,10 +23,7 @@ module.exports={
                 
                 return DataHandlor(req,{message:'تم اضافة الطالب بنجاح'},res)
                 }catch(e){
-                    
-                    if(req.operation.data){
-                        await user.destroy()
-                    }
+                 
                     return ErrorHandlor(req,new SqlError(e),res)
                 }
             }
