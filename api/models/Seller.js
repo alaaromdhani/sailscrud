@@ -46,6 +46,10 @@ const {
         phone_number:{
             type:DataTypes.STRING,
             allowNull:false
+        },
+        show: {
+          type:DataTypes.BOOLEAN,
+          defaultValue:false
         }
         
         

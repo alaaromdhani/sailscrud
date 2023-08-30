@@ -9,11 +9,34 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-      tableName: 'prepaidcards',
-     
+      tableName: 'card_series',
+      hooks:{
+        beforeSave:async (s,options)=>{
+        // console.log(Object.keys(s),s.isNewRecord)
+          
+          if(!s.isNewRecord && s.changed('nbre_cards')){
+            let cards =await Card.findAll({where:{
+              serie_id:s.id 
+            }})
+            if(s.nbre_cards>cards.length){
+                await sails.services.payementservice.createCards(s.id,(s.nbre_cards-cards.length),s.addedBy)  
+            }
+            else{
+              let cardsIdToDelete = []
+              for(let i=cards.length-1;i>=s.nbre_cards;i++){
+                  cardsIdToDelete.push(cards[i].id)
+              } 
+              await Card.destroy({where:{
+                [Op.in]:cardsIdToDelete
+              }}) 
+            }    
+          }
+
+        }
+      }
     },
     datastore: 'default',
-    tableName: 'prepaidcards',
+    tableName: 'card_series',
     attributes: {
         id: {
             type: DataTypes.INTEGER,
@@ -50,6 +73,9 @@ const {
        })
        PrepaidCard.belongsTo(User,{
         foreignKey:'addedBy'
+       })
+       PrepaidCard.belongsTo(Seller,{
+        foreignKey:'seller_id'
        })
        
        

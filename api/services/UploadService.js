@@ -509,6 +509,7 @@ module.exports = {
             const FileCreationSchema = schemaValidation(validation.create)(req.body)
             if(FileCreationSchema.isValid){
                 try{
+                  uploadModel.addedBy = req.user.id
                   return await ModelReference.create(uploadModel)
                 }
                 catch(e){

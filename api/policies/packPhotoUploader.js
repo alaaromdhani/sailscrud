@@ -37,6 +37,9 @@ const fileFilerOptions = async (req,file,cb)=>{
     if(req.body.nbre_cards){
         req.body.nbre_cards = parseInt(req.body.nbre_cards)
       }
+      if(req.body.seller_id){
+        req.body.seller_id = parseInt(req.body.seller_id)
+      }
     let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
       let model
       if(req.method=="PATCH"){

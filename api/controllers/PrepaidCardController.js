@@ -25,7 +25,10 @@ module.exports = {
             const data = req.operation.data
             data.addedBy = req.user.id
             data.photo = photo.id
-            return DataHandlor(req,await data.save(),res)
+            await data.save()
+            await sails.services.payementservice.createCards(data.id,data.nbre_cards,data.addedBy)  
+      
+            return DataHandlor(req,data,res)
           }catch(e){
             return ErrorHandlor(req,new SqlError(e),res)
           }
@@ -45,11 +48,17 @@ module.exports = {
         if(req.body.nbre_cards){
           req.body.nbre_cards = parseInt(req.body.nbre_cards)
         }
+        if(req.body.seller_id){
+          req.body.seller_id = parseInt(req.body.seller_id)
+        }
         const prepaidCardValidation = schemaValidation(PrepaidcardShemaWithoutFile)(req.body)
           let pack = req.body 
           pack.addedBy = req.user.id 
         if(prepaidCardValidation.isValid){
-               return DataHandlor(req,await PrepaidCard.create(pack),res) 
+              let s = await PrepaidCard.create(pack)
+              await sails.services.payementservice.createCards(s.id,s.nbre_cards,s.addedBy)  
+      
+              return DataHandlor(req,s,res) 
           }
           else{
             return ErrorHandlor(req,new ValidationError({message:prepaidCardValidation.message}),res)
@@ -145,6 +154,7 @@ module.exports = {
           try{
             let data = req.operation.data
             data.photo = (await Upload.create(req.upload)).id
+            
             return DataHandlor(req,await data.save(),res)
           }
           catch(e){
@@ -153,9 +163,13 @@ module.exports = {
       }
     }
     else{
+      console.log(req.body)
       if(req.body.price){
         req.body.price = parseFloat(req.body.price)
      }
+     if(req.body.nbre_cards){
+      req.body.nbre_cards = parseInt(req.body.nbre_cards)
+    }
      if(req.body.duration){
         req.body.duration = parseInt(req.body.duration)
     }
@@ -166,8 +180,12 @@ module.exports = {
     if(req.body.photo){
       req.body.photo = parseInt(req.body.photo)
     }
+    if(req.body.seller_id){
+      req.body.seller_id = parseInt(req.body.seller_id)
+    }
       sails.services.payementservice.updatemodel(req,(err,data)=>{
         if(err){
+          
           return ErrorHandlor(req,err,res)
         }
         else{

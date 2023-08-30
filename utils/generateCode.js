@@ -5,4 +5,5 @@ const generateCode = ()=>{
     }
     return generateMagicNumber(Math.floor(Math.random()*(10**6)))
 }
+
 module.exports = generateCode

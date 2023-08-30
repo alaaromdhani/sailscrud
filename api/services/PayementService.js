@@ -2,6 +2,7 @@ const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
+const generateCardCode = require("../../utils/generateCardCode")
 const schemaValidation = require("../../utils/validations")
 const { UpdateCTypeShemaWithUpload, UpdateCTypeShema, CTypeShemaWithUpload, CTypeShema } = require("../../utils/validations/CTypeSchema")
 const { UpdatePackShema, UpdatePackShemaWithoutFile } = require("../../utils/validations/PackSchema")
@@ -9,7 +10,7 @@ const { UpdatePrepaidcardShema, UpdatePrepaidcardShemaWithFile } = require("../.
 const { UpdateSellerShema } = require("../../utils/validations/SellerSchema")
 const converter= {
     pack:{validation:{withFile:UpdatePackShema,withoutFile:UpdatePackShemaWithoutFile},hasUpload:true,uploadKey:"image"},
-    prepaidcard:{validation:{withFile:UpdatePrepaidcardShema,withoutFile:UpdatePrepaidcardShemaWithFile},hasUpload:false,uploadKey:"image"},
+    prepaidcard:{validation:{withFile:UpdatePrepaidcardShema,withoutFile:UpdatePrepaidcardShemaWithFile},hasUpload:true,uploadKey:"image"},
     seller:{validation:UpdateSellerShema},
     ctype:{validation:{withFile:UpdateCTypeShemaWithUpload,withoutFile:UpdateCTypeShema},hasUpload:false,uploadKey:"image"},
  
@@ -84,6 +85,7 @@ module.exports = {
                 callback(null,m)
 
             }).catch(e=>{
+                console.log(e)
                 if(e instanceof RecordNotFoundErr || e instanceof ValidationError|| e instanceof UnauthorizedError){
                     callback(e,null)
                 }
@@ -133,7 +135,18 @@ module.exports = {
             }
         })
 
-    }
+    },
+    createCards:(serie_id,nb_cards,addedBy)=>{
+        let cardsToAdd=[]
+        for(let i=0;i<nb_cards;i++){
+            cardsToAdd.push({
+                serie_id,
+                code:generateCardCode(3),
+                addedBy
+            })
+        }
+         return Card.bulkCreate(cardsToAdd) 
+     }
     
 
 

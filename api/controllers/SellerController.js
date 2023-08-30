@@ -90,7 +90,18 @@ module.exports = {
 
   async findOne(req, res) {
     try {
-      const data = await Seller.findByPk(req.params.id);
+      const data = await Seller.findByPk(req.params.id,{
+        include:{
+          model:State,
+          foreignKey:'state_id',
+          attributes:['id'],
+          include:{
+            model:Country,
+            foreignKey:'country_id',
+            attributes:['id']
+          }
+        }
+      });
       if (!data) {
         return ErrorHandlor(req,new RecordNotFoundErr(),res);
       }
