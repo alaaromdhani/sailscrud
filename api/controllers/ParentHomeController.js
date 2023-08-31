@@ -93,27 +93,15 @@ module.exports={
 
     },
     calculatePrice:async (req,res)=>{
-        let {nbTrimestres} = req.query
-        if(nbTrimestres){
-            try{
-                const data = await Pack.findOne({where:{
-                    nbTrimestres   
-                },include:{
-                    model:Upload,
-                    foreignKey:'photo',
-                    attributes:['link']
-                },})
-                
-                return DataHandlor(req,data?data:{},res)
-            }catch(e){
-               
-                return ErrorHandlor(req,new SqlError(e),res)
-            }
+       sails.services.parenthomeservice.calculatePrice(req,(err,data)=>{
+        if(err){
+            return ErrorHandlor(req, err,res)
         }
         else{
-            return ErrorHandlor(req,new ValidationError(),res)
-        }        
+            return DataHandlor(req,data,res)
+        }
 
+       })
     },
     addOrder:(req,res)=>{
         sails.services.parenthomeservice.addOrder(req,(err,data)=>{

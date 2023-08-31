@@ -1,10 +1,11 @@
 const { Op } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
-const { OrderShema } = require("../../utils/validations/OrderSchema")
+const { OrderShema, calculatePriceSchema } = require("../../utils/validations/OrderSchema")
 const resolveError = require("../../utils/errors/resolveError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
+const { array } = require("joi")
 
 module.exports = {
     addOrder:(req,callback)=>{
@@ -92,7 +93,7 @@ module.exports = {
 
     },
     getPaybleTrimestres:(req,callback)=>{
-        const {student_id,niveau_scolaire_id} = req.params
+        const {student_id,annee_scolaire_id} = req.params
         User.findOne({where:{
             id:student_id,
             addedBy:req.user.id
@@ -107,7 +108,7 @@ module.exports = {
         }).then(u=>{
             return AnneeNiveauUser.findAll({where:{
                 user_id:u.id,
-                niveau_scolaire_id,
+                annee_scolaire_id,
                 order_id:null,
                 type:{
                     [Op.ne]:'archive'
@@ -132,7 +133,69 @@ module.exports = {
             callback(resolveError(e))
          })
 
-    }
+    },
+    calculatePrice:(req,callback)=>{
+         let orgPrice
+         let bodyData = {nbTrimestres:parseInt(req.query.nbTrimestres)}
+            return new Promise((resolve,reject)=>{
+                const bodyValidation = schemaValidation(calculatePriceSchema)(bodyData)
+                if(bodyValidation.isValid){
+                    return resolve()
+                }
+                else{
+                    return reject(new ValidationError())
+                }
+            }).then(()=>{
+                return Pack.findOne({where:{
+                    nbTrimestres:(bodyData.nbTrimestres.length>=3)?3:bodyData.nbTrimestres
+                }})
+            }).then(p=>{
+              if(p){
+                orgPrice = p.price
+                return 
+                } 
+              else{
+                return Promise.reject(new ValidationError())
+              } 
+            }).then(()=>{
+              return AnneeNiveauUser.findAll({
+                where:{
+                    type:'paid'
+                },
+                include:{
+                    model:User,
+                    foreignKey:'user_id',
+                    where:{
+                        addedBy:req.user.id
+                    },
+                    required:true
+                }
+              })     
+            }).then(annee_niveau_users=>{
+                const nbTrimestres=annee_niveau_users.length+bodyData.nbTrimestres
+                const {remises} =sails.config.custom     
+                if(!remises){
+                    return Promise.reject(new ValidationError({message:'no remises found'}))
+                }
+                else{
+                   return Object.keys(remises).map(r=>parseInt(r)).filter(r=>r<=nbTrimestres).sort((a,b)=>b-a).map(r=>remises[r]).at(0)
+                }    
+            }).then(r=>{
+                if(r){
+                    callback(null,{orgPrice,priceAfterDiscount:(orgPrice-((orgPrice*r)/100))})
+                }
+                else{
+                    callback(null,{orgPrice,priceAfterDiscount:orgPrice})
+                }
+            }).catch(e=>{
+                console.log(e)
+                callback(resolveError(e))
+            })
+
+    },
+
+
+
     
 
 

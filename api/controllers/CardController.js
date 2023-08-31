@@ -49,6 +49,25 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Card.findAndCountAll({
         where,
+        include:[{
+          model:Order,
+          foreignKey:'order_id',
+          attributes:['code'],
+          include:{
+            model:User,
+            foreignKey:'addedBy',
+            attributes:['firstName','lastName']
+          }
+        },{
+          model:PrepaidCard,
+          foreignKey:'serie_id',
+          attributes:['name'],
+          include:{
+            model:Pack,
+            foreignKey:'pack_id',
+            attributes:['name']
+          }
+        }],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
@@ -63,6 +82,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res);
     } catch (error) {
+      console.log(error)
       return ErrorHandlor(req,new SqlError(error),res);
     }
   },

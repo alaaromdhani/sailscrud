@@ -9,4 +9,8 @@ const UpdateOrderShema = joi.object({
     studentId:joi.number().integer().required(),
     niveau_scolaire_id:joi.number().integer().required()
 })
-module.exports = {OrderShema,UpdateOrderShema}
+const calculatePriceSchema = joi.object({
+    nbTrimestres:joi.number().integer().required()
+
+})
+module.exports = {OrderShema,UpdateOrderShema,calculatePriceSchema}
