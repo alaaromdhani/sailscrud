@@ -454,7 +454,7 @@ module.exports = {
         },
        
 
-      },order:[['startMonth','DESC']],limit:1})
+      },order:[['startMonth','DESC']],limit:1}).then(c=>c.at(0))
 
     },
     canAddSchoolLevel:async (student_id)=>{
@@ -472,7 +472,10 @@ module.exports = {
          studentHistory =annee_niveau_users 
         return  sails.services.configservice.getCurrentTrimestres()     
       }).then(t=>{
+
+          console.log("currenttrimestre",t)
         if(studentHistory.length){
+        
           if(t.id===3 && studentHistory.every(h=>h.AnneeScolaire.active)){
             return AnneeScolaire.findOne({where:{
               startingYear:(studentHistory.map(h=>h.AnneeScolaire).filter(a=>a.active).map(a=>a.startingYear).at(0))+1

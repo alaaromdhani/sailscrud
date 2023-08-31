@@ -74,6 +74,7 @@ module.exports.routes = {
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
   'GET /front/api/v1/parent/orders':'ParentHomeController.getOrders',
+   'GET /front/api/v1/parent/orders/:user_id/:annee_scolaire_id':'ParentHomeController.getOrderByStudentAnnee', 
   'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
   
  
@@ -81,7 +82,6 @@ module.exports.routes = {
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',
   'GET /front/api/v1/students/schoollevels/:id': 'StudentController.getStudentSchoolLevels',
-  'DELETE /front/api/v1/students/schoollevels/:id/:NiveauScolaireId': 'StudentController.deleteSchoolLevel',
   'GET /front/api/v1/students/trimestres': 'ParentHomeController.getTrimestres',
   
   'PATCH /front/api/v1/students/:id': 'StudentController.updateStudent',

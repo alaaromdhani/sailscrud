@@ -7,6 +7,7 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const { array } = require("joi")
 const { every } = require("lodash")
+const SqlError = require("../../utils/errors/sqlErrors")
 
 module.exports = {
     getOrderByStudent:(student_id,annee_scolaire_id)=>{
@@ -88,6 +89,44 @@ module.exports = {
             callback(resolveError(e))
         }) 
     },
+    deleteOrder:(req,callback)=>{
+        let order
+        Order.findOne({where:{
+            code:req.params.id,
+            addedBy:req.user.id,
+            status:'onhold'
+        }}).then(o=>{
+           if(o){
+            order =o
+            if(o.coupon_id){return Coupon.findByPk(o.coupon_id)}
+            else{return}
+           }
+           else{
+            return Promise.reject(new RecordNotFoundErr()) 
+           }
+         }).then(o=>{
+            if(o){
+                return o.update({used:o.used-1})
+            }
+            else{
+                return 
+            }
+        }).then(o=>{
+            return AnneeNiveauUser.findAll({where:{order_id:order.id}})
+        }).then(ans=>{
+            return Promise.all(ans.map(a=>a.update({order_id:null})))
+        }).then((ans)=>{
+            return order.update({status:'expired'})
+        
+        }).then(a=>{
+          callback(null,{})  
+         }).catch(e=>{
+            callback(new SqlError(e))
+        })
+
+
+
+    },
     calculatePriceByNbTrimestres:(req,nbTrimestres)=>{
         let pack
         let orgPrice
@@ -106,7 +145,9 @@ module.exports = {
     }).then(()=>{
       return AnneeNiveauUser.findAll({
         where:{
-            type:'paid'
+            order_id:{
+                [Op.ne]:null
+            }
         },
         include:{
             model:User,

@@ -138,19 +138,18 @@ module.exports={
       
       try{
         let canAdd 
-        
+        let student = await User.findOne({where:{
+          id:req.params.id,
+          addedBy:req.user.id
+        }})
+        if(!student){
+          return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
         const data = await AnneeNiveauUser.findAll({
          
           where:{
           user_id:req.params.id
         },include:[{
-          model:User,
-          attributes:['addedBy'],
-          where:{
-            addedBy:req.user.id
-          },
-          required:true  
-        },{
           model:AnneeScolaire, 
           foreignKey:'annee_scolaire_id'
         },{
@@ -268,15 +267,7 @@ module.exports={
         }
       })
     },
-    deleteSchoolLevel:(req,res)=>{
-        sails.services.studentservice.deleteSchoolLevel(req,(err,data)=>{
-          if(err){
-            return ErrorHandlor(req,err,res)
-          }else{
-            return DataHandlor(req,data,res)
-          }
-        })
-     },
+    
      
     
 

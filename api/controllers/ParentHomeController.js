@@ -177,6 +177,17 @@ module.exports={
             return ErrorHandlor(req,new SqlError(e),res)
         }
     },
+    deleteOrder:(req,res)=>{
+        sails.services.parenthomeservice.deleteOrder(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+        })
+
+    },
     getOrders:async (req,res)=>{
         try{
             return DataHandlor(req,await Order.findAll({
@@ -198,6 +209,18 @@ module.exports={
             return ErrorHandlor(req, new SqlError(e),res)
         }
 
+    },
+    getOrderByStudentAnnee:async (req,res)=>{
+        if(req.params.user_id && req.params.annee_scolaire_id){
+            try{
+                 return DataHandlor(req,await  sails.services.parenthomeservice.getOrderByStudent(req.params.user_id,req.params.annee_scolaire_id),res)
+            }catch(e){
+                return ErrorHandlor(req,new SqlError(e),res)
+            }
+        }
+        else{
+            return ErrorHandlor(req,new ValidationError(),res)
+        }
     },
     getPaybleTrimestres:(req,res)=>{
         return sails.services.parenthomeservice.getPaybleTrimestres(req,(err,data)=>{
