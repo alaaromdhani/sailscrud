@@ -53,6 +53,7 @@ module.exports = {
          AnneeNiveauUser.belongsTo(Order,{
             foreignKey:'order_id'
          })
+         
         
   
           

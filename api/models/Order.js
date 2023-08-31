@@ -42,6 +42,10 @@ const {
             allowNull:false
 
         },
+        priceAfterReduction:{
+          type:DataTypes.FLOAT,
+          allowNull:false
+        },
         status:{
             type:DataTypes.ENUM('active','onhold','expired'),
             defaultValue:'onhold'
@@ -50,7 +54,7 @@ const {
         
     },
     associations : function(){
-       Order.belongsTo(Pack,{
+      Order.belongsTo(Pack,{
         foreignKey:'pack_id'
        })
        

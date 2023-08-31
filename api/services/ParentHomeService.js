@@ -6,98 +6,134 @@ const resolveError = require("../../utils/errors/resolveError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const { array } = require("joi")
+const { every } = require("lodash")
 
 module.exports = {
-    getOrderByStudent:(student_id)=>{
-        return AnneeNiveauUser.findAll({where:{
+    getOrderByStudent:(student_id,annee_scolaire_id)=>{
+        return Order.findAll({include:{model:AnneeNiveauUser,foreignKey:'order_id',
+        where:{
             user_id:student_id,
+            annee_scolaire_id,
             type:'trial'
-            
-        }})
+        }}})
     },
     addOrder:(req,callback)=>{
         let order
-        let records
+        let ordred
         return new Promise((resolve,reject)=>{
-            const addOrderSchema = schemaValidation(OrderShema)(req.body)
-            if(addOrderSchema.isValid){
-                    req.body.trimestres = Array.from(new Set(req.body.trimestres))
-                    if(req.body.trimestres.length===3){
-                        req.body.trimestres=[1,2,3,4]
-                    }
-                    return resolve()
+            const bodyValidation = schemaValidation(OrderShema)(req.body)
+            if(bodyValidation.isValid){
+                return resolve()
             }
             else{
-                return reject(new ValidationError())
+                return reject(new ValidationError({message:bodyValidation.message}))
             }
         }).then(()=>{
-            //see if there is already an onhold order
-            return Order.findOne({where:{
-                addedBy:req.user.id,
-                status:'onhold'
-            }})
-        }).then(o=>{
-            if(o){
-                return Promise.reject(new ValidationError({message:'عليك أن تدفع الطلبات المعلقة'}))    
-            }
-            else{
-                return User.findOne({where:{id:req.body.studentId,addedBy:req.user.id}})
-            }
-        }).then(u=>{
-            if(!u){
-                return Promise.reject(new ValidationError({message:'طالب غير صالح'}))
-            }
-            else{
-                return AnneeNiveauUser.findAll({where:{
-                    user_id:req.body.studentId,
-                    trimestre_id:{
-                        [Op.in]:req.body.trimestres
-                    },
-                    niveau_scolaire_id:req.body.niveau_scolaire_id,
+            return AnneeNiveauUser.findAll({
+                where:{id:{
+                    [Op.in]:req.body.annee_niveau_users
+                },
                     type:'trial'
-                }})
-            }
-        }).then(data=>{
-              if(data && data.length===req.body.trimestres.length){
-                records = data
-                return Pack.findOne({
-                    where:{
-                        nbTrimestres:req.body.trimestres.length===4?3:req.body.trimestres.length
-                    }
-                }) 
-                }
-               else{
+                },
+
+                include:[{
+                    model:User,
+                    foreignKey:'user_id',
+                    attributes:['addedBy']
+                }],
+                raw:true,
+                nest:true
+
+            },)
+
+        }).then(annee_niveau_users=>{
+             
+            if(!annee_niveau_users.length){
                 return Promise.reject(new ValidationError())
-               } 
-        }).then(p=>{
-            if(p){
-                let today  = new Date()
-                return Order.create({
-                    code:today.getFullYear()+''+today.getMonth()+""+today.getDay()+""+today.getMinutes()+"-"+today.getSeconds()+Math.floor(Math.random()*100),
-                    price:p.price,
-                    pack_id:p.id,
-                    addedBy:req.user.id
-                }) 
+            }
+            let annee_scolaire_id =annee_niveau_users[0].annee_scolaire_id
+            let user_id =annee_niveau_users[0].user_id
+            if(!annee_niveau_users.every(a=>!a.order_id && a.User.addedBy==req.user.id&&a.annee_scolaire_id===annee_scolaire_id)){
+                return Promise.reject(new UnauthorizedError())
+            }
+            ordred = annee_niveau_users
+            return sails.services.parenthomeservice.getOrderByStudent(user_id,annee_scolaire_id) 
+        }).then(o=>{
+            if(o.length){
+                return Promise.reject(new ValidationError({message:'يجب عليك دفع جميع الطلبات المعلقة لهذا الطالب'}))
             }
             else{
-                return Promise.reject(new ValidationError({message:'خطة تسعير غير صالحة'}))
+                return sails.services.parenthomeservice.calculatePriceByNbTrimestres(req,ordred.length)
             }
+
+        }).then(c=>{
+            let today  = new Date()
+          
+            return Order.create({
+                code:today.getFullYear()+''+today.getMonth()+""+today.getDay()+""+today.getMinutes()+"-"+today.getSeconds()+Math.floor(Math.random()*100),
+                price:c.orgPrice,
+                priceAfterReduction:c.priceAfterDiscount,
+                pack_id:c.pack.id,
+                addedBy:req.user.id
+            }) 
+
         }).then(o=>{
             order = o
-            return Promise.all(records.map(r=>{
-                r.order_id = o.id
-                return r.save()
-            }))
+            return Promise.all(ordred.map(ans=>AnneeNiveauUser.update({order_id:o.id},{where:{id:ans.id}})))
         }).then(sd=>{
-
-            callback(null,{message:'تم تمرير الطلب بنجاح',order})
-
+            
+            callback(null,order)
         }).catch(e=>{
             console.log(e)
             callback(resolveError(e))
-
-        })
-
+        }) 
+    },
+    calculatePriceByNbTrimestres:(req,nbTrimestres)=>{
+        let pack
+        let orgPrice
+        return Pack.findOne({where:{
+            nbTrimestres:(nbTrimestres>=3)?3:nbTrimestres
+        }})
+        .then(p=>{
+      if(p){
+        orgPrice = p.price
+            pack = p
+        return 
+        } 
+      else{
+        return Promise.reject(new ValidationError())
+      } 
+    }).then(()=>{
+      return AnneeNiveauUser.findAll({
+        where:{
+            type:'paid'
+        },
+        include:{
+            model:User,
+            foreignKey:'user_id',
+            where:{
+                addedBy:req.user.id
+            },
+            required:true
+        }
+      })     
+    }).then(annee_niveau_users=>{
+        const nb=annee_niveau_users.length+nbTrimestres
+        const {remises} =sails.config.custom     
+        if(!remises){
+            return Promise.reject(new ValidationError({message:'no remises found'}))
+        }
+        else{
+           return Object.keys(remises).map(r=>parseInt(r)).filter(r=>r<=nb).sort((a,b)=>b-a).map(r=>remises[r]).at(0)
+        }    
+    }).then(r=>{
+        if(r){
+           return {orgPrice,priceAfterDiscount:(orgPrice-((orgPrice*r)/100)),pack}
+        }
+        else{
+            return {orgPrice,priceAfterDiscount:orgPrice,pack}
+        }
+    })
     },
     getPaybleTrimestres:(req,callback)=>{
         const {student_id,annee_scolaire_id} = req.params
@@ -153,49 +189,10 @@ module.exports = {
                     return reject(new ValidationError())
                 }
             }).then(()=>{
-                return Pack.findOne({where:{
-                    nbTrimestres:(bodyData.nbTrimestres>=3)?3:bodyData.nbTrimestres
-                }})
-            }).then(p=>{
-              if(p){
-                orgPrice = p.price
-                return 
-                } 
-              else{
-                return Promise.reject(new ValidationError())
-              } 
-            }).then(()=>{
-              return AnneeNiveauUser.findAll({
-                where:{
-                    type:'paid'
-                },
-                include:{
-                    model:User,
-                    foreignKey:'user_id',
-                    where:{
-                        addedBy:req.user.id
-                    },
-                    required:true
-                }
-              })     
-            }).then(annee_niveau_users=>{
-                const nbTrimestres=annee_niveau_users.length+bodyData.nbTrimestres
-                const {remises} =sails.config.custom     
-                if(!remises){
-                    return Promise.reject(new ValidationError({message:'no remises found'}))
-                }
-                else{
-                   return Object.keys(remises).map(r=>parseInt(r)).filter(r=>r<=nbTrimestres).sort((a,b)=>b-a).map(r=>remises[r]).at(0)
-                }    
-            }).then(r=>{
-                if(r){
-                    callback(null,{orgPrice,priceAfterDiscount:(orgPrice-((orgPrice*r)/100))})
-                }
-                else{
-                    callback(null,{orgPrice,priceAfterDiscount:orgPrice})
-                }
+               return sails.services.parenthomeservice.calculatePriceByNbTrimestres(req,bodyData.nbTrimestres)
+            }).then(c=>{
+                callback(null,c)
             }).catch(e=>{
-                console.log(e)
                 callback(resolveError(e))
             })
 

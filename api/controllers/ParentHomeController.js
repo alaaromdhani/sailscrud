@@ -114,7 +114,7 @@ module.exports={
                 return ErrorHandlor(req,err,res)
             }
             else{
-                return DataHandlor(req,data.order,res,data.message)
+                return DataHandlor(req,data,res,data.message)
             }
         })
     },
@@ -126,8 +126,45 @@ module.exports={
                     addedBy:req.user.id,
                     status:{
                         [Op.in]:['active','onhold']
+                    },
+                },include:[{
+                    
+                    model:AnneeNiveauUser,
+                    foreignKey:'order_id',
+                    attributes:['type'],
+                    include:[{
+                        model:User,
+                        foreignKey:'user_id',
+                        attributes:['firstName','lastName']
+                    
+                    },{
+                        model:Trimestre,
+                        foreignKey:'trimestre_id',
+                        attributes:['name_ar','id']
+                     },{
+                        model:AnneeScolaire,
+                        foreignKey:'annee_scolaire_id',
+                        attributes:['startingYear','endingYear']
+                     },{
+                        model:NiveauScolaire,
+                        foreignKey:'niveau_scolaire_id',
+                        attributes:['name_ar']
+                     }],
+                    
+                },{
+                    model:Pack,
+                    foreignKey:'pack_id',
+                    attributes:['name'],
+                    include:{
+                        model:Upload,
+                        foreignKey:'photo',
+                        attributes:['link']
                     }
-                },
+                } ,{
+                    model:User,
+                    foreignKey:'addedBy',
+                    attributes:['firstName','lastName']
+                 }]
                 
             })
             if(!order){
