@@ -51,40 +51,33 @@ module.exports={
 
     },
     getTrimestres:async (req,res)=>{
-         const {StudentId,NiveauScolaireId} = req.query 
+         const {StudentId,annee_scolaire_id} = req.query 
+            if(!StudentId || !annee_scolaire_id){
+                return ErrorHandlor(req,new ValidationError(),res)
+            }
             try{
-                    if(StudentId && NiveauScolaireId){
+                  let student = await User.findOne({where:{
+                    id:StudentId,
+                    addedBy:req.user.id
+                  }})
+                  if(!student){
+                    return ErrorHandlor(req,new RecordNotFoundErr(),res)
+                    }
                         const data = await AnneeNiveauUser.findAll({
                             where:{
                                 user_id:StudentId,
-                                niveau_scolaire_id:NiveauScolaireId
+                                annee_scolaire_id
                             },
                 
                             include:[{
-                                model:User,
-                                foreignKey:'user_id',
-                                where:{
-                                    addedBy:req.user.id
-                                },
-                                required:true,
-                                attributes:[]
-                                
-                            },{
                                 model:Trimestre,
                                 foreignKey:'trimestre_id',
                                 
                                 
                             }]
                          },)
-                         if(!data){
-                            return ErrorHandlor(req,new RecordNotFoundErr(),res)
-                         }
-                         else{
-                            return DataHandlor(req,data,res)
-                         }
-                    }
-                    return ErrorHandlor(req,new ValidationError({message:""}),res)
-                
+                         return DataHandlor(req,data,res)
+                    
             }catch(e){
                 console.log(e)
                                     return ErrorHandlor(req,new SqlError(e),res)
@@ -102,6 +95,18 @@ module.exports={
         }
 
        })
+    },
+    calculatePriceAfterCoupon:(req,res)=>{
+        return sails.services.parenthomeservice.calculatePriceAfterCoupon(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+
+        })
+
     },
     addOrder:(req,res)=>{
         sails.services.parenthomeservice.addOrder(req,(err,data)=>{

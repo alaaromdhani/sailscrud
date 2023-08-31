@@ -1,13 +1,20 @@
-const { Op } = require("sequelize")
+const { Op, Sequelize } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
-const { OrderShema, calculatePriceSchema } = require("../../utils/validations/OrderSchema")
+const { OrderShema, calculatePriceSchema, tryCouponSchema } = require("../../utils/validations/OrderSchema")
 const resolveError = require("../../utils/errors/resolveError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const { array } = require("joi")
 
 module.exports = {
+    getOrderByStudent:(student_id)=>{
+        return AnneeNiveauUser.findAll({where:{
+            user_id:student_id,
+            type:'trial'
+            
+        }})
+    },
     addOrder:(req,callback)=>{
         let order
         let records
@@ -122,7 +129,7 @@ module.exports = {
 
         }).then(annee_niveau_users=>{
             if(annee_niveau_users.length){
-                callback(null,annee_niveau_users.map(a=>a.Trimestre.id))
+                callback(null,annee_niveau_users)
             }
             else{
                 callback(null,[])
@@ -147,7 +154,7 @@ module.exports = {
                 }
             }).then(()=>{
                 return Pack.findOne({where:{
-                    nbTrimestres:(bodyData.nbTrimestres.length>=3)?3:bodyData.nbTrimestres
+                    nbTrimestres:(bodyData.nbTrimestres>=3)?3:bodyData.nbTrimestres
                 }})
             }).then(p=>{
               if(p){
@@ -193,6 +200,108 @@ module.exports = {
             })
 
     },
+    calculatePriceAfterCoupon:(req,callback)=>{
+     //   let orgPrice
+     let coupon
+     let orgPrice
+        return new Promise((resolve,reject)=>{
+            const bodyValidation = schemaValidation(tryCouponSchema)(req.body)
+            if(bodyValidation.isValid){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError({message:bodyValidation.message}))
+            }
+        }).then(()=>{
+            
+            return Coupon.findOne({where:{
+             code:req.body.code,
+             used:{
+                [Op.lt]:Sequelize.col("limit")
+             }  
+            },
+            
+            include:{
+                model:Order,
+                foreignKey:'coupon_id',
+               
+                
+            },
+            raw: true,
+            nest: true,
+            })
+
+        }).then(c=>{
+
+            if(c){
+                if(c.Orders.length&&c.Orders.some(o=>o.addedBy===req.user.id)){
+                    return Promise.reject(new ValidationError({message:'لقد استخدمت هذه القسيمة من قبل'}))
+                }
+                else{
+                    coupon = c
+                    return 
+                }
+               
+            }
+            else{
+                return Promise.reject(new ValidationError({message:'قسيمة غير صالحة'}))
+            }
+        }).then(()=>{
+            return Pack.findOne({where:{
+                nbTrimestres:(req.body.nbTrimestres>=3)?3:req.body.nbTrimestres
+            }})
+        }) .then(p=>{
+                if(p){
+                  orgPrice = p.price
+                  return 
+                  } 
+                else{
+                  return Promise.reject(new ValidationError())
+                } 
+              }).then(()=>{
+            return AnneeNiveauUser.findAll({
+              where:{
+                  type:'paid'
+              },
+              include:{
+                  model:User,
+                  foreignKey:'user_id',
+                  where:{
+                      addedBy:req.user.id
+                  },
+                  required:true
+              }
+            })     
+          }).then(annee_niveau_users=>{
+
+              const nbTrimestres=annee_niveau_users.length+req.body.nbTrimestres
+              const {remises} =sails.config.custom     
+              if(!remises){
+                  return Promise.reject(new ValidationError({message:'no remises found'}))
+              }
+              else{
+                 return Object.keys(remises).map(r=>parseInt(r)).filter(r=>r<=nbTrimestres).sort((a,b)=>b-a).map(r=>remises[r]).at(0)
+              }    
+          }).then(r=>{
+            console.log(coupon)
+              if(!r){
+                r=0
+              }
+              let priceAfterDiscount=(orgPrice-((orgPrice*r)/100))
+              let priceAfterCoupon =priceAfterDiscount-((priceAfterDiscount*coupon.reduction)/100) 
+              req.session.coupon_id = coupon.id
+              callback(null,{orgPrice,priceAfterDiscount:priceAfterCoupon})
+        
+          }).catch(e=>{
+                console.log(e)
+              callback(resolveError(e))
+          })
+  
+
+
+    },
+    
+
 
 
 

@@ -64,6 +64,9 @@ const {
        Order.belongsTo(Coupon,{
         foreignKey:'coupon_id'
        })
+       Order.hasMany(AnneeNiveauUser,{
+        foreignKey:'order_id'
+       })
        
        
        
