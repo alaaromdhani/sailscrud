@@ -11,6 +11,9 @@ const UpdateOrderShema = joi.object({
 })
 const calculatePriceSchema = joi.object({
     nbTrimestres:joi.number().integer().required()
-
 })
-module.exports = {OrderShema,UpdateOrderShema,calculatePriceSchema}
+const tryCouponSchema = joi.object({
+    nbTrimestres:joi.number().integer().required(),
+    code:joi.string().required()
+})
+module.exports = {OrderShema,UpdateOrderShema,calculatePriceSchema,tryCouponSchema}

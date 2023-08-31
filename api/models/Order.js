@@ -61,6 +61,9 @@ const {
        Order.belongsTo(User,{
         foreignKey:'addedBy'
        })
+       Order.belongsTo(Coupon,{
+        foreignKey:'coupon_id'
+       })
        
        
        

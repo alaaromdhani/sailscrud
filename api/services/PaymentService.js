@@ -182,10 +182,10 @@ module.exports = {
         return new Promise((resolve,reject)=>{
             const bodyValidaion = schemaValidation(UpdateCouponShema)(req.body)
             if(bodyValidaion.isValid){
-                return reject(new ValidationError({message:bodyValidaion.message}))
-            }
-            else{
                 return resolve()
+          }
+            else{
+                return reject(new ValidationError({message:bodyValidaion.message}))
             }
 
         }).then(()=>{
@@ -221,6 +221,7 @@ module.exports = {
             callback(null,c)
 
         }).catch(e=>{
+            
             callback(resolveError(e))
         })
 

@@ -52,6 +52,11 @@ module.exports = {
     Coupon.belongsTo(User,{
         foreignKey:'addedBy'
     })
+    Coupon.hasMany(Order,{
+      foreignKey:'coupon_id'
+    })
+
+
 
 
 

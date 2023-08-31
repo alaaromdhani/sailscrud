@@ -12,11 +12,11 @@ const CouponShema = joi.object({
 const UpdateCouponShema = joi.object({
     
     
-    limit: joi.number().integer().required(),
+    limit: joi.number().integer(),
     
     used: joi.number().integer(),
     
-    reduction: joi.number().integer().required(),
+    reduction: joi.number().integer(),
     
 })
 module.exports = {CouponShema,UpdateCouponShema}
