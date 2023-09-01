@@ -212,11 +212,23 @@ module.exports={
     },
     getOrderByStudentAnnee:async (req,res)=>{
         if(req.params.user_id && req.params.annee_scolaire_id){
-            try{
-                 return DataHandlor(req,await  sails.services.parenthomeservice.getOrderByStudent(req.params.user_id,req.params.annee_scolaire_id),res)
-            }catch(e){
-                return ErrorHandlor(req,new SqlError(e),res)
-            }
+            return DataHandlor(req,await Order.findAll({include:[
+                {model:AnneeNiveauUser,foreignKey:'order_id',
+            where:{
+                user_id:req.params.user_id ,
+                annee_scolaire_id:req.params.annee_scolaire_id,
+                type:'trial'
+            },},{
+                model:Pack,
+                foreignKey:'pack_id',
+                attributes:['name'],
+                include:{
+                    model:Upload,
+                    foreignKey:'photo',
+                    attributes:['link']
+                }
+
+            }]}),res)
         }
         else{
             return ErrorHandlor(req,new ValidationError(),res)
