@@ -116,7 +116,7 @@ module.exports = {
         }).then(ans=>{
             return Promise.all(ans.map(a=>a.update({order_id:null})))
         }).then((ans)=>{
-            return order.update({status:'expired'})
+            return order.update({status:'expired',coupon_id:null})
         
         }).then(a=>{
           callback(null,{})  
@@ -241,6 +241,7 @@ module.exports = {
     calculatePriceAfterCoupon:(req,callback)=>{
      //   let orgPrice
      let coupon
+     let order
      let orgPrice
         return new Promise((resolve,reject)=>{
             const bodyValidation = schemaValidation(tryCouponSchema)(req.body)
@@ -251,7 +252,15 @@ module.exports = {
                 return reject(new ValidationError({message:bodyValidation.message}))
             }
         }).then(()=>{
-            
+            return Order.findOne({where:{
+                code:req.params.id,
+                addedBy:req.user.id
+            }})
+         }).then((c)=>{
+            if(!c){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            order = c
             return Coupon.findOne({where:{
              code:req.body.code,
              used:{
@@ -265,71 +274,33 @@ module.exports = {
                
                 
             },
-            raw: true,
-            nest: true,
+           
             })
 
         }).then(c=>{
 
             if(c){
+              //  console.log(c.Orders.some(o=>o.addedBy===req.user.id))
                 if(c.Orders.length&&c.Orders.some(o=>o.addedBy===req.user.id)){
                     return Promise.reject(new ValidationError({message:'لقد استخدمت هذه القسيمة من قبل'}))
                 }
                 else{
-                    coupon = c
-                    return 
+                    return c
                 }
                
             }
             else{
                 return Promise.reject(new ValidationError({message:'قسيمة غير صالحة'}))
             }
-        }).then(()=>{
-            return Pack.findOne({where:{
-                nbTrimestres:(req.body.nbTrimestres>=3)?3:req.body.nbTrimestres
-            }})
-        }) .then(p=>{
-                if(p){
-                  orgPrice = p.price
-                  return 
-                  } 
-                else{
-                  return Promise.reject(new ValidationError())
-                } 
-              }).then(()=>{
-            return AnneeNiveauUser.findAll({
-              where:{
-                  type:'paid'
-              },
-              include:{
-                  model:User,
-                  foreignKey:'user_id',
-                  where:{
-                      addedBy:req.user.id
-                  },
-                  required:true
-              }
-            })     
-          }).then(annee_niveau_users=>{
+        }).then(c=>{
+           // console.log(coqupon)
+             return Promise.all([order.update({priceAfterReduction:order.priceAfterReduction-((order.priceAfterReduction*c.reduction)/100),coupon_id:c.id})
+             ,c.update({used:c.used+1})   
+            ])
+          }).then(c=>{
 
-              const nbTrimestres=annee_niveau_users.length+req.body.nbTrimestres
-              const {remises} =sails.config.custom     
-              if(!remises){
-                  return Promise.reject(new ValidationError({message:'no remises found'}))
-              }
-              else{
-                 return Object.keys(remises).map(r=>parseInt(r)).filter(r=>r<=nbTrimestres).sort((a,b)=>b-a).map(r=>remises[r]).at(0)
-              }    
-          }).then(r=>{
-            console.log(coupon)
-              if(!r){
-                r=0
-              }
-              let priceAfterDiscount=(orgPrice-((orgPrice*r)/100))
-              let priceAfterCoupon =priceAfterDiscount-((priceAfterDiscount*coupon.reduction)/100) 
-              req.session.coupon_id = coupon.id
-              callback(null,{orgPrice,priceAfterDiscount:priceAfterCoupon})
-        
+                callback(null,c)
+
           }).catch(e=>{
                 console.log(e)
               callback(resolveError(e))
