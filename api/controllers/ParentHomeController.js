@@ -221,7 +221,7 @@ module.exports={
             },},{
                 model:Pack,
                 foreignKey:'pack_id',
-                attributes:['name'],
+                attributes:['name','nbTrimestres'],
                 include:{
                     model:Upload,
                     foreignKey:'photo',
