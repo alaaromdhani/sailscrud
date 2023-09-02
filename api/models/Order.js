@@ -54,8 +54,8 @@ const {
         
     },
     associations : function(){
-      Order.belongsTo(Pack,{
-        foreignKey:'pack_id'
+      Order.belongsToMany(Pack,{
+        through:'orders_packs'
        })
        
       

@@ -53,6 +53,9 @@ module.exports = {
          AnneeNiveauUser.belongsTo(Order,{
             foreignKey:'order_id'
          })
+         AnneeNiveauUser.belongsTo(CartDetail,{
+            foreignKey:'cart_detail_id'
+         })
          
         
   

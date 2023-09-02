@@ -1,7 +1,7 @@
 const { Op, Sequelize } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
 const schemaValidation = require("../../utils/validations")
-const { OrderShema, calculatePriceSchema, tryCouponSchema } = require("../../utils/validations/OrderSchema")
+const { OrderShema, tryCouponSchema, trimestreVerifier } = require("../../utils/validations/OrderSchema")
 const resolveError = require("../../utils/errors/resolveError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
@@ -10,6 +10,102 @@ const { every } = require("lodash")
 const SqlError = require("../../utils/errors/sqlErrors")
 
 module.exports = {
+    
+    getPaybleTrimestres:(req,callback)=>{
+        const {student_id,annee_scolaire_id} = req.params
+        User.findOne({where:{
+            id:student_id,
+            addedBy:req.user.id
+        }}).then(u=>{
+           // console.log(u)
+            if(u){
+                return u
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+        }).then(u=>{
+            return AnneeNiveauUser.findAll({where:{
+                user_id:u.id,
+                annee_scolaire_id,
+                cart_detail_id:null,
+                order_id:null,
+                type:{
+                    [Op.ne]:'archive'
+                }
+            },include:{
+                model:Trimestre,
+                foreignKey:'trimestre_id',
+                attributes:['id','name_ar']
+            }})
+
+
+        }).then(annee_niveau_users=>{
+            if(annee_niveau_users.length){
+                callback(null,annee_niveau_users)
+            }
+            else{
+                callback(null,[])
+            }
+            //  
+        }).catch(e=>{
+            //console.log(e)
+            callback(resolveError(e))
+         })
+
+    },
+    canAddForthTrimestre:(req)=>{
+        return new Promise((resolve,reject)=>{
+            const bodyValidation = schemaValidation(OrderShema)(req.body)
+            if(bodyValidation.isValid){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError({message:bodyValidation.message}))
+            }
+        }).then(()=>{
+            return AnneeNiveauUser.findAll({where:{
+                id:{
+                    [Op.in]:req.body.annee_niveau_users
+                }
+            }})
+        }).then(ans=>{
+            if(ans.length){
+                let annee_scolaire_id =ans[0].annee_scolaire_id
+                let user_id =ans[0].user_id
+              
+                if(!ans.every(a=>a.annee_scolaire_id===annee_scolaire_id&&a.user_id==user_id)){
+                    return Promise.reject(new ValidationError()) 
+                } 
+                
+                return AnneeNiveauUser.findAll({where:{
+                    user_id,
+                    annee_scolaire_id,
+                    cart_detail_id:{
+                        [Op.ne]:null
+                    }
+                }})     
+            }
+            else{
+                return Promise.reject(new ValidationError())
+            } 
+
+        }).then(ans=>{
+            //console.log(ans)
+            if(ans.map(a=>a.id).some(id=>req.body.annee_niveau_users.includes(id))){
+                return Promise.reject(new UnauthorizedError())
+            }
+            if(ans.length+req.body.annee_niveau_users.length>=3){
+                return {canAddForthTrimestre:true}
+            }
+            else{
+               return {canAddForthTrimestre:false}
+            }     
+            
+
+
+        })
+    },
     getOrderByStudent:(student_id,annee_scolaire_id)=>{
         return Order.findAll({include:{model:AnneeNiveauUser,foreignKey:'order_id',
         where:{
@@ -18,9 +114,13 @@ module.exports = {
             type:'trial'
         }}})
     },
+    addToCart:()=>{
+
+
+    },
     addOrder:(req,callback)=>{
-        let order
         let ordred
+        let cart
         return new Promise((resolve,reject)=>{
             const bodyValidation = schemaValidation(OrderShema)(req.body)
             if(bodyValidation.isValid){
@@ -54,12 +154,34 @@ module.exports = {
             }
             let annee_scolaire_id =annee_niveau_users[0].annee_scolaire_id
             let user_id =annee_niveau_users[0].user_id
-            if(!annee_niveau_users.every(a=>!a.order_id && a.User.addedBy==req.user.id&&a.annee_scolaire_id===annee_scolaire_id)){
+            if(!annee_niveau_users.every(a=>!a.cart_id && !a.order_id && a.User.addedBy==req.user.id&&a.annee_scolaire_id===annee_scolaire_id)){
                 return Promise.reject(new UnauthorizedError())
             }
-            ordred = annee_niveau_users
-            return sails.services.parenthomeservice.getOrderByStudent(user_id,annee_scolaire_id) 
+          //  ordred = annee_niveau_users
+            if(ordred.length===3){
+                return AnneeNiveauUser.findAll({where:{
+                    user_id,
+                    annee_scolaire_id,
+                    order_id:null
+                }})
+            }
+            else{
+                return annee_niveau_users
+            } 
         }).then(o=>{
+            return Cart.findOrCreate({where:{
+                addedBy:req.user.id
+            },defaults:{
+                addedBy:req.user.id
+            }}) 
+        }).then(([c,created])=>{
+            if(c){
+
+            }
+            else{
+
+            }
+          }).then(c=>{
             if(o.length){
                 return Promise.reject(new ValidationError({message:'يجب عليك دفع جميع الطلبات المعلقة لهذا الطالب'}))
             }
@@ -89,6 +211,7 @@ module.exports = {
             callback(resolveError(e))
         }) 
     },
+  
     deleteOrder:(req,callback)=>{
         let order
         Order.findOne({where:{
@@ -127,97 +250,56 @@ module.exports = {
 
 
     },
-    calculatePriceByNbTrimestres:(req,nbTrimestres)=>{
-        let pack
-        let orgPrice
-        return Pack.findOne({where:{
-            nbTrimestres:(nbTrimestres>=3)?3:nbTrimestres
-        }})
-        .then(p=>{
-      if(p){
-        orgPrice = p.price
-            pack = p
-        return 
-        } 
-      else{
-        return Promise.reject(new ValidationError())
-      } 
-    }).then(()=>{
-      return AnneeNiveauUser.findAll({
-        where:{
-            order_id:{
-                [Op.ne]:null
-            }
-        },
-        include:{
-            model:User,
-            foreignKey:'user_id',
-            where:{
-                addedBy:req.user.id
-            },
-            required:true
-        }
-      })     
-    }).then(annee_niveau_users=>{
-        const nb=annee_niveau_users.length+nbTrimestres
-        const {remises} =sails.config.custom     
-        if(!remises){
-            return Promise.reject(new ValidationError({message:'no remises found'}))
-        }
-        else{
-           return Object.keys(remises).map(r=>parseInt(r)).filter(r=>r<=nb).sort((a,b)=>b-a).map(r=>remises[r]).at(0)
-        }    
-    }).then(r=>{
-        if(r){
-           return {orgPrice,priceAfterDiscount:(orgPrice-((orgPrice*r)/100)),pack}
-        }
-        else{
-            return {orgPrice,priceAfterDiscount:orgPrice,pack}
-        }
-    })
-    },
-    getPaybleTrimestres:(req,callback)=>{
-        const {student_id,annee_scolaire_id} = req.params
-        User.findOne({where:{
-            id:student_id,
-            addedBy:req.user.id
-        }}).then(u=>{
-            console.log(u)
-            if(u){
-                return u
+    /**
+     * 
+     * @param {AnneeNiveauUser[]} orders 
+     * @param {Pack[]} packs 
+     * @returns {object} {specialGrouped:Object,groupedByAnneeScolaire:Object,groupedPacks:Object} 
+     */
+    groupCart:(orders,packs)=>{
+        let groupedById = {}
+        let specialGrouped = {}
+        let groupedByAnneeScolaire = {}
+        let groupedPacks = {}
+        packs.forEach(p=>{
+            groupedPacks[p.nbTrimestres] = p
+        })
+        orders.forEach(element => {
+            groupedById[element.id] = element
+            if(!groupedByAnneeScolaire['a-'+element.annee_scolaire_id+'-s-'+element.user_id]){
+                groupedByAnneeScolaire['a-'+element.annee_scolaire_id+'-s-'+element.user_id] =1
+                
             }
             else{
-                return Promise.reject(new RecordNotFoundErr())
-            }
-        }).then(u=>{
-            return AnneeNiveauUser.findAll({where:{
-                user_id:u.id,
-                annee_scolaire_id,
-                order_id:null,
-                type:{
-                    [Op.ne]:'archive'
+                groupedByAnneeScolaire['a-'+element.annee_scolaire_id+'-s-'+element.user_id]++
+                if(groupedByAnneeScolaire['a-'+element.annee_scolaire_id+'-s-'+element.user_id]>=3){
+                    if(!Object.keys(specialGrouped).length){
+                        specialGrouped[element.user_id]=true
+                    }
                 }
-            },include:{
-                model:Trimestre,
-                foreignKey:'trimestre_id',
-                attributes:['id','name_ar']
-            }})
-
-
-        }).then(annee_niveau_users=>{
-            if(annee_niveau_users.length){
-                callback(null,annee_niveau_users)
-            }
-            else{
-                callback(null,[])
-            }
-            //  
-        }).catch(e=>{
-            //console.log(e)
-            callback(resolveError(e))
-         })
+            } 
+        });
+        return {groupedPacks,groupedByAnneeScolaire,groupedPacks,groupedById}
+        /*Object.keys(groupedByAnneeScolaire).forEach(k=>{
+                let qt = groupedByAnneeScolaire[k]
+                const user_id = k.split('-s-').pop()
+                if(qt<3){
+                    price +=groupedPacks[qt]
+                }
+                else{
+                    if(!specialGrouped[user_id]){
+                        price +=(groupedPacks[qt]/2)
+                    }
+                    else{
+                        price +=(groupedPacks[qt])
+                    }
+                }
+        })*/
+    
 
     },
+    
+    
     calculatePrice:(req,callback)=>{
          let orgPrice
          let bodyData = {nbTrimestres:parseInt(req.query.nbTrimestres)}

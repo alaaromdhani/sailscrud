@@ -3,6 +3,7 @@ const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
+const resolveError = require("../../utils/errors/resolveError")
 
 module.exports={
     getThemes:async (req,res)=>{
@@ -85,19 +86,8 @@ module.exports={
 
 
     },
-    calculatePrice:async (req,res)=>{
-       sails.services.parenthomeservice.calculatePrice(req,(err,data)=>{
-        if(err){
-            return ErrorHandlor(req, err,res)
-        }
-        else{
-            return DataHandlor(req,data,res)
-        }
-
-       })
-    },
-    calculatePriceAfterCoupon:(req,res)=>{
-        return sails.services.parenthomeservice.calculatePriceAfterCoupon(req,(err,data)=>{
+    getPaybleTrimestres:(req,res)=>{
+        return sails.services.parenthomeservice.getPaybleTrimestres(req,(err,data)=>{
             if(err){
                 return ErrorHandlor(req,err,res)
             }
@@ -107,7 +97,17 @@ module.exports={
 
         })
 
+
     },
+    canAddFourthTrimestre:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.parenthomeservice.canAddForthTrimestre(req),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    
     addOrder:(req,res)=>{
         sails.services.parenthomeservice.addOrder(req,(err,data)=>{
             if(err){
@@ -188,6 +188,10 @@ module.exports={
         })
 
     },
+    addToCart:(req,callback)=>{
+         
+
+    },
     getOrders:async (req,res)=>{
         try{
             return DataHandlor(req,await Order.findAll({
@@ -234,19 +238,8 @@ module.exports={
             return ErrorHandlor(req,new ValidationError(),res)
         }
     },
-    getPaybleTrimestres:(req,res)=>{
-        return sails.services.parenthomeservice.getPaybleTrimestres(req,(err,data)=>{
-            if(err){
-                return ErrorHandlor(req,err,res)
-            }
-            else{
-                return DataHandlor(req,data,res)
-            }
+    
 
-        })
-
-
-    }
   
     
     
