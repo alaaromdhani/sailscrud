@@ -41,14 +41,7 @@ const databaseCredentials = require('./utils/constants');
       }
        
   process.chdir(__dirname);
-  await new Promise((resolve,reject)=>{
-    setTimeout(()=>{
-      
-      return resolve()
   
-  
-    },3000)
-  })
   console.log('created')
   //require('appmetrics-dash').monitor();
   

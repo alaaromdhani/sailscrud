@@ -2,14 +2,14 @@ const {
     DataTypes 
   } = require('sequelize'); 
   
- 
+  
   
   module.exports = {
     options: {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-
+      
       tableName: 'carts',
      
       
@@ -39,6 +39,9 @@ const {
     },
     associations : function(){
        Cart.hasMany(CartDetail,{
+        foreignKey:'cart_id'
+       })
+       Cart.hasMany(AnneeNiveauUser,{
         foreignKey:'cart_id'
        })
        Cart.belongsTo(User,{

@@ -114,10 +114,195 @@ module.exports = {
             type:'trial'
         }}})
     },
-    addToCart:()=>{
+    addToCart:(req)=>{
+        console.log('wow')
+        let ordred
+        let c
+        let full 
+        let p//pack
+        let price
+        let isReducted
+        return new Promise((resolve,reject)=>{
+            const  bodyValidation = schemaValidation(OrderShema)(req.body)
+            if(bodyValidation.isValid){
+                return resolve()
+            }
+            else{
+               // console.log(e)
+                console.log(bodyValidation)
+               return reject(new ValidationError({message:bodyValidation.message}))
+            }
+        }).then(()=>{
+            return AnneeNiveauUser.findAll({where:{
+                id:{
+                    [Op.in]:req.body.annee_niveau_users
+                },
+                
+                
+            },include:{
+                model:User,
+                foreignKey:'addedBy',
+                attributes:['addedBy']
+            },
+            type:'trial',})
+        }).then(annee_niveau_users=>{
+            if(annee_niveau_users.length){
+                let annee_scolaire_id = annee_niveau_users[0].annee_scolaire_id
+                let user_id =annee_niveau_users[0].user_id
+                console.log(!annee_niveau_users.every(a=>a.User.addedBy===req.user.id&&a.user_id===user_id&&a.annee_scolaire_id===annee_scolaire_id&&!a.order_id&&!a.cart_id&&!a.cart_detail_id))
+                if(!annee_niveau_users.every(a=>a.User.addedBy===req.user.id&&a.user_id===user_id&&a.annee_scolaire_id===annee_scolaire_id&&!a.order_id&&!a.cart_id&&!a.cart_detail_id)){
+                    return Promise.reject(new UnauthorizedError()) 
+                }
+                ordred = annee_niveau_users     
+                return AnneeNiveauUser.findAll({where:{
+                    user_id,
+                    annee_scolaire_id,
+                    cart_detail_id:{    
+                        [Op.ne]:null
+                    }
+                }})
+            } 
+            else{
+                return Promise.reject(new ValidationError())
+            }
 
+        }).then(ans=>{
+            if (ans.map(a=>a.id).some(a=>req.body.annee_niveau_users.includes(a.id))){
+                //
+                return Promise.reject(new UnauthorizedError())
+            }
+            else{
+                full = req.body.annee_niveau_users.length+ans.length
+                if(full>=3){
+                    full=3
+                }
+                console.log(full)
+                return Pack.findOne({where:{
+                    nbTrimestres:full
+                },raw:true})
+            }
+         }).then(pack=>{
+            p = pack
+            if(full===3){
+                return CartDetail.findOne({where:{
+                    pack_id:p.id,
+                    addedBy:req.user.id
+                },include:{
+                    model:AnneeNiveauUser,
+                    foreignKey:'cart_detail_id',
+                    where:{
+                        user_id:{
+                            [Op.ne]:ordred[0].user_id
+                        }
+                    },
+                    required:true
+                },raw:true,nest:true})
+            }
+            return 
+         }).then((cd)=>{
+            if(cd){
+                price = p.price/2
+                isReducted=true
+            }
+            else{
+                price = p.price
+                isReducted=false    
+            }
+            return 
+         }).then(()=>{
+
+            return Cart.findOrCreate({where:{addedBy:req.user.id},defaults:{addedBy:req.user.id}})
+
+         }).then(([cart,created])=>{
+            c = cart
+            if(created){
+                return CartDetail.create({
+                    addedBy:req.user.id,
+                    cart_id:cart.id,
+                    pack_id:p.id,
+                    price:p.price,
+                    priceAfterReduction:price,
+                    isReducted:(p.price!=price)
+                })
+            }
+            else{
+                //isOldAddedCart = true
+                return CartDetail.findOne({where:{
+                  addedBy:req.user.id ,
+                },include:{
+                    model:AnneeNiveauUser,
+                    foreignKey:'cart_detail_id',
+                    where:{
+                        annee_scolaire_id:ordred[0].annee_scolaire_id,
+                        user_id:ordred[0].user_id
+                    },
+                    required:true
+                }})
+            }
+        }).then(cartDetail=>{
+            console.log(Object.keys(cartDetail))
+            if(!cartDetail){
+                return CartDetail.create({
+                    addedBy:req.user.id,
+                    cart_id:cart.id,
+                    pack_id:p.id,
+                    price:p.price,
+                    priceAfterReduction:price,
+                    isReducted:(p.price!=price)
+                })
+            }
+            if(cartDetail && cartDetail.dataValues.AnneeNiveauUsers){
+                
+                return cartDetail.update({priceAfterReduction:price,price:p.price,pack_id:p.id})
+            }
+            return cartDetail
+            
+        }).then(cd=>{
+            return Promise.all(ordred.map(o=>o.update({cart_id:c.id,cart_detail_id:cd.id})))              
+        })
 
     },
+    readCart:(req)=>{
+        return CartDetail.findAll({where:{
+             addedBy:req.user.id   
+        },include:[{
+            model:AnneeNiveauUser,
+            foreignKey:'cart_detail_id',
+            attributes:['trimestre_id'],
+            include:[{model:Trimestre,foreignKey:'trimestre_id',attributes:['name_ar']},{model:AnneeScolaire,foreignKey:'annee_scolaire_id',attributes:['startingYear','endingYear']},{model:NiveauScolaire,foreignKey:'niveau_scolaire_id',attributes:['name_ar']},{model:User,foreignKey:'user_id',attributes:['firstName','lastName']}]
+        },{
+            model:Pack,
+            foreignKey:'pack_id'
+        }]})
+
+    },
+
+    calculateCartDetailPrice:(req,packs)=>{
+        let updatedValues = {}
+        let groupedPacks={}
+
+        packs.forEach(p=>{
+            groupedPacks[p.nbTrimestres]=p.price
+        })
+        return CartDetail.findAll({where:{
+            addedBy:req.user.id
+        },include:{
+            model:AnneeNiveauUser,
+            foreignKey:'cart_detail_id'
+        }}).then(all=>{
+            let grouped ={} 
+            all.forEach(cd=>{
+               if(grouped['cd-'+cd.id+'-a-'+cd.AnneeNiveauUser[0].user_id]){
+                    grouped['cd-'+cd.id+'-a-'+cd.AnneeNiveauUser[0].user_id]++
+               }
+               else{
+                grouped['cd-'+cd.id+'-a-'+cd.AnneeNiveauUser[0].user_id]=1  
+               }
+            })
+
+
+        })
+     },
     addOrder:(req,callback)=>{
         let ordred
         let cart

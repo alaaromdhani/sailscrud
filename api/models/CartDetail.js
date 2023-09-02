@@ -9,6 +9,9 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
+      hooks:{
+       
+      },
 
       tableName: 'cart_details',
      
@@ -18,6 +21,7 @@ const {
     datastore: 'default',
     tableName: 'cart_details',
     attributes: {
+      
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -33,6 +37,10 @@ const {
           type:DataTypes.FLOAT,
           allowNull:true
         },
+        isReducted:{
+          type:DataTypes.BOOLEAN,
+          allowNull:true
+        }
         
 
         
@@ -43,6 +51,9 @@ const {
        })
        CartDetail.belongsTo(Cart,{
         foreignKey:'cart_id'
+       })
+       CartDetail.belongsTo(Pack,{
+        foreignKey:'pack_id'
        })
        CartDetail.belongsTo(User,{
         foreignKey:'addedBy'

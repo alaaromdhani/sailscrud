@@ -68,6 +68,9 @@ module.exports.routes = {
   //pursuase
   'GET /front/api/v1/purchase/trimestres/:student_id/:annee_scolaire_id':'ParentHomeController.getPaybleTrimestres',
   'post /front/api/v1/trimestres/choose':'ParentHomeController.canAddFourthTrimestre',
+  //cart
+  'GET /front/parent/api/v1/cart':'ParentHomeController.readCart',
+  'POST /front/parent/api/v1/cart':'ParentHomeController.addToCart',
   
   //orders 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
