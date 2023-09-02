@@ -137,9 +137,7 @@ module.exports = {
                 id:{
                     [Op.in]:req.body.annee_niveau_users
                 },
-                
-                
-            },include:{
+             },include:{
                 model:User,
                 foreignKey:'addedBy',
                 attributes:['addedBy']
@@ -240,11 +238,11 @@ module.exports = {
                 }})
             }
         }).then(cartDetail=>{
-            console.log(Object.keys(cartDetail))
+            
             if(!cartDetail){
                 return CartDetail.create({
                     addedBy:req.user.id,
-                    cart_id:cart.id,
+                    cart_id:c.id,
                     pack_id:p.id,
                     price:p.price,
                     priceAfterReduction:price,
