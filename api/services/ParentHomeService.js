@@ -183,7 +183,10 @@ module.exports = {
             if(full===3){
                 return CartDetail.findOne({where:{
                     pack_id:p.id,
-                    addedBy:req.user.id
+                    addedBy:req.user.id,
+                    priceAfterReduction:{
+                        [Op.eq]:Sequelize.col('price')
+                    }
                 },include:{
                     model:AnneeNiveauUser,
                     foreignKey:'cart_detail_id',
@@ -197,6 +200,7 @@ module.exports = {
             }
             return 
          }).then((cd)=>{
+            console.log(cd)
             if(cd){
                 price = p.price/2
                 isReducted=true
@@ -279,22 +283,22 @@ module.exports = {
              return CartDetail.findAll({where:{
                 id:{
                     [Op.ne]:cd.id
-                }
-             }},{include:{
+                },
+                
+             },include:{
                 model:Pack,
                 foreignKey:'pack_id',
                 where:{
-                    nbTrimestres:3,
+                    nbTrimestres:3
                 }
-
-             }})   
+            }}) 
             }
             else{
                 return []
             }
         }).then(cardDetails=>{
             //console.log(cardDetails)
-            if(cardDetails.length>0){
+            if(cardDetails.length &&!cardDetails.some(c=>c.price===c.priceAfterReduction)){
                 return cardDetails[0].update({priceAfterReduction:cardDetails[0].price,isReducted:false})
             }
             return 
@@ -321,6 +325,7 @@ module.exports = {
         }]})
 
     },
+    
     
     calculateCartDetailPrice:(req,packs)=>{
         let updatedValues = {}
@@ -458,79 +463,7 @@ module.exports = {
             })
 
     },
-    calculatePriceAfterCoupon:(req,callback)=>{
-     //   let orgPrice
-     let coupon
-     let order
-     let orgPrice
-        return new Promise((resolve,reject)=>{
-            const bodyValidation = schemaValidation(tryCouponSchema)(req.body)
-            if(bodyValidation.isValid){
-                return resolve()
-            }
-            else{
-                return reject(new ValidationError({message:bodyValidation.message}))
-            }
-        }).then(()=>{
-            return Order.findOne({where:{
-                code:req.params.id,
-                addedBy:req.user.id
-            }})
-         }).then((c)=>{
-            if(!c){
-                return Promise.reject(new RecordNotFoundErr())
-            }
-            order = c
-            return Coupon.findOne({where:{
-             code:req.body.code,
-             used:{
-                [Op.lt]:Sequelize.col("limit")
-             }  
-            },
-            
-            include:{
-                model:Order,
-                foreignKey:'coupon_id',
-               
-                
-            },
-           
-            })
-
-        }).then(c=>{
-
-            if(c){
-              //  console.log(c.Orders.some(o=>o.addedBy===req.user.id))
-                if(c.Orders.length&&c.Orders.some(o=>o.addedBy===req.user.id)){
-                    return Promise.reject(new ValidationError({message:'لقد استخدمت هذه القسيمة من قبل'}))
-                }
-                else{
-                    return c
-                }
-               
-            }
-            else{
-                return Promise.reject(new ValidationError({message:'قسيمة غير صالحة'}))
-            }
-        }).then(c=>{
-           // console.log(coqupon)
-             return Promise.all([order.update({priceAfterReduction:order.priceAfterReduction-((order.priceAfterReduction*c.reduction)/100),coupon_id:c.id})
-             ,c.update({used:c.used+1})   
-            ])
-          }).then(c=>{
-
-                callback(null,c)
-
-          }).catch(e=>{
-                console.log(e)
-              callback(resolveError(e))
-          })
-  
-
-
-    },
     
-
 
 
 

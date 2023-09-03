@@ -18,6 +18,11 @@ module.exports = {
                     [Op.ne]:as.id
                    } 
                }})
+              
+               await CartDetail.destory({where:{
+
+               },truncate: true
+              })
                await AnneeNiveauUser.update({
                  type:'archive',
  

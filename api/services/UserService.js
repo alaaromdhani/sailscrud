@@ -224,6 +224,9 @@ module.exports = {
     if(req.body.isDeleted && typeof(req.body.isDeleted)==='string'){
       req.body.isDeleted=req.body.isDeleted==='true'?true:false
     }
+    if(req.body.isShown && typeof(req.body.isShown)==='string'){
+      req.body.isShown=req.body.isShown==='true'?true:false
+    }
     
 
     Object.keys(req.body).filter(k=>k!='pp').forEach(k=>{

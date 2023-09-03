@@ -398,6 +398,11 @@ module.exports = {
           name:'Teacher',
           weight:400,
           dashboardUser:false
+        },
+        seller:{
+          name:'Seller',
+          weight:60,
+          dashboardUser:true
         }
     },
     dafault_user_image:{

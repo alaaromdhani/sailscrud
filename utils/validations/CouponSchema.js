@@ -6,7 +6,9 @@ const CouponShema = joi.object({
     
     used: joi.number().integer(),
     
-    reduction: joi.number().integer().required(),
+    reduction: joi.number().required(),
+    expiredDate: joi.string(),
+ 
     
 })
 const UpdateCouponShema = joi.object({
@@ -16,7 +18,9 @@ const UpdateCouponShema = joi.object({
     
     used: joi.number().integer(),
     
-    reduction: joi.number().integer(),
+    reduction: joi.number(),
+    expiredDate: joi.string(),
+    
     
 })
 module.exports = {CouponShema,UpdateCouponShema}

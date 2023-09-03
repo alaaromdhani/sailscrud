@@ -9,9 +9,7 @@ const UserShema = joi.object({
     sex:joi.string().valid('M','F'),    
     role_id:joi.number().integer(),
     country_id:joi.number().integer().required(),
-    permissions: joi.array().items(PermissionShema).allow(null),
-    features:joi.array().items(joi.string()).allow(null),
-
+    isShown:joi.boolean(),
 })
 const registerSchema = joi.object({
     firstName:joi.string().required(),  
@@ -35,6 +33,7 @@ const updateUserSchema= joi.object({
     
     country_id:joi.number().integer(),
     state_id:joi.number().integer(),
+    isShown:joi.boolean(),
 })
 const updateNormalUserProfile= joi.object({
     birthDate:joi.string(),

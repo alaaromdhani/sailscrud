@@ -1,5 +1,9 @@
 const { Op } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
+const { tryCouponSchema } = require("../../utils/validations/OrderSchema")
+const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
+const resolveError = require("../../utils/errors/resolveError")
+const schemaValidation = require("../../utils/validations")
 
 module.exports={
     addOrder:(req)=>{
@@ -58,7 +62,83 @@ module.exports={
         }).then(sd=>{
            return  createdOrder
         })
-    }
+    },
+    applicateCoupon:(req)=>{
+        //   let orgPrice
+        let order
+           
+           return new Promise((resolve,reject)=>{
+               const bodyValidation = schemaValidation(tryCouponSchema)(req.body)
+               if(bodyValidation.isValid){
+                   return resolve()
+               }
+               else{
+                   return reject(new ValidationError({message:bodyValidation.message}))
+               }
+           }).then(()=>{
+               return Order.findOne({where:{
+                   code:req.params.id,
+                   addedBy:req.user.id,
+                   status:'onhold'
+               }})
+            }).then((c)=>{
+               if(!c){
+                   return Promise.reject(new RecordNotFoundErr())
+               }
+               order = c
+               return Coupon.findOne({where:{
+                code:req.body.code,
+                used:{
+                   [Op.lt]:Sequelize.col("limit")
+                }  
+               },
+               
+               include:{
+                   model:Order,
+                   foreignKey:'coupon_id',
+                  
+                   
+               },
+              
+               })
+   
+           }).then(c=>{
+                
+               if(c){
+                 //  console.log(c.Orders.some(o=>o.addedBy===req.user.id))
+                
+                if(c.expiredDate && new Date(c.expiredDate)<new Date()){
+                    return Promise.reject(new ValidationError({message:'لقد انتهت صلاحية رمز الخصم'}))  
+                } 
+                 if(c.Orders.length&&c.Orders.some(o=>o.type!=='expired'&&o.addedBy===req.user.id)){
+                       return Promise.reject(new ValidationError({message:'لقد استخدمت هذه القسيمة من قبل'}))
+                   }
+                   else{
+                       return c
+                   }
+                  
+               }
+               else{
+                   return Promise.reject(new ValidationError({message:'قسيمة غير صالحة'}))
+               }
+           }).then(c=>{
+              // console.log(coqupon)
+
+                return Promise.all([order.update({priceAfterReduction:(c.type==='percentage')?order.priceAfterReduction-((order.priceAfterReduction*c.reduction)/100):order.priceAfterReduction-c.reduction,coupon_id:c.id})
+                ,c.update({used:c.used+1})   
+               ])
+             }).then(c=>{
+   
+                   return {message:'تم تطبيق الخصم بنجاح'}
+   
+             })
+     
+   
+   
+       },
+       
+       
+   
 
 
 

@@ -42,6 +42,15 @@ module.exports = {
       type: DataTypes.INTEGER,
       allowNull:false
     },
+    expiredDate:{
+      type:DataTypes.DATE,
+      allowNull:true
+   },
+    
+    type:{
+      type:DataTypes.ENUM('percentage','ammount'),
+      defaultValue:'ammount'
+    }
 
 
 
@@ -55,6 +64,7 @@ module.exports = {
     Coupon.hasMany(Order,{
       foreignKey:'coupon_id'
     })
+
 
 
 

@@ -131,7 +131,11 @@ module.exports = {
     phonenumber:{ type:DataTypes.STRING,allowNull:false,
       },
     password:{ type:DataTypes.STRING },
-    isDeleted:{ type:DataTypes.BOOLEAN }
+    isDeleted:{ type:DataTypes.BOOLEAN },
+    isShown:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:true
+    }
 
 
 

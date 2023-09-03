@@ -223,10 +223,12 @@ module.exports={
             },
             include:{
                 model:Pack,
-                foreignKey:'pack_id',
+                through:'orders_packs',
+                attributes:['name'],
                 include:{
                     model:Upload,
-                    foreignKey:'photo'
+                    foreignKey:'photo',
+                    attributes:['link']
                 }
             }    
             },),res)
@@ -234,6 +236,13 @@ module.exports={
             return ErrorHandlor(req, new SqlError(e),res)
         }
 
+    },
+    applicateCoupon:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.orderfrontservice.applicateCoupon(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
     },
     getOrderByStudentAnnee:async (req,res)=>{
         if(req.params.user_id && req.params.annee_scolaire_id){
