@@ -147,8 +147,7 @@ module.exports = {
             if(annee_niveau_users.length){
                 let annee_scolaire_id = annee_niveau_users[0].annee_scolaire_id
                 let user_id =annee_niveau_users[0].user_id
-                console.log(!annee_niveau_users.every(a=>a.User.addedBy===req.user.id&&a.user_id===user_id&&a.annee_scolaire_id===annee_scolaire_id&&!a.order_id&&!a.cart_id&&!a.cart_detail_id))
-                if(!annee_niveau_users.every(a=>a.User.addedBy===req.user.id&&a.user_id===user_id&&a.annee_scolaire_id===annee_scolaire_id&&!a.order_id&&!a.cart_id&&!a.cart_detail_id)){
+                if(!annee_niveau_users.every(a=>a.User.addedBy===req.user.id&&a.user_id===user_id&&a.annee_scolaire_id===annee_scolaire_id&&!a.order_id&&!a.cart_detail_id)){
                     return Promise.reject(new UnauthorizedError()) 
                 }
                 ordred = annee_niveau_users     
@@ -260,7 +259,7 @@ module.exports = {
         })
 
     },
-    deleteFormCard:(req)=>{
+    deleteFromCart:(req)=>{
         let cartDetail
         return CartDetail.findByPk(req.params.id,{
             include:{
@@ -269,12 +268,19 @@ module.exports = {
             }
         }).
         then(cd=>{
+            if(!cd){
+                return Promise.reject(new RecordNotFoundErr())
+            }
             if(cd.addedBy!=req.user.id){
                     return Promise.reject(new RecordNotFoundErr())
             }
             cartDetail = cd
             if(cartDetail.price==cartDetail.priceAfterReduction && cartDetail.Pack.nbTrimestres===3){
-             return cartDetail.findAll({include:{
+             return CartDetail.findAll({where:{
+                id:{
+                    [Op.ne]:cd.id
+                }
+             }},{include:{
                 model:Pack,
                 foreignKey:'pack_id',
                 where:{
@@ -287,12 +293,13 @@ module.exports = {
                 return []
             }
         }).then(cardDetails=>{
+            //console.log(cardDetails)
             if(cardDetails.length>0){
-                cardDetails[0].update({priceAfterReduction:cardDetails[0].price,isReducted:false})
+                return cardDetails[0].update({priceAfterReduction:cardDetails[0].price,isReducted:false})
             }
             return 
         }).then(c=>{
-            return cardDetails.destroy()
+            return cartDetail.destroy()
         })
     },
     readCart:(req)=>{

@@ -121,6 +121,7 @@ module.exports={
         try{
             return DataHandlor(req,await sails.services.parenthomeservice.readCart(req),res )
         }catch(e){
+            
             return ErrorHandlor(req,resolveError(e),res)
         }
     },
@@ -135,11 +136,12 @@ module.exports={
             }
         })
     },
-    deleteFormCard:async (req,res)=>{
+    deleteFromCart:async (req,res)=>{
         try{
-            await sails.services.parenthomeservice.deleteFormCard(req)
+            await sails.services.parenthomeservice.deleteFromCart(req)
             return DataHandlor(req,{},res)
         }catch(e){
+            console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
         }
     },
