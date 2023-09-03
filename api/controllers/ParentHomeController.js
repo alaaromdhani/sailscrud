@@ -126,15 +126,12 @@ module.exports={
         }
     },
     
-    addOrder:(req,res)=>{
-        sails.services.parenthomeservice.addOrder(req,(err,data)=>{
-            if(err){
-                return ErrorHandlor(req,err,res)
-            }
-            else{
-                return DataHandlor(req,data,res,data.message)
-            }
-        })
+    addOrder:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.orderfrontservice.addOrder(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
     },
     deleteFromCart:async (req,res)=>{
         try{

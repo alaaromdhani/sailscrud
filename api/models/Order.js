@@ -42,6 +42,10 @@ const {
             allowNull:false
 
         },
+        isCombined:{
+          type:DataTypes.BOOLEAN,
+          defaultValue:false
+        },
         priceAfterReduction:{
           type:DataTypes.FLOAT,
           allowNull:false
