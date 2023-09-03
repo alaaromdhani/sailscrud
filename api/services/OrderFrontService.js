@@ -55,6 +55,8 @@ module.exports={
             }})])
         }).then(sd=>{
            return createdOrder.addPacks(ordered.packs)
+        }).then(sd=>{
+           return  createdOrder
         })
     }
 
