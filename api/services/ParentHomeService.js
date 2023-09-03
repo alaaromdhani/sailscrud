@@ -260,6 +260,41 @@ module.exports = {
         })
 
     },
+    deleteFormCard:(req)=>{
+        let cartDetail
+        return CartDetail.findByPk(req.params.id,{
+            include:{
+                model:Pack,
+                foreignKey:'pack_id'
+            }
+        }).
+        then(cd=>{
+            if(cd.addedBy!=req.user.id){
+                    return Promise.reject(new RecordNotFoundErr())
+            }
+            cartDetail = cd
+            if(cartDetail.price==cartDetail.priceAfterReduction && cartDetail.Pack.nbTrimestres===3){
+             return cartDetail.findAll({include:{
+                model:Pack,
+                foreignKey:'pack_id',
+                where:{
+                    nbTrimestres:3,
+                }
+
+             }})   
+            }
+            else{
+                return []
+            }
+        }).then(cardDetails=>{
+            if(cardDetails.length>0){
+                cardDetails[0].update({priceAfterReduction:cardDetails[0].price,isReducted:false})
+            }
+            return 
+        }).then(c=>{
+            return cardDetails.destroy()
+        })
+    },
     readCart:(req)=>{
         return CartDetail.findAll({where:{
              addedBy:req.user.id   
@@ -270,11 +305,16 @@ module.exports = {
             include:[{model:Trimestre,foreignKey:'trimestre_id',attributes:['name_ar']},{model:AnneeScolaire,foreignKey:'annee_scolaire_id',attributes:['startingYear','endingYear']},{model:NiveauScolaire,foreignKey:'niveau_scolaire_id',attributes:['name_ar']},{model:User,foreignKey:'user_id',attributes:['firstName','lastName']}]
         },{
             model:Pack,
-            foreignKey:'pack_id'
+            foreignKey:'pack_id',
+            include:{
+                model:Upload,
+                foreignKey:'photo',
+                attributes:['link']
+            }
         }]})
 
     },
-
+    
     calculateCartDetailPrice:(req,packs)=>{
         let updatedValues = {}
         let groupedPacks={}

@@ -71,7 +71,8 @@ module.exports.routes = {
   //cart
   'GET /front/parent/api/v1/cart':'ParentHomeController.readCart',
   'POST /front/parent/api/v1/cart':'ParentHomeController.addToCart',
-  
+  'delete /front/parent/api/v1/cart/:id':'ParentHomeController.deleteFromCart',
+    
   //orders 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',

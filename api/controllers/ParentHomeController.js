@@ -135,6 +135,14 @@ module.exports={
             }
         })
     },
+    deleteFormCard:async (req,res)=>{
+        try{
+            await sails.services.parenthomeservice.deleteFormCard(req)
+            return DataHandlor(req,{},res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
     getOrder:async (req,res)=>{
         try{
             let order =await Order.findOne({
