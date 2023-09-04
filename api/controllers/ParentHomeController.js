@@ -168,7 +168,7 @@ module.exports={
                      },{
                         model:AnneeScolaire,
                         foreignKey:'annee_scolaire_id',
-                        attributes:['startingYear','endingYear','active']
+                        attributes:['startingYear','endingYear']
                      },{
                         model:NiveauScolaire,
                         foreignKey:'niveau_scolaire_id',
@@ -187,7 +187,16 @@ module.exports={
                 } ,{
                     model:User,
                     foreignKey:'addedBy',
-                    attributes:['firstName','lastName']
+                    attributes:['firstName','lastName'],
+                    include:[{
+                        model:Country,
+                        foreignKey:'country_id',
+                        attributes:['name']
+                    },{
+                        model:State,
+                        foreignKey:'state_id',
+                        attributes:['name']
+                    }]
                  }]
                 
             })
