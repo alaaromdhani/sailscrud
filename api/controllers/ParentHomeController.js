@@ -187,7 +187,7 @@ module.exports={
                 } ,{
                     model:User,
                     foreignKey:'addedBy',
-                    attributes:['firstName','lastName'],
+                    attributes:['firstName','lastName','phonenumber'],
                     include:[{
                         model:Country,
                         foreignKey:'country_id',
