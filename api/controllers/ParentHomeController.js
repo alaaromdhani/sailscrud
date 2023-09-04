@@ -178,7 +178,7 @@ module.exports={
                 },{
                     model:Pack,
                     foreignKey:'pack_id',
-                    attributes:['name'],
+                    attributes:['name','nbTrimestres','price'],
                     include:{
                         model:Upload,
                         foreignKey:'photo',
