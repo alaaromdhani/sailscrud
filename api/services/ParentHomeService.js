@@ -55,6 +55,7 @@ module.exports = {
 
     },
     canAddForthTrimestre:(req)=>{
+        let ordred
         return new Promise((resolve,reject)=>{
             const bodyValidation = schemaValidation(OrderShema)(req.body)
             if(bodyValidation.isValid){
@@ -73,8 +74,8 @@ module.exports = {
             if(ans.length){
                 let annee_scolaire_id =ans[0].annee_scolaire_id
                 let user_id =ans[0].user_id
-              
-                if(!ans.every(a=>a.annee_scolaire_id===annee_scolaire_id&&a.user_id==user_id)){
+                ordred = ans
+                if(!ans.every(a=>!a.order_id&&!a.cart_detail_id&&a.annee_scolaire_id===annee_scolaire_id&&a.user_id==user_id)){
                     return Promise.reject(new ValidationError()) 
                 } 
                 
@@ -94,6 +95,10 @@ module.exports = {
             //console.log(ans)
             if(ans.map(a=>a.id).some(id=>req.body.annee_niveau_users.includes(id))){
                 return Promise.reject(new UnauthorizedError())
+            }
+            ordred = ordred.concat(ans)
+            if(ordred.map(a=>a.trimestre_id).includes(4)){
+                return {canAddForthTrimestre:false}
             }
             if(ans.length+req.body.annee_niveau_users.length>=3){
                 return {canAddForthTrimestre:true}
