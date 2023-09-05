@@ -77,6 +77,10 @@ module.exports={
                                 model:AnneeScolaire,
                                 foreignKey:'annee_scolaire_id',
                                 attributes:['startingYear','endingYear']
+                            },{
+                                model:NiveauScolaire,
+                                foreignKey:'niveau_scolaire_id',
+                                attributes:['name_ar']
                             }]
                          },)
                          return DataHandlor(req,data,res)
