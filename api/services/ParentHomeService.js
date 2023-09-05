@@ -327,7 +327,16 @@ module.exports = {
                 foreignKey:'photo',
                 attributes:['link']
             }
-        }]})
+        }]}).then(cartDetails=>{
+            let {price,priceAfterReduction} = cartDetails.reduce((prev,curr)=>{
+
+                return {price:prev.price+curr.price,priceAfterReduction:prev.priceAfterReduction+curr.priceAfterReduction} 
+
+            },{price:0,priceAfterReduction:0})
+            return {cart:cartDetails,price,priceAfterReduction}
+            
+
+        })
 
     },
     
