@@ -73,8 +73,10 @@ module.exports={
                             include:[{
                                 model:Trimestre,
                                 foreignKey:'trimestre_id',
-                                
-                                
+                            },{
+                                model:AnneeScolaire,
+                                foreignKey:'annee_scolaire_id',
+                                attributes:['startingYear','endingYear']
                             }]
                          },)
                          return DataHandlor(req,data,res)

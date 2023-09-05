@@ -4,6 +4,7 @@ const { tryCouponSchema } = require("../../utils/validations/OrderSchema")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const resolveError = require("../../utils/errors/resolveError")
 const schemaValidation = require("../../utils/validations")
+const { default: axios } = require("axios")
 
 module.exports={
     addOrder:(req)=>{
@@ -136,6 +137,36 @@ module.exports={
    
    
        },
+       payUsingCart:async (req)=>{
+            return Order.findOne({where:{
+                code:req.params.id,
+                status:'onhold',
+                addedBy:req.user.id
+           
+            }}).then(o=>{
+                    if(!o){
+                        return Promise.reject(new RecordNotFoundErr())
+                    }
+                    else{
+                         const payment_conf = sails.config.custom.payment
+                        return axios.post('https://ipay.clictopay.com/payment/rest/register.do',{
+                            'userName' : payment_conf.username,
+                            'password' : payment_conf.username,
+                            'orderNumber' : o.code,
+                            'amount' : o.priceAfterReduction,
+                            'language' : "fr",
+                            'currency' :"788",
+                            'pageView' :'DESKTOP',
+                            'returnUrl': payment_conf.successUrl,
+                            'failUrl' :payment_conf.failUrl,
+                            'clientId': req.user.id,
+                        })
+                    }
+             }).then(c=>{
+                
+                
+            })
+       }
        
        
    

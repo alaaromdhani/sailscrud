@@ -200,7 +200,7 @@ module.exports = {
             }
             return 
          }).then((cd)=>{
-            console.log(cd)
+            
             if(cd){
                 price = p.price/2
                 isReducted=true
@@ -463,6 +463,7 @@ module.exports = {
             })
 
     },
+    
     
 
 

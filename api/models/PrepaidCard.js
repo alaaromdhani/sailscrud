@@ -77,7 +77,7 @@ const {
        PrepaidCard.belongsTo(User,{
         foreignKey:'addedBy'
        })
-       PrepaidCard.belongsTo(User,{
+       PrepaidCard.belongsTo(Seller,{
         foreignKey:'seller_id'
        })
        
