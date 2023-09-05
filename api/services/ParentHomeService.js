@@ -97,7 +97,7 @@ module.exports = {
                 return Promise.reject(new UnauthorizedError())
             }
             ordred = ordred.concat(ans)
-            if(ordred.map(a=>a.trimestre_id).includes(4)){
+            if(ordred.map(a=>a.trimestre_id).includes(4) &&ordred.length==3){
                 return {canAddForthTrimestre:false}
             }
             if(ans.length+req.body.annee_niveau_users.length>=3){
