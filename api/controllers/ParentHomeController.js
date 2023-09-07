@@ -230,12 +230,21 @@ module.exports={
   
     getOrders:async (req,res)=>{
         try{
-            return DataHandlor(req,await Order.findAll({
-            where:{addedBy:req.user.id,
-                status:{
+            const {type}=req.params
+            let where ={
+                addedBy:req.user.id
+            }
+            if(type==="all"){
+                where.status = { 
                     [Op.in]:['active','onhold']
-                }
-            },
+                }                
+            }
+            else{
+                where.status='onhold'
+            }
+            
+            return DataHandlor(req,await Order.findAll({
+            where,
             include:{
                 model:Pack,
                 through:'orders_packs',

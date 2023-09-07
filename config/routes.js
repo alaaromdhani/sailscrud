@@ -79,7 +79,7 @@ module.exports.routes = {
   'GET /front/api/v1/parent/verify-payement/:id':'ParentHomeController.verifyPayement',
   
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
-  'GET /front/api/v1/parent/orders':'ParentHomeController.getOrders',
+  'GET /front/api/v1/parent/orders/type/:type':'ParentHomeController.getOrders',
    'GET /front/api/v1/parent/orders/:user_id/:annee_scolaire_id':'ParentHomeController.getOrderByStudentAnnee', 
   'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
   'POST /front/api/v1/parent/orders/coupon/:id':'ParentHomeController.applicateCoupon',

@@ -58,13 +58,14 @@ module.exports.bootstrap = async function() {
     await permissionSeeders()
     console.log('now user seaders')
    await userSeesers()
-  await nivauScolaireSeeders()
   await matiereSeeders()
   await trimestresSeeders()
   await chaptersSeeders()
   await settingsSeeders()
   await anneeScolaireSeeders()
   await pay_config()
+  await nivauScolaireSeeders()
+
   //await usersSeeders()
 //  await documentSeeders()
  }

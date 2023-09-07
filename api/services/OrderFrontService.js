@@ -288,6 +288,7 @@ module.exports={
                 if(resData.OrderStatus===2){
                     return Order.findOne({where:{
                         orderId:req.params.id,
+                        priceAfterReduction:resData.Amount
                        
                     }})
                 }
