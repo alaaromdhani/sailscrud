@@ -294,8 +294,26 @@ module.exports={
     
             }
         }
+        else if(type==='prepaidCard'){
+                try{
+                    return DataHandlor(req,await sails.services.orderfrontservice.payUsingPrepaidCart(req),res)
+                }catch(e){
+                    console.log(e)
+                    return ErrorHandlor(req,resolveError(e),res)
+        
+                }
+        }
         else{
-            return ErrorHandlor(req,new ValidationError({message:'الرجاء إدخال نوع دفع صالح'}))
+            return ErrorHandlor(req,new ValidationError({message:'الرجاء إدخال نوع دفع صالح'}),res)
+        }
+
+    },
+    verifyPayement:async (req,res)=>{
+        try{
+            await sails.services.orderfrontservice.verifyPayement(req)
+            return DataHandlor(req,{message:'تم دفع الطلب بنجاح'} ,res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
         }
 
     }

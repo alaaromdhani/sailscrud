@@ -76,6 +76,8 @@ module.exports.routes = {
   //orders 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
+  'GET /front/api/v1/parent/verify-payement/:id':'ParentHomeController.verifyPayement',
+  
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
   'GET /front/api/v1/parent/orders':'ParentHomeController.getOrders',
    'GET /front/api/v1/parent/orders/:user_id/:annee_scolaire_id':'ParentHomeController.getOrderByStudentAnnee', 

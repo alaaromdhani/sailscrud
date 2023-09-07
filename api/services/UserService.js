@@ -847,7 +847,7 @@ module.exports = {
     const {roles} =sails.config.custom
     
     let allowedRoles = Object.keys(roles).filter(k=>!roles[k].dashboardUser).map(k=>roles[k].name)
-    console.log(allowedRoles)
+    //console.log(allowedRoles)
     User.findOne({where:{
       
       phonenumber:phonenumber.startsWith('+')?phonenumber:'+'+phonenumber,

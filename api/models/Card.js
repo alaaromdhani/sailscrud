@@ -41,6 +41,10 @@ module.exports = {
       type: DataTypes.STRING,
       required: true,
     },
+    used: {
+      type: DataTypes.STRING,
+      defaultValue:false,
+    }
     
 
   },

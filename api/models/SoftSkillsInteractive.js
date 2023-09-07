@@ -14,10 +14,7 @@ module.exports = {
     charset: 'utf8',
     collate: 'utf8_general_ci',
     scopes: {},
-    indexes:[{
-      unique:true,
-      fields:['url']
-    },],
+    indexes:[],
     hooks: {
       beforeSave:(course,options)=>{
         if(course.isNewRecord){
@@ -98,7 +95,7 @@ module.exports = {
     url:{
         type: DataTypes.STRING,
         required: true,
-        unique: true,   
+         
     },
 
 

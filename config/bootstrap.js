@@ -26,7 +26,8 @@ const chaptersSeeders = require('../utils/seeders/chatpter')
 const documentSeeders = require('../seeders/DocumentCourse')
 const usersSeeders = require('../seeders/users')
 const settingsSeeders = require('../seeders/settings')
-const anneeScolaireSeeders = require('../utils/seeders/AnneeScolaire')
+const anneeScolaireSeeders = require('../utils/seeders/AnneeScolaire');
+const pay_config = require('../utils/seeders/pay_config');
 module.exports.bootstrap = async function() {
   /*function getAllKeys(object){
     Object.keys(object).forEach(k=>{
@@ -63,6 +64,7 @@ module.exports.bootstrap = async function() {
   await chaptersSeeders()
   await settingsSeeders()
   await anneeScolaireSeeders()
+  await pay_config()
   //await usersSeeders()
 //  await documentSeeders()
  }

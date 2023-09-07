@@ -1,11 +1,12 @@
 const { Op } = require("sequelize")
 const ValidationError = require("../../utils/errors/validationErrors")
-const { tryCouponSchema } = require("../../utils/validations/OrderSchema")
+const { tryCouponSchema, prepaidCartPayment } = require("../../utils/validations/OrderSchema")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const resolveError = require("../../utils/errors/resolveError")
 const schemaValidation = require("../../utils/validations")
 const { default: axios } = require("axios")
 const UnkownError = require("../../utils/errors/UnknownError")
+const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 
 
 module.exports={
@@ -206,6 +207,103 @@ module.exports={
                         return {orderId:order.orderId,url:'https://ipay.clictopay.com:443/epg/merchants/CLICTOPAY/payment.html?mdOrder='+order.orderId+'&language=fr'}
               
                     })
+       },
+       payUsingPrepaidCart:async(req)=>{
+        let order 
+        return new Promise((resolve,reject)=>{
+            const bodyValidaion = schemaValidation(prepaidCartPayment)(req.body)
+            if(bodyValidaion.isValid){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError({message:bodyValidaion.message}))
+            }
+        }).then(()=>{
+           return  Order.findOne({where:{
+                code:req.params.id,
+                status:'onhold',
+                coupon_id:null,
+                
+                addedBy:req.user.id,
+                isCombined:false,
+                
+            },include:{
+                model:Pack,
+                through:'orders_packs',
+                attributes:['id']
+            }})
+        }).then(o=>{
+          if(!o || o.dataValues.Packs.length!==1){
+            
+            return Promise.reject(new RecordNotFoundErr())
+          }
+          
+          else{
+            console.log(o.dataValues.Packs[0].dataValues)
+            order =o
+            return Card.findOne({
+                where:{
+                    code:req.body.code,
+                    used:false
+                },
+                include:{
+                    model:PrepaidCard,
+                    foreignKey:'serie_id',
+                    where:{
+                        pack_id:o.dataValues.Packs[0].dataValues.id
+                    },
+                    required:true
+                }
+            })
+          }     
+        }).then(c=>{
+            if(!c){
+                return Promise.reject(new ValidationError({message:'رمز البطاقة خاطئ'}))
+            }
+            else{
+                return c.update({used:true})
+            }
+        }).then(c=>{
+            return order.update({payment_type_id:3,status:'active'})
+
+        })
+
+
+       },
+       verifyPayement:(req)=>{
+        const payment_conf = sails.config.custom.payment
+        return axios.get('https://ipay.clictopay.com/payment/rest/getOrderStatus.do?language=en&orderId='+req.params.id+'&password='+payment_conf.password+'&userName='+payment_conf.username)
+        .then(a=>{
+            let resData
+            if(typeof(a.data)==='object'){
+                resData=a.data
+            }
+            else if(typeof(a.data)==='string'){
+                resData=JSON.parse(a.data)
+            }
+            else{
+                return Promise.reject(new UnkownError())
+            }
+            if(resData.OrderStatus){
+                if(resData.OrderStatus===2){
+                    return Order.findOne({where:{
+                        orderId:req.params.id,
+                       
+                    }})
+                }
+                else{
+                    return Promise.resolve(new ValidationError({message:'لم يتم دفع الطلب بعد'}))
+                }
+            }
+         }).then(o=>{
+            if(!o){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                return o.update({status:'active',payment_type_id:1})
+            }
+        })
+
        }
        
        

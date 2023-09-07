@@ -16,4 +16,7 @@ const trimestreVerifier = joi.object({
 const tryCouponSchema = joi.object({
     code:joi.string().required()
 })
-module.exports = {OrderShema,UpdateOrderShema,trimestreVerifier,tryCouponSchema,CartPriceCalculation}
+const prepaidCartPayment = joi.object({
+    code:joi.string().required()
+})
+module.exports = {OrderShema,UpdateOrderShema,trimestreVerifier,tryCouponSchema,CartPriceCalculation,prepaidCartPayment}
