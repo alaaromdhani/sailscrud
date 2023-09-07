@@ -283,6 +283,22 @@ module.exports={
             return ErrorHandlor(req,new ValidationError(),res)
         }
     },
+    payOrder:async (req,res)=>{
+        const {type} = req.params
+        if(type==='BankCart'){
+            try{
+                return DataHandlor(req,await sails.services.orderfrontservice.payUsingCart(req),res)
+            }catch(e){
+                console.log(e)
+                               return ErrorHandlor(req,resolveError(e),res)
+    
+            }
+        }
+        else{
+            return ErrorHandlor(req,new ValidationError({message:'الرجاء إدخال نوع دفع صالح'}))
+        }
+
+    }
     
 
   

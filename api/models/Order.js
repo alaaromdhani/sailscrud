@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const {
     DataTypes 
   } = require('sequelize'); 
@@ -11,6 +12,7 @@ const {
       scopes: {},
 
       tableName: 'orders',
+
       indexes:[/*{
         unique:true,
         fields:['orderId']
@@ -18,6 +20,17 @@ const {
         unique:true,
         fields:['code']
       }],
+      hooks:{
+        beforeSave:(order,options)=>{
+          if(order.isNewRecord){
+            order.expiredDate = sails.config.custom.payment.expiredDate?dayjs().add(sails.config.custom.payment.expiredDate,'minute').toISOString():dayjs().add(20,'minute').toISOString()
+         }  
+          if(!order.isNewRecord&&order.changed('secretCode')){
+               order.expiredDate = sails.config.custom.payment.expiredDate?dayjs().add(sails.config.custom.payment.expiredDate,'minute').toISOString():dayjs().add(20,'minute').toISOString()
+          }
+
+        }
+      }
       
       
     },
@@ -50,10 +63,20 @@ const {
           type:DataTypes.FLOAT,
           allowNull:false
         },
+        secretCode:{
+          type:DataTypes.STRING,
+          allowNull:false
+        },
+        expiredDate:{
+          type:DataTypes.DATE,
+          allowNull:true
+        },
         status:{
             type:DataTypes.ENUM('active','onhold','expired'),
             defaultValue:'onhold'
-        }
+        },
+
+
 
         
     },

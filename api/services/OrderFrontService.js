@@ -5,6 +5,8 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const resolveError = require("../../utils/errors/resolveError")
 const schemaValidation = require("../../utils/validations")
 const { default: axios } = require("axios")
+const UnkownError = require("../../utils/errors/UnknownError")
+
 
 module.exports={
     addOrder:(req)=>{
@@ -38,11 +40,14 @@ module.exports={
                 },{ans:[],price:0,priceAfterReduction:0,packs:[]}) 
                 
                 let today  = new Date()
+                let code = today.getFullYear()+''+today.getMonth()+""+today.getDay()+""+today.getMinutes()+"-"+today.getSeconds()+today.getMilliseconds()+Math.floor(Math.random()*100)
+     
                 return Order.create({
-                    code:today.getFullYear()+''+today.getMonth()+""+today.getDay()+""+today.getMinutes()+"-"+today.getSeconds()+Math.floor(Math.random()*100),
-                    price:ordered.price,
+                   code,
+                   price:ordered.price,
                     priceAfterReduction:ordered.priceAfterReduction,
                     addedBy:req.user.id,
+                    secretCode:code,
                     isCombined:(cartDetails.length>1)
                 })
             }
@@ -147,25 +152,60 @@ module.exports={
                     if(!o){
                         return Promise.reject(new RecordNotFoundErr())
                     }
+                    if(o.orderId ){
+                        let today = new Date()
+                        if(today<new Date(o.expiredDate)){
+                            return o
+                        }
+                        else{
+                            const payment_conf = sails.config.custom.payment
+                             let code = today.getFullYear()+''+today.getMonth()+""+today.getDay()+""+today.getMinutes()+"-"+today.getSeconds()+today.getMilliseconds()+Math.floor(Math.random()*100)
+                            
+                             return o.update({secretCode:code}).then(o=>{
+                                return axios.get('https://ipay.clictopay.com/payment/rest/register.do?userName='+payment_conf.username+'&password='+payment_conf.password+'&orderNumber='+o.secretCode+'&pageView=DESKTOP&amount='+o.priceAfterReduction+'&currency=788&returnUrl='+payment_conf.returnUrl+'&failUrl='+payment_conf.returnUrl)})
+                                .then(res=>{
+                                            if(res.data){
+                                    if(typeof(res.data)==='object'){
+                                        let d = res.data
+                                        return o.update({orderId:d.orderId})
+                                    }
+                                    else if(typeof (res.data)==='string'){
+                                        let d = JSON.parse(res.data)
+                                        return o.update({orderId:d.orderId})
+                                    }
+                                    else{
+                                        return Promise.reject(new UnkownError())
+                                    }
+                                }
+                            }).then(order=>{
+                                return {orderId:order.orderId,url:'https://ipay.clictopay.com:443/epg/merchants/CLICTOPAY/payment.html?mdOrder='+order.orderId+'&language=fr'}
+                      
+                            })
+                        }
+                    }
                     else{
                          const payment_conf = sails.config.custom.payment
-                        return axios.post('https://ipay.clictopay.com/payment/rest/register.do',{
-                            'userName' : payment_conf.username,
-                            'password' : payment_conf.username,
-                            'orderNumber' : o.code,
-                            'amount' : o.priceAfterReduction,
-                            'language' : "fr",
-                            'currency' :"788",
-                            'pageView' :'DESKTOP',
-                            'returnUrl': payment_conf.successUrl,
-                            'failUrl' :payment_conf.failUrl,
-                            'clientId': req.user.id,
+               //          console.log(payment_conf)
+                        return axios.get('https://ipay.clictopay.com/payment/rest/register.do?userName='+payment_conf.username+'&password='+payment_conf.password+'&orderNumber='+o.secretCode+'&pageView=DESKTOP&amount='+o.priceAfterReduction+'&currency=788&returnUrl='+payment_conf.returnUrl+'&failUrl='+payment_conf.returnUrl).then(res=>{
+                            if(res.data){
+                                if(typeof(res.data)==='object'){
+                                    let d = res.data
+                                    return o.update({orderId:d.orderId})
+                                }
+                                else if(typeof (res.data)==='string'){
+                                    let d = JSON.parse(res.data)
+                                    return o.update({orderId:d.orderId})
+                                }
+                                else{
+                                    return Promise.reject(new UnkownError())
+                                }
+                            }
                         })
-                    }
-             }).then(c=>{
-                
-                
-            })
+                     }
+                  }).then(order=>{
+                        return {orderId:order.orderId,url:'https://ipay.clictopay.com:443/epg/merchants/CLICTOPAY/payment.html?mdOrder='+order.orderId+'&language=fr'}
+              
+                    })
        }
        
        

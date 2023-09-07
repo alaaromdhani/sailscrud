@@ -845,17 +845,18 @@ module.exports = {
       return callback(new ValidationError({message:'رقم الهاتف is required'}))
     }
     const {roles} =sails.config.custom
-    let allowedRoles = Object.keys(k=>!roles[k].dashboardUser).map(k=>roles[k].name)
-
+    
+    let allowedRoles = Object.keys(roles).filter(k=>!roles[k].dashboardUser).map(k=>roles[k].name)
+    console.log(allowedRoles)
     User.findOne({where:{
-
-      phonenumber:'+'+phonenumber,
-      include:{
-        model:Role,
-        where:{
-          name:{
-            [Op.in]:allowedRoles
-          }
+      
+      phonenumber:phonenumber.startsWith('+')?phonenumber:'+'+phonenumber,
+      
+    },include:{
+      model:Role,
+      where:{
+        name:{
+          [Op.in]:allowedRoles
         }
       }
     }}).then(u=>{
