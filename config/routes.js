@@ -76,10 +76,11 @@ module.exports.routes = {
   //orders 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
-  'GET /front/api/v1/parent/verify-payement/:id':'ParentHomeController.verifyPayement',
+  'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
   
   'GET /front/api/v1/parent/orders/:id':'ParentHomeController.getOrder',
   'GET /front/api/v1/parent/orders/type/:type':'ParentHomeController.getOrders',
+
    'GET /front/api/v1/parent/orders/:user_id/:annee_scolaire_id':'ParentHomeController.getOrderByStudentAnnee', 
   'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
   'POST /front/api/v1/parent/orders/coupon/:id':'ParentHomeController.applicateCoupon',
@@ -104,6 +105,7 @@ module.exports.routes = {
  
   //normal user profile 
   'GET /front/api/v1/profile':'HomeController.profileCallback',
+  'GET /front/api/v1/country':'HomeController.getMyCountry',
  
   'PATCH /front/api/v1/profile':'HomeController.updateProfile',
   'PATCH /front/api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',

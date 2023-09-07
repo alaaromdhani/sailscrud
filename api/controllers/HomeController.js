@@ -85,6 +85,9 @@ module.exports={
 
 
     },
+    getMyCountry:(req)=>{
+      return Country.findByPk(req.user.country_id)
+    }
    
     
 

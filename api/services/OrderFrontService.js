@@ -271,40 +271,59 @@ module.exports={
 
        },
        verifyPayement:(req)=>{
-        const payment_conf = sails.config.custom.payment
-        return axios.get('https://ipay.clictopay.com/payment/rest/getOrderStatus.do?language=en&orderId='+req.params.id+'&password='+payment_conf.password+'&userName='+payment_conf.username)
-        .then(a=>{
-            let resData
-            if(typeof(a.data)==='object'){
-                resData=a.data
-            }
-            else if(typeof(a.data)==='string'){
-                resData=JSON.parse(a.data)
-            }
-            else{
-                return Promise.reject(new UnkownError())
-            }
-            if(resData.OrderStatus){
-                if(resData.OrderStatus===2){
-                    return Order.findOne({where:{
-                        orderId:req.params.id,
-                        priceAfterReduction:resData.Amount
-                       
-                    }})
+             
+        const {orderId,orderCode} = req.query
+        if(!orderId && !orderCode){
+            return Promise.reject(new ValidationError()) 
+        }
+        if(orderId){
+            const payment_conf = sails.config.custom.payment
+            return axios.get('https://ipay.clictopay.com/payment/rest/getOrderStatus.do?language=en&orderId='+orderId+'&password='+payment_conf.password+'&userName='+payment_conf.username)
+            .then(a=>{
+                let resData
+                if(typeof(a.data)==='object'){
+                    resData=a.data
+                }
+                else if(typeof(a.data)==='string'){
+                    resData=JSON.parse(a.data)
                 }
                 else{
-                    return Promise.resolve(new ValidationError({message:'لم يتم دفع الطلب بعد'}))
+                    return Promise.reject(new UnkownError())
                 }
-            }
-         }).then(o=>{
-            if(!o){
-                return Promise.reject(new RecordNotFoundErr())
-            }
-            else{
-                return o.update({status:'active',payment_type_id:1})
-            }
-        })
-
+                if(resData.OrderStatus){
+                    if(resData.OrderStatus===2){
+                        return Order.findOne({where:{
+                            orderId:orderId,
+                            priceAfterReduction:resData.Amount
+                           
+                        }})
+                    }
+                    else{
+                        return Promise.resolve(new ValidationError({message:'لم يتم دفع الطلب بعد'}))
+                    }
+                }
+             }).then(o=>{
+                if(!o){
+                    return Promise.reject(new RecordNotFoundErr())
+                }
+                else{
+                    return o.update({status:'active',payment_type_id:1})
+                }
+            })
+        }
+        else{
+            return Order.findOne({where:{
+                code:orderCode,
+                status:'paid'
+            }}).then(o=>{
+                if(o){
+                    return Promise.reject(new RecordNotFoundErr()) 
+                }
+                else{
+                    return o
+                }    
+           })
+        }
        }
        
        
