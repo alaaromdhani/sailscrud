@@ -177,8 +177,8 @@ module.exports = {
     payment:{
       username:'1160070015',
       password:'pFym63C9',
-      returnUrl:'http://localhost:3000/parent/payment-success',
-      failUrl:'http://localhost:3000/parent/payment-error',
+      returnUrl:'http://localhost:3000/payment-success',
+      failUrl:'http://localhost:3000/payment-error',
       expiredDate:20
 
     },

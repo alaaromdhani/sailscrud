@@ -239,8 +239,12 @@ module.exports={
                     [Op.in]:['active','onhold']
                 }                
             }
-            else{
-                where.status='onhold'
+            
+            else if(type==='active'||type==='onhold'){
+                where.status=type
+            }
+            if(!where.status){
+                return ErrorHandlor(req,new ValidationError(),res)
             }
             
             return DataHandlor(req,await Order.findAll({
