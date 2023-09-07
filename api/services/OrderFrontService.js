@@ -261,7 +261,7 @@ module.exports={
                 return Promise.reject(new ValidationError({message:'رمز البطاقة خاطئ'}))
             }
             else{
-                return c.update({used:true})
+                return c.update({used:true,order_id:order.id})
             }
         }).then(c=>{
             return order.update({payment_type_id:3,status:'active'})

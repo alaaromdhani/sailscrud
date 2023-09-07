@@ -53,8 +53,10 @@ module.exports = {
         foreignKey:'serie_id'
       })
       Card.belongsTo(User,{
-        foreignKey:'addedBy'
-      })  
+        foreignKey:'addedBy',
+      
+      })
+      
       Card.belongsTo(Order,{
         foreignKey:'order_id'
       })
