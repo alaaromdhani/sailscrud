@@ -47,16 +47,19 @@ module.exports = {
       if(seller_id){
           where.seller_id = seller_id
       }  
+      let dateBetween=[]
       if(debutDate){
-        where.createdAt = {[sequelize.Op.and]:[
-          sequelize.where(sequelize.fn('date',sequelize.col('Payment.createdAt')),{
-            [sequelize.Op.gte]:debutDate
-          }),
-          sequelize.where(sequelize.fn('date',sequelize.col('Payment.createdAt')),{
-            [sequelize.Op.lte]:debutDate
-          })
-
-        ]}
+        dateBetween.push(sequelize.where(sequelize.fn('date',sequelize.col('Payment.createdAt')),{
+          [sequelize.Op.gte]:debutDate
+        }))
+      }
+      if(endDate){
+        dateBetween.push(sequelize.where(sequelize.fn('date',sequelize.col('Payment.createdAt')),{
+          [sequelize.Op.lte]:endDate
+        }))
+      }
+      where.createdAt = {
+        [sequelize.Op.and]:dateBetween
       }
       
       // Create the sorting order based on the sortBy and sortOrder parameters
