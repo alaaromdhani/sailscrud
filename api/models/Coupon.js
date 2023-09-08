@@ -48,7 +48,7 @@ module.exports = {
    },
     
     type:{
-      type:DataTypes.ENUM('percentage','ammount'),
+      type:DataTypes.ENUM('percentage','amount'),
       defaultValue:'percentage'
     }
 
