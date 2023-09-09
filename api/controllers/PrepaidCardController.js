@@ -5,7 +5,9 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const { Op } = require("sequelize");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const resolveError = require("../../utils/errors/resolveError");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
@@ -194,7 +196,47 @@ module.exports = {
       })
     }
   },
-
+  getPrepaidCardsBySeller:async (req,res)=>{
+   try{
+    const {seller_id} = req.params  
+  
+    const search = req.query.search
+    const page = parseInt(req.query.page)+1 || 1;
+    const limit = req.query.limit || 10;
+    let where=search?{
+      name:{
+        [Op.like]:'%'+search+'%'
+      }
+    }:{seller_id}
+    let {rows} = await PrepaidCard.findAndCountAll({where,
+      attributes:['name'],
+    include:{
+      model:Card,
+      attributes:['id'],
+      foreignKey:'serie_id',
+      where:{
+        used:true
+      },
+      required:false
+    },
+    limit: parseInt(limit, 10),
+    offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+    })
+    
+    let count = rows.length
+    return DataHandlor(req,{
+      success: true,
+      data: rows,
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+      totalCount: rows.length,
+      totalPages: Math.ceil(count / parseInt(limit, 10)),
+    },res);
+   }catch(e){
+    console.log(e)
+    return ErrorHandlor(req,resolveError(e),res)
+   }
+  },
   async destroy(req, res) {
     sails.services.payementservice.deleteModel(req,(err,data)=>{
       if(err){

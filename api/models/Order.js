@@ -33,11 +33,7 @@ const {
                   return Promise.all(ans.map(a=>a.update({type:'paid'})))
                 })
           }
-          if(order.changed('status') && order.status==='expired'){
-                 await AnneeNiveauUser.findAll({where:{order_id:order.id}}).then(ans=>{
-                   return Promise.all(ans.map(a=>a.update({type:'archive'})))
-                 })
-           }
+          
 
         }
       }

@@ -123,7 +123,7 @@ module.exports.policies = {
   PrepaidCardController:{
     'create':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions','packPhotoUploader'],//adminonly
     'update':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions','packPhotoUploader'],//adminonly
-  
+    'getPrepaidCardsBySeller':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly'],
     '*':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions']//adminonly
   },
   PackController:{

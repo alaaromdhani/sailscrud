@@ -18,6 +18,8 @@ module.exports.routes = {
   'patch /profile/me':'AuthController.profileUpdater',
   'get /register/countries':'AuthController.getCounteries',
   'get /register/states/:countryId':'AuthController.getStatesByCountry',
+    //dashboardpayment
+  'get /api/v1/series/:seller_id':'PrepaidCardController.getPrepaidCardsBySeller',
   //medialibrary
   'get /v/uploads/:filename':'AssetsController.streamPrivateFile',
   'get /v/public/:filename':'AssetsController.streamPublicFile',

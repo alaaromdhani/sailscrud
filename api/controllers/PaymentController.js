@@ -38,8 +38,16 @@ module.exports = {
       const search = req.query.search;
       const sortBy = req.query.sortBy || 'createdAt'; // Set the default sortBy attribute
       const sortOrder = req.query.sortOrder || 'DESC'; // Set the default sortOrder
-  
-
+      let whereUser = {}
+      if(search){
+          whereUser = {
+            where:{
+              name:{
+                [sequelize.Op.like]:'%'+search+'%'
+              }
+            }
+          }  
+      }  
       // Create the filter conditions based on the search query
       let  where = {
 
@@ -72,7 +80,8 @@ module.exports = {
         include:[{
           model:Seller,
           foreignKey:'seller_id',
-          attributes:['name']
+          attributes:['name'],
+          where:whereUser
         },{
           model:User,
           foreignKey:'addedBy',
