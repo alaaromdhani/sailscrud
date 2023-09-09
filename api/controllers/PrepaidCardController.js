@@ -215,7 +215,7 @@ module.exports = {
     }:{seller_id}
 
     let {count ,rows} = await PrepaidCard.findAndCountAll({where,
-      attributes:['name','nbre_cards'],
+      attributes:['id','name','nbre_cards'],
       
       include:{
       model:Card,
