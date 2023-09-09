@@ -206,15 +206,17 @@ module.exports = {
     let where=search?{
       name:{
         [Op.like]:'%'+search+'%'
-      }
+      },
+      seller_id
     }:{seller_id}
 
-    /*let {rows} = await PrepaidCard.findAndCountAll({where,
+    let {count ,rows} = await PrepaidCard.findAndCountAll({where,
       attributes:['name'],
     include:{
       model:Card,
       attributes:['id'],
       foreignKey:'serie_id',
+      
       where:{
         used:true
       },
@@ -224,25 +226,15 @@ module.exports = {
     offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
     })
     
-    let count = rows.length
     return DataHandlor(req,{
       success: true,
       data: rows,
       page: parseInt(page, 10),
       limit: parseInt(limit, 10),
-      totalCount: rows.length,
+      totalCount: count,
       totalPages: Math.ceil(count / parseInt(limit, 10)),
-    },res);*/
-    let data = await Card.findAll({
-      group:'serie_id',
-      attributes:['serie_id',[Sequelize.literal(`sum(CASE used WHEN 1 THEN 1 ELSE 0 END)`),'nbre_used']],
-      include:{
-        model:PrepaidCard,
-        foreignKey:'serie_id',
-        attributes:['name','nbre_cards']
-      }
-    })
-    return DataHandlor(req,data,res)   
+    },res);
+  
    }catch(e){
     console.log(e)
     return ErrorHandlor(req,resolveError(e),res)
