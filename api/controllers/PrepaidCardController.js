@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const resolveError = require("../../utils/errors/resolveError");
 const SqlError = require("../../utils/errors/sqlErrors");
@@ -208,7 +208,8 @@ module.exports = {
         [Op.like]:'%'+search+'%'
       }
     }:{seller_id}
-    let {rows} = await PrepaidCard.findAndCountAll({where,
+
+    /*let {rows} = await PrepaidCard.findAndCountAll({where,
       attributes:['name'],
     include:{
       model:Card,
@@ -231,7 +232,17 @@ module.exports = {
       limit: parseInt(limit, 10),
       totalCount: rows.length,
       totalPages: Math.ceil(count / parseInt(limit, 10)),
-    },res);
+    },res);*/
+    let data = await Card.findAll({
+      group:'serie_id',
+      attributes:['serie_id',[Sequelize.literal(`sum(CASE used WHEN 1 THEN 1 ELSE 0 END)`),'nbre_used']],
+      include:{
+        model:PrepaidCard,
+        foreignKey:'serie_id',
+        attributes:['name','nbre_cards']
+      }
+    })
+    return DataHandlor(req,data,res)   
    }catch(e){
     console.log(e)
     return ErrorHandlor(req,resolveError(e),res)

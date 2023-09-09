@@ -77,8 +77,8 @@ module.exports = {
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
-        totalCount: rows.length,
-        totalPages: Math.ceil(count / parseInt(limit, 10)),
+        totalCount: count,
+        totalPages: Math.ceil(rows.length / parseInt(limit, 10)),
       },res);
     } catch (error) {
      return ErrorHandlor(req,new SqlError(error),res)
