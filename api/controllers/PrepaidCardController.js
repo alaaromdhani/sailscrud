@@ -215,16 +215,18 @@ module.exports = {
     }:{seller_id}
 
     let {count ,rows} = await PrepaidCard.findAndCountAll({where,
-      attributes:['name'],
-    include:{
+      attributes:['name','nbre_cards'],
+      
+      include:{
       model:Card,
       attributes:['id'],
       foreignKey:'serie_id',
-      
+        
       where:{
         used:true
       },
-      required:false
+      required:false,
+      
     },
     limit: parseInt(limit, 10),
     offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
