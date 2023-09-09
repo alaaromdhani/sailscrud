@@ -214,7 +214,7 @@ module.exports = {
       seller_id
     }:{seller_id}
 
-    let {count ,rows} = await PrepaidCard.findAndCountAll({where,
+    let {rows} = await PrepaidCard.findAndCountAll({where,
       attributes:['id','name','nbre_cards'],
       
       include:{
@@ -231,6 +231,9 @@ module.exports = {
     limit: parseInt(limit, 10),
     offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
     })
+    let count=await PrepaidCard.count({where:{
+      seller_id
+    }})
     
     return DataHandlor(req,{
       success: true,
