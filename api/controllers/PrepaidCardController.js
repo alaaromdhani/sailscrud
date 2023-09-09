@@ -103,14 +103,18 @@ module.exports = {
         where,
         include:[{
           model:Upload,
-          foreignKey:'photo'
+          foreignKey:'photo',
+          attributes:['link']
         },
         {
           model:Pack,
           foreignKey:'pack_id',
           attributes:['name']
-
-
+        },
+        {
+          model:Seller,
+          foreignKey:'seller_id',
+          attributes:['name']
         }
       ],
         order,
