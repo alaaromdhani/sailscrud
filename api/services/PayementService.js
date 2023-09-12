@@ -159,17 +159,14 @@ module.exports = {
                 let qrpositionX=130
                 let qrpositionY=30
                 const pdfDocument = require('pdfkit')
-                const fs = require('fs')
                 const doc = new pdfDocument();
                 var QRCode = require('qrcode');
-                
-                //await doc.pipe(fs.createWriteStream(path.join(__dirname,'../../assets/cards.pdf')));
                 let counter =0;
                 for(let i=0;i<serie.Cards.length;i++){
                     doc.image(path.join(__dirname,'../../assets/'+serie.Upload.path+'/'+serie.Upload.file_name+'.'+serie.Upload.extension), positionX, positionY, {width: 310,height:198})
-                    //doc.image(url,qrpositionX,qrpositionY,{width:40,height:40})
+                    let url = await QRCode.toDataURL(serie.Cards[i].code)
+                    doc.image(url,qrpositionX,qrpositionY,{width:40,height:40})
                     doc.fontSize(20).text(serie.Cards[i].code,textpositionX,textpositionY)
-                    console.log('after save',i)
                     if(positionX>0){
                         positionX=0
                         positionY+=198
@@ -200,7 +197,6 @@ module.exports = {
                 }
                 doc.save()
                 doc.end()
-                
                 return {doc}
             }
             else{
@@ -237,8 +233,6 @@ module.exports = {
                 console.log('here')
                 return Promise.reject(RecordNotFoundErr())
             }
-          }).then(c=>{
-            return c
           })  
 
      },

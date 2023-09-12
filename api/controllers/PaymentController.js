@@ -96,9 +96,14 @@ module.exports = {
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
+       let total =0
+      rows.forEach(r=>{
+          total+=r.amount
+      })
 
       return DataHandlor(req,{
         success: true,
+        total,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
