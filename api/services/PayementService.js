@@ -162,13 +162,14 @@ module.exports = {
                 const fs = require('fs')
                 const doc = new pdfDocument();
                 var QRCode = require('qrcode');
-                doc.pipe(fs.createWriteStream(path.join(__dirname,'../../assets/cards.pdf')));
+                
+                //await doc.pipe(fs.createWriteStream(path.join(__dirname,'../../assets/cards.pdf')));
                 let counter =0;
                 for(let i=0;i<serie.Cards.length;i++){
                     doc.image(path.join(__dirname,'../../assets/'+serie.Upload.path+'/'+serie.Upload.file_name+'.'+serie.Upload.extension), positionX, positionY, {width: 310,height:198})
-                    let url = await QRCode.toDataURL(serie.Cards[i].code)
-                    doc.image(url,qrpositionX,qrpositionY,{width:40,height:40})
-                    doc.fontSize(20).text(serie.Cards[0].code,textpositionX,textpositionY)
+                    //doc.image(url,qrpositionX,qrpositionY,{width:40,height:40})
+                    doc.fontSize(20).text(serie.Cards[i].code,textpositionX,textpositionY)
+                    console.log('after save',i)
                     if(positionX>0){
                         positionX=0
                         positionY+=198
@@ -199,7 +200,8 @@ module.exports = {
                 }
                 doc.save()
                 doc.end()
-                return {path:path.join(__dirname,'../../assets')}
+                
+                return {doc}
             }
             else{
 
@@ -235,9 +237,29 @@ module.exports = {
                 console.log('here')
                 return Promise.reject(RecordNotFoundErr())
             }
+          }).then(c=>{
+            return c
           })  
 
-     }
+     },
+     createDefaultSerie:async (req)=>{
+        const {name,path} = sails.config.custom.serie
+        if(!name || !path){
+            return Promise.reject(new ValidationError({message:'some inputs are missing did you forget to set you conf file '}))
+        }
+        const file_original_name = path.split('/').pop()
+        const extension = file_original_name.split('.').pop()
+        let serie = {
+            name,
+            nbre_cards:0,
+            addedBy:req.user.id
+        }
+        serie.photo = await Upload.create({
+            
+        })
+            
+
+    }
      
     
 

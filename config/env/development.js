@@ -162,6 +162,10 @@ module.exports = {
 
 
   custom: {
+    serie:{
+      name:'madar',
+      path:'seeders/default_serie.jpg'
+    },
     security:{
       recaptcha:{
         key:'6LfzbI0nAAAAAJVjT9_5O40dEwPsWT9G5NtJhXJ7'

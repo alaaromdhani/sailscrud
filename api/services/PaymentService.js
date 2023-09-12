@@ -5,7 +5,7 @@ const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const { ErrorHandlor } = require("../../utils/translateResponseMessage")
 const schemaValidation = require("../../utils/validations")
-const UpdateCardShema = require("../../utils/validations/CardSchema")
+const {UpdateCardShema} = require("../../utils/validations/CardSchema")
 const { UpdateCouponShema } = require("../../utils/validations/CouponSchema")
 const { UpdatePayconfigShema } = require("../../utils/validations/PayconfigSchema")
 
@@ -260,7 +260,8 @@ module.exports = {
 
         })
 
-    }
+    },
+    
     
 
 

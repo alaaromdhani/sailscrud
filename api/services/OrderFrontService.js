@@ -326,7 +326,7 @@ module.exports={
            })
         }
        },
-       createAdress:(req)=>{
+       createAdresse:(req)=>{
         return new Promise((resolve,reject)=>{
             const bodyValidation = schemaValidation(AdresseShema)(req.body)
             if(bodyValidation.isValid){
@@ -359,24 +359,27 @@ module.exports={
 
 
        },
-       deleteAdress:(req)=>{
+       deleteAdresse:(req)=>{
+        let adress
         return Adresse.findOne({where:{id:req.params.id,addedBy:req.user.id}}).then(a=>{
             if(!a){
+                
                 return Promise.reject(new RecordNotFoundErr())
             }
             else{
+                adress=a
                 return Livraison.findOne({where:{id:a.dataValues.id}})
             }
-        }).then(a=>{
+        }).then(l=>{
             if(l){
                 return Promise.reject(new ValidationError())
             }
             else{
-                return a.destroy()
-            }
+                return adress.destroy()
+            }         
         })
        },
-       createLivraision:()=>{
+       createLivraision:(req)=>{
             return new Promise((resolve,reject)=>{
                 const bodyValidation = schemaValidation(LivraisonShema)(req.body)
                 if(bodyValidation.isValid){
@@ -386,15 +389,36 @@ module.exports={
                     return reject(new ValidationError({message:bodyValidation.message}))
                 }
              }).then(()=>{
-                
+                return Livraison.findOne({where:{
+                    addedBy:req.user.id,
+                    status:'onhold'
+                }})
+            }).then(l=>{
+                if(l){
+                    return Promise.reject(new ValidationError())
+                }
+                return Order.findOne({where:{
+                    code:req.body.order_code,
+                    addedBy:req.user.id,
+                    status:'onhold'
+                }})
 
-             })
-           /* return Order.findOne({where:{
-                id:
 
-            }})*/ 
+            }).then(l=>{
+                if(!l){
+                    return Promise.reject(new RecordNotFoundErr())
+                }
+                return Livraison.create({
+                    order_id:l.id,
+                    adresse_id:req.body.adresse_id,
+                    addedBy:req.user.id
+                })
 
-       }
+            })
+           
+
+       },
+      
 
 
        

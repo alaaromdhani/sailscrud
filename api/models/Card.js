@@ -56,7 +56,9 @@ module.exports = {
         foreignKey:'addedBy',
       
       })
-      
+      Card.belongsTo(Livraison,{
+        foreignKey:'livraison_id'
+      })
       Card.belongsTo(Order,{
         foreignKey:'order_id'
       })

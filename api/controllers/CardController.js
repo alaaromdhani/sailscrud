@@ -13,7 +13,9 @@ const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMess
 
 module.exports = {
   
-
+  async create (req, res) {
+         
+  },
   async find(req, res) {
     try {
       const serie_id =req.query.serie_id 

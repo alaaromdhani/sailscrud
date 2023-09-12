@@ -6,10 +6,13 @@ const {
   
   module.exports = {
     options: {
-      tableName: 'verbs'
+      tableName: 'verbs',
+     
     },
+    
     datastore: 'default',
     tableName: 'verbs',
+   
     attributes: {
       id:{
         type:DataTypes.STRING,
@@ -17,8 +20,8 @@ const {
       },
       display:{
         type:DataTypes.STRING,
-        unique:true
-
+        allowNull:false
+        
       }
         
      

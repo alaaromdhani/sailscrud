@@ -4,7 +4,7 @@ const AdresseShema = joi.object({
     adresse: joi.string().required(),
     state_id:joi.number().required(),
     postal_code: joi.string().required(),
-    order_code:joi.string().required()
+   
     
 })
 const updateAdressSchema = joi.object({

@@ -330,26 +330,75 @@ module.exports={
         }
 
     },
-    createAdress:async (req,res)=>{
+    createAdresse:async (req,res)=>{
         try{
-            return DataHandlor(req,await sails.service.orderfrontservice.createAdress(req),res)
+            return DataHandlor(req,await sails.services.orderfrontservice.createAdresse(req),res)
         }
         catch(e){
-            return DataHandlor(req,resolveError(e),res)
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
         }
     },
-    deleteAdress:async (req,res)=>{
+    getAdresses:async (req,res)=>{
         try{
-            await sails.service.orderfrontservice.deleteAdress(req)
+            let data =await  Adresse.findAll({
+                where:{
+                  addedBy:req.user.id
+                },
+                attributes:['adresse','postal_code','phonenumber','state_id'],
+                include:{
+                    model:State,
+                    foreignKey:'state_id',
+                    attributes:['name']
+                }
+            })
+            return DataHandlor(req,data,res)
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+    },
+    deleteAdresse:async (req,res)=>{
+        try{
+            await sails.services.orderfrontservice.deleteAdresse(req)
             return DataHandlor(req,{},res)
-        }
-        catch(e){
-            return DataHandlor(req,resolveError(e),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
         }
     },
-    addLivraison:(req,res)=>{
+    createLivraisons:async (req,res)=>{
+        try{
+            await sails.services.orderfrontservice.createLivraision(req)
+            return DataHandlor(req,{},res,"تم إنشاء الشحن بنجاح")
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    getLivraisons:async (req,res)=>{
+        try{
+            return DataHandlor(req,await Livraison.findAll({where:{
+                addedBy:req.user.id,
+                status:'onhold',
+               
+            }, include:[{
+                model:Adresse,
+                attributes:['postal_code','state_id','adresse','phonenumber'],
+                include:{
+                    model:State,
+                    foreignKey:'state_id',
+                    attributes:['name']
+                }
+            },{
+                model:Order,
+                attributes:['code']
+            }]}),res)
+        }catch(e){
+            //console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    payLivraison:(req)=>{
         
-
     }
    
     

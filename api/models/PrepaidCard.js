@@ -81,9 +81,7 @@ const {
        PrepaidCard.belongsTo(Seller,{
         foreignKey:'seller_id'
        })
-       PrepaidCard.belongsTo(Livraison,{
-        foreignKey:'livraison_id'
-       })
+    
        PrepaidCard.hasMany(Card,{
         foreignKey:'serie_id'
        })

@@ -13,6 +13,7 @@ const ValidationError = require("../../utils/errors/validationErrors");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
 const schemaValidation = require("../../utils/validations");
 const { PrepaidcardShemaWithoutFile } = require("../../utils/validations/PrepaidcardSchema");
+const path = require("path");
 
 
 module.exports = {
@@ -263,21 +264,17 @@ module.exports = {
   },
   print:async(req,res)=>{
     try{
-      let data =await sails.services.payementservice.print(req)
-      console.log(data)
-      let options={
-        root:data.path
-      }
-      let filename='cards.pdf'
-      res.setHeader('Content-Disposition', 'attachment; filename='+filename);
-      res.sendFile(filename, options,err=>{
-        if(err){
-          ErrorHandlor(req,new RecordNotFoundErr(),res)
-        }
-        else{
-          console.log(filename)
-        }
-      })
+      let {doc} =await sails.services.payementservice.print(req)
+      /*await new Promise((resolve,reject)=>{
+        console.log('waiting for 1 sec')
+          setTimeout(()=>{
+            return resolve()
+          },100)
+
+      })*/
+      doc.pipe( res )
+  //    res.setHeader('Content-Disposition', 'attachment; filename='+filename);
+     
       
     }
     catch(e){
