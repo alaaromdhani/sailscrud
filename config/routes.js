@@ -20,6 +20,7 @@ module.exports.routes = {
   'get /register/states/:countryId':'AuthController.getStatesByCountry',
     //dashboardpayment
   'get /api/v1/series/:seller_id':'PrepaidCardController.getPrepaidCardsBySeller',
+  'get /api/v1/prepaidcards/print/:id':'PrepaidCardController.print',
   //medialibrary
   'get /v/uploads/:filename':'AssetsController.streamPrivateFile',
   'get /v/public/:filename':'AssetsController.streamPublicFile',

@@ -27,6 +27,8 @@
     "passport-http": "^0.3.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
+    "pdfkit": "^0.13.0",
+    "qrcode": "^1.5.3",
     "sails": "^1.5.4",
     "sails-crud-generators": "^2.0.0",
     "sails-hook-grunt": "^5.0.0",

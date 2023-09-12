@@ -261,4 +261,27 @@ module.exports = {
   
   
   },
+  print:async(req,res)=>{
+    try{
+      let data =await sails.services.payementservice.print(req)
+      console.log(data)
+      let options={
+        root:data.path
+      }
+      let filename='cards.pdf'
+      res.setHeader('Content-Disposition', 'attachment; filename='+filename);
+      res.sendFile(filename, options,err=>{
+        if(err){
+          ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        else{
+          console.log(filename)
+        }
+      })
+      
+    }
+    catch(e){
+      return ErrorHandlor(req,resolveError(e),res)
+    }
+  }
 };

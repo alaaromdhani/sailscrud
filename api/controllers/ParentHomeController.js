@@ -330,6 +330,27 @@ module.exports={
         }
 
     },
+    createAdress:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.service.orderfrontservice.createAdress(req),res)
+        }
+        catch(e){
+            return DataHandlor(req,resolveError(e),res)
+        }
+    },
+    deleteAdress:async (req,res)=>{
+        try{
+            await sails.service.orderfrontservice.deleteAdress(req)
+            return DataHandlor(req,{},res)
+        }
+        catch(e){
+            return DataHandlor(req,resolveError(e),res)
+        }
+    },
+    addLivraison:(req,res)=>{
+        
+
+    }
    
     
 

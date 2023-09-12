@@ -7,6 +7,8 @@ const schemaValidation = require("../../utils/validations")
 const { default: axios } = require("axios")
 const UnkownError = require("../../utils/errors/UnknownError")
 const { ErrorHandlor } = require("../../utils/translateResponseMessage")
+const { AdresseShema } = require("../../utils/validations/AdresseSchema")
+const { LivraisonShema } = require("../../utils/validations/LivraisonSchema")
 
 
 module.exports={
@@ -239,7 +241,6 @@ module.exports={
           }
           
           else{
-            console.log(o.dataValues.Packs[0].dataValues)
             order =o
             return Card.findOne({
                 where:{
@@ -324,7 +325,78 @@ module.exports={
                 }    
            })
         }
+       },
+       createAdress:(req)=>{
+        return new Promise((resolve,reject)=>{
+            const bodyValidation = schemaValidation(AdresseShema)(req.body)
+            if(bodyValidation.isValid){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError({message:bodyValidation.message}))
+            }
+        }).then(()=>{
+            return State.findByPk(req.body.state_id,{include:{
+                model:Country,
+                foreignKey:'country_id',
+                attributes:['name']
+            }})
+        }).then(s=>{
+            if(s && s.Country.name==='Tunisia'){
+                return s
+            }
+            else{
+                return Promise.reject(new ValidationError())
+            }
+        }).then(s=>{
+            req.body.addedBy = req.user.id
+            req.body.phonenumber = req.user.phonenumber
+            return Adresse.create(req.body)
+        }).then(s=>{
+            return {message:'تم إنشاء العنوان بنجاح'}
+
+        })
+
+
+       },
+       deleteAdress:(req)=>{
+        return Adresse.findOne({where:{id:req.params.id,addedBy:req.user.id}}).then(a=>{
+            if(!a){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                return Livraison.findOne({where:{id:a.dataValues.id}})
+            }
+        }).then(a=>{
+            if(l){
+                return Promise.reject(new ValidationError())
+            }
+            else{
+                return a.destroy()
+            }
+        })
+       },
+       createLivraision:()=>{
+            return new Promise((resolve,reject)=>{
+                const bodyValidation = schemaValidation(LivraisonShema)(req.body)
+                if(bodyValidation.isValid){
+                    return resolve()
+                }
+                else{
+                    return reject(new ValidationError({message:bodyValidation.message}))
+                }
+             }).then(()=>{
+                
+
+             })
+           /* return Order.findOne({where:{
+                id:
+
+            }})*/ 
+
        }
+
+
        
        
    
