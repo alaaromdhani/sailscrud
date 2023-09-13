@@ -338,7 +338,9 @@ module.exports={
            })
         }
        },
+
        createAdresse:(req)=>{
+        let adress
         return new Promise((resolve,reject)=>{
             const bodyValidation = schemaValidation(AdresseShema)(req.body)
             if(bodyValidation.isValid){
@@ -347,6 +349,13 @@ module.exports={
             else{
                 return reject(new ValidationError({message:bodyValidation.message}))
             }
+        }).then(()=>{
+            return Adresse.findOne({where:{addedBy:req.user.id}})
+        }).then(a=>{
+            if(a){
+                adress =a
+            }
+            
         }).then(()=>{
             return State.findByPk(req.body.state_id,{include:{
                 model:Country,
@@ -361,9 +370,21 @@ module.exports={
                 return Promise.reject(new ValidationError())
             }
         }).then(s=>{
-            req.body.addedBy = req.user.id
-            req.body.phonenumber = req.user.phonenumber
-            return Adresse.create(req.body)
+           
+            
+            if(adress ){
+             let    {adresse,state_id,postal_code} = adress.dataValues
+                if(JSON.stringify({adresse,state_id,postal_code})!=JSON.stringify(req.body)){
+                    console.log('differenet',{adresse,state_id,postal_code})
+                    return adress.update(req.body)
+                }
+                return adress
+            }
+            else{
+                req.body.addedBy = req.user.id
+                 req.body.phonenumber = req.user.phonenumber
+                return Adresse.create(req.body)
+            }
         })
 
        },
@@ -438,6 +459,20 @@ module.exports={
                 }
                 else{
                     return reject(new ValidationError())
+                }
+            }).then(()=>{
+                return Card.findOne({where:{code:req.body.code,used:false,livraison_id:req.params.id},
+                    include:{
+                        model:Livraison,
+                        foreignKey:'livraison_id'
+                    }})
+            }).then(c=>{
+                if(c){
+                    let l = c.Livraison
+                    return Promise.all([c.update({used:true}),l.update({status:'active'})])
+                }
+                else{
+                    return Promise.reject(new ValidationError({message:''}))
                 }
             })
 
