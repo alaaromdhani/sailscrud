@@ -364,11 +364,7 @@ module.exports={
             req.body.addedBy = req.user.id
             req.body.phonenumber = req.user.phonenumber
             return Adresse.create(req.body)
-        }).then(s=>{
-            return {message:'تم إنشاء العنوان بنجاح'}
-
         })
-
 
        },
        deleteAdresse:(req)=>{
@@ -434,6 +430,19 @@ module.exports={
            
 
        },
+       payLivraison:(req)=>{
+            return new Promise((resolve,reject)=>{
+                const bodyValidation = schemaValidation(prepaidCartPayment)(req.body)
+                if(bodyValidation.isValid){
+                    return resolve()
+                }
+                else{
+                    return reject(new ValidationError())
+                }
+            })
+
+
+       }
 
       
 
