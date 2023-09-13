@@ -142,12 +142,13 @@ module.exports = {
                 id:{
                     [Op.in]:req.body.annee_niveau_users
                 },
+                type:'trial'
              },include:{
                 model:User,
                 foreignKey:'addedBy',
                 attributes:['addedBy']
             },
-            type:'trial',})
+            })
         }).then(annee_niveau_users=>{
             if(annee_niveau_users.length){
                 let annee_scolaire_id = annee_niveau_users[0].annee_scolaire_id

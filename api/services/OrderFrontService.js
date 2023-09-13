@@ -452,6 +452,7 @@ module.exports={
 
        },
        payLivraison:(req)=>{
+         let liv_order
             return new Promise((resolve,reject)=>{
                 const bodyValidation = schemaValidation(prepaidCartPayment)(req.body)
                 if(bodyValidation.isValid){
@@ -461,21 +462,31 @@ module.exports={
                     return reject(new ValidationError())
                 }
             }).then(()=>{
-                return Card.findOne({where:{code:req.body.code,used:false,livraison_id:req.params.id},
-                    include:{
-                        model:Livraison,
 
-                        foreignKey:'livraison_id',
-                        include:{
-                            model:Order,
-                            foreignKey:'order_id'
-                        }
-                    }})
+                return  Livraison.findOne({include:{
+                    model:Order,
+                    where:{
+                        addedBy:req.user.id,
+                        code:req.params.id,
+                        payment_type_id:4
+                    },
+                    required:true
+                }})
+            }).then(l=>{
+                if(l && l.dataValues.Order){
+                    liv_order = l
+                    return Card.findOne({where:{code:req.body.code,used:false,livraison_id:l.dataValues.id}})
+                    
+                }
+                else{
+                    return Promise.reject(new RecordNotFoundErr())
+                }
+
             }).then(c=>{
                 if(c){
-                    let o = c.dataValues.Livraison.dataValues.Order 
-                    let l = c.dataValues.Livraison
-                    return Promise.all([c.update({used:true,order_id:o.dataValues.id}),l.update({status:'active'})])
+
+                    return Promise.all([c.update({used:true,order_id:liv_order.dataValues.Order.dataValues.id}),liv_order.update({status:'active'})])
+    
                 }
                 else{
                     return Promise.reject(new ValidationError({message:'رمز البطاقة خاطئ'}))
