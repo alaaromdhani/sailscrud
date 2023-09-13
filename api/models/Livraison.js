@@ -46,6 +46,9 @@ const {
        Livraison.belongsTo(User,{
         foreignKey:'addedBy'
        })
+       Livraison.hasMany(Card,{
+        foreignKey:'livraison_id'
+       })
        
       
        

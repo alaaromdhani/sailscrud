@@ -47,7 +47,8 @@ module.exports = {
           foreignkey:'adresse_id'
         },{model:Order,foreignkey:'order_id',attributes:['code','priceAfterReduction']},
 
-        {model:User,foreignkey:'addedBy',attributes:['firstName','lastName']}
+        {model:User,foreignkey:'addedBy',attributes:['firstName','lastName']},
+        {model:Card,foreignkey:'livraison_id',attributes:['id','serie_id']}
         ],
         order,
         limit: parseInt(limit, 10),

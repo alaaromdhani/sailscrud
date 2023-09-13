@@ -26,12 +26,16 @@ module.exports = {
            madarpack = await sails.services.payementservice.createDefaultSerie(req)
          }
          
-         let card =await Card.create({
-           serie_id:madarpack.id?madarpack.id:madarpack.dataValues.id,
-           code:generateCardCode(3),
-           addedBy:req.user.id,
-           livraison_id:req.body.livraison_id
-          })
+         let [card,created] =await Card.findOrCreate({where:{
+          serie_id:madarpack.id?madarpack.id:madarpack.dataValues.id,
+          livraison_id:req.body.livraison_id
+         
+         },defaults:{
+          serie_id:madarpack.id?madarpack.id:madarpack.dataValues.id,
+          code:generateCardCode(3),
+          addedBy:req.user.id,
+          livraison_id:req.body.livraison_id
+         }})
           return DataHandlor(req,card,res) 
         }
         else{
