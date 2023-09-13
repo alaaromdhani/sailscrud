@@ -1,48 +1,4 @@
-endpoint:{
-    register:{
-        edgecases:['sending a invalid school level']
-        authcodes:{
-                    only 1 auth code per user stays ---> done
-                    only inactive users should reach the account activation routes--> done
-                    must login the user after registration---->  done
-                    must notify the user that the code change only when the sms is sent ---->done 
-                    must destroy the authcodes instances when the user is activated ---->done 
-                    must ensure that the generated code is always the same number of digits
-                    must enable the user to update his profile even when his not activate it ---> done   
-                },
-                usecases to test{
-                    registration--->recieving the code                                  ---->done,
-                    try_type valid code--->verify                                       ----->done,
-                    try_type not valid code--->verify if the numberRetries increments
-                    //blocking the user
-                    try_type to invalidate the number of attemtps--->verify if the user is blocked
-                    //resend the user
-                    try to resend--->in normal cases and verify if the the number of attemps becomes 0 and the resendattemps increment and the resendTime grows--->done
-                    try to resend--->try to invalidate the number of attemps to resend--->done
-                    arabic messages
 
-                }    
-    }
-
-        defferenciate between the admin routes and the normaluser routes(middleware)
-        //must delete all authcodes for activation and activate all users when the settings for account activation are disabled
-    students:{
-        the parent must update only his children
-
-    } 
-    courses:{
-        adding a subject with two modules
-        one module is on the trimestre 1 and the other for trimestre 2
-        adiding 4 courses {
-                2 courses on the module 1 , one of them is active
-                2 courses on the module 2 , one of them is active
-        }
-
-    }  
-    id_student
-    id_niveau_scolaire
-    id_annee_scolaire
+    click to pay:multiply all the prices by 1000 
     
     
-    
-}

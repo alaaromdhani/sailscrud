@@ -468,7 +468,7 @@ module.exports={
                     where:{
                         addedBy:req.user.id,
                         code:req.params.id,
-                        payment_type_id:4
+                        
                     },
                     required:true
                 }})
