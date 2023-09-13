@@ -248,11 +248,16 @@ module.exports = {
             nbre_cards:0,
             addedBy:req.user.id
         }
-        serie.photo = await Upload.create({
-            
+        return  Upload.create({
+            file_original_name,
+            isPublic:true,
+            path:path,
+            file_name:'madar_card_special',
+            extension:extension,
+        }).then(u=>{
+            serie.photo = u.id
+            return PrepaidCard.create(serie)
         })
-            
-
     }
      
     

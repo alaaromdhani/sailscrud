@@ -4,6 +4,6 @@ const LivraisonShema = joi.object({
         adresse_id:joi.number().integer().required()
 })
 const UpdateLivraisonShema = joi.object({
-    status:joi.string().valid('onhold','paid')
+    status:joi.string().valid('active'),
 })
 module.exports = {LivraisonShema,UpdateLivraisonShema}

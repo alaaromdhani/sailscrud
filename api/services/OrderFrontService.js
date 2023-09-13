@@ -210,6 +210,18 @@ module.exports={
               
                     })
        },
+        payUsingVirement:(req)=>{
+            const {id} = req.params 
+            return  Order.findOne({where:{
+                code:id,
+                status:'onhold',
+                addedBy:req.user.id
+            }}).then(o=>{
+                return o.update({payment_type_id:2})
+            }).then(o=>{
+                return {message:'تمت العملية بنجاح'}
+            })        
+        },
        payUsingPrepaidCart:async(req)=>{
         let order 
         return new Promise((resolve,reject)=>{
@@ -360,23 +372,28 @@ module.exports={
 
        },
        deleteAdresse:(req)=>{
-        let adress
-        return Adresse.findOne({where:{id:req.params.id,addedBy:req.user.id}}).then(a=>{
+        
+        return Adresse.findOne({
+            where:{id:req.params.id,addedBy:req.user.id},
+            include:{
+                model:Livraison,
+                foreignKey:'adresse_id',
+                attributes:['id']
+            }
+        
+        }).then(a=>{
             if(!a){
                 
                 return Promise.reject(new RecordNotFoundErr())
             }
             else{
-                adress=a
-                return Livraison.findOne({where:{id:a.dataValues.id}})
+                if(a.Livraisons.length){
+                    return Promise.reject(new ValidationError({message:'هذا العنوان مرتبط ببعض الشحنات '}))
+                }
+                else{
+                    return a.destroy()
+                }
             }
-        }).then(l=>{
-            if(l){
-                return Promise.reject(new ValidationError())
-            }
-            else{
-                return adress.destroy()
-            }         
         })
        },
        createLivraision:(req)=>{
@@ -408,16 +425,16 @@ module.exports={
                 if(!l){
                     return Promise.reject(new RecordNotFoundErr())
                 }
-                return Livraison.create({
+             return   Promise.all([Livraison.create({
                     order_id:l.id,
                     adresse_id:req.body.adresse_id,
                     addedBy:req.user.id
-                })
-
+                }),l.update({payment_type_id:4,status:'shipping'})])
             })
            
 
        },
+
       
 
 

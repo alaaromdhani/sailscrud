@@ -236,7 +236,7 @@ module.exports={
             }
             if(type==="all"){
                 where.status = { 
-                    [Op.in]:['active','onhold']
+                    [Op.notIn]:['expired']
                 }                
             }
             
@@ -315,6 +315,13 @@ module.exports={
                     return ErrorHandlor(req,resolveError(e),res)
         
                 }
+        }
+        else if(type==='virement'){
+            try{
+                return DataHandlor(req,await sails.services.orderfrontservice.payUsingVirement(req),res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
         }
         else{
             return ErrorHandlor(req,new ValidationError({message:'الرجاء إدخال نوع دفع صالح'}),res)

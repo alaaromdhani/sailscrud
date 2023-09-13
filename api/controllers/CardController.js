@@ -6,15 +6,41 @@
  */
 
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const resolveError = require("../../utils/errors/resolveError");
 const SqlError = require("../../utils/errors/sqlErrors");
 const ValidationError = require("../../utils/errors/validationErrors");
+const generateCardCode = require("../../utils/generateCardCode");
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage");
+const schemaValidation = require("../../utils/validations");
+const { CreateCardShema } = require("../../utils/validations/CardSchema");
 
 
 module.exports = {
   
   async create (req, res) {
+     const bodyValidation   = schemaValidation(CreateCardShema)(req.body)
+     try{
+      if(bodyValidation.isValid){
+        let madarpack =  await PrepaidCard.findOne({where:{pack_id:null}})
+         if(!madarpack){
+           madarpack = await sails.services.payementservice.createDefaultSerie(req)
+         }
          
+         let card =await Card.create({
+           serie_id:madarpack.id?madarpack.id:madarpack.dataValues.id,
+           code:generateCardCode(3),
+           addedBy:req.user.id,
+           livraison_id:req.body.livraison_id
+          })
+          return DataHandlor(req,card,res) 
+        }
+        else{
+          throw new ValidationError({message:bodyValidation.message})
+        }
+         
+     } catch(e){
+      return ErrorHandlor(req,resolveError(e),res)
+     }
   },
   async find(req, res) {
     try {

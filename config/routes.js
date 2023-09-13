@@ -78,6 +78,7 @@ module.exports.routes = {
     
   //orders 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
+  
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
   
@@ -87,6 +88,7 @@ module.exports.routes = {
    'GET /front/api/v1/parent/orders/:user_id/:annee_scolaire_id':'ParentHomeController.getOrderByStudentAnnee', 
   'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
   'POST /front/api/v1/parent/orders/coupon/:id':'ParentHomeController.applicateCoupon',
+ 
   //livraisons front:
    'POST /front/api/v1/adresses':      'ParentHomeController.createAdresse',
    'GET /front/api/v1/adresses':       'ParentHomeController.getAdresses',

@@ -45,6 +45,9 @@ const {
        Adresse.belongsTo(User,{
         foreignKey:'addedBy'
        })
+       Adresse.hasMany(Livraison,{
+        foreignKey:'adresse_id'
+       })
        
       
        

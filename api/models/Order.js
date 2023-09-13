@@ -78,7 +78,7 @@ const {
           allowNull:true
         },
         status:{
-            type:DataTypes.ENUM('active','onhold','expired'),
+            type:DataTypes.ENUM('active','onhold','expired','shipping'),
             defaultValue:'onhold'
         },
 

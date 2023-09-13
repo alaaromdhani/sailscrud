@@ -9,7 +9,15 @@ const {
       charset: 'utf8',
       collate: 'utf8_general_ci',
       scopes: {},
-
+      hooks:{
+        async beforeSave(l,options){
+          if(l.changed('status') && l.status==='active'){
+            await Order.update({status:'active'},{where:{
+              id:l.order_id
+            }})
+          }
+        }
+      },
       tableName: 'livraisons',
       indexes:[],
     },
