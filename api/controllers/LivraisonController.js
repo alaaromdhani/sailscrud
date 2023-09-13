@@ -51,6 +51,7 @@ module.exports = {
         {model:Card,foreignkey:'livraison_id',attributes:['id','serie_id']}
         ],
         order,
+        distinct:true,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
       });
