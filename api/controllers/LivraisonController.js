@@ -41,10 +41,14 @@ module.exports = {
       // Perform the database query with pagination, filtering, sorting, and ordering
       const { count, rows } = await Livraison.findAndCountAll({
         where,
-        include:{
+
+        include:[{
           model:Adresse,
           foreignkey:'adresse_id'
-        },
+        },{model:Order,foreignkey:'order_id',attributes:['code','priceAfterReduction']},
+
+        {model:User,foreignkey:'addedBy',attributes:['firstName','lastName']}
+        ],
         order,
         limit: parseInt(limit, 10),
         offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
