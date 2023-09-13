@@ -14,7 +14,7 @@ const {
           if(l.changed('status') && l.status==='active'){
             await Order.update({status:'active'},{where:{
               id:l.order_id
-            }})
+            },individualHooks: true})
           }
         }
       },
