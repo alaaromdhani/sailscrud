@@ -90,6 +90,16 @@ module.exports = {
             foreignKey:'addedBy',
             attributes:['firstName','lastName']
           }
+        },
+        {
+          model:Livraison,
+          foreignKey:'livraison_id',
+          attributes:['addedBy'],
+          include:{
+            model:User,
+            foreignKey:'addedBy',
+            attributes:['firstName','lastName']
+          }
         },{
           model:PrepaidCard,
           foreignKey:'serie_id',
