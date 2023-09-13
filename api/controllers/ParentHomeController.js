@@ -323,6 +323,13 @@ module.exports={
                 return ErrorHandlor(req,resolveError(e),res)
             }
         }
+        else if(type==='livraison'){
+            try{
+                return DataHandlor(req,await sails.services.orderfrontservice.payLivraison(req),res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+        }
         else{
             return ErrorHandlor(req,new ValidationError({message:'الرجاء إدخال نوع دفع صالح'}),res)
         }

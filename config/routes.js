@@ -88,14 +88,14 @@ module.exports.routes = {
    'GET /front/api/v1/parent/orders/:user_id/:annee_scolaire_id':'ParentHomeController.getOrderByStudentAnnee', 
   'delete /front/api/v1/parent/orders/:id':'ParentHomeController.deleteOrder',
   'POST /front/api/v1/parent/orders/coupon/:id':'ParentHomeController.applicateCoupon',
- 
+    
   //livraisons front:
    'POST /front/api/v1/adresses':      'ParentHomeController.createAdresse',
    'GET /front/api/v1/adresses':       'ParentHomeController.getAdresses',
    'delete /front/api/v1/adresses/:id':'ParentHomeController.deleteAdresse',
    'POST /front/api/v1/livraisons':     'ParentHomeController.createLivraisons',
    'GET /front/api/v1/livraisons':     'ParentHomeController.getLivraisons',
-   
+  
    
  
   //student management

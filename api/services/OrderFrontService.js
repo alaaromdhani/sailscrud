@@ -464,16 +464,26 @@ module.exports={
                 return Card.findOne({where:{code:req.body.code,used:false,livraison_id:req.params.id},
                     include:{
                         model:Livraison,
-                        foreignKey:'livraison_id'
+
+                        foreignKey:'livraison_id',
+                        include:{
+                            model:Order,
+                            foreignKey:'order_id'
+                        }
                     }})
             }).then(c=>{
                 if(c){
-                    let l = c.Livraison
-                    return Promise.all([c.update({used:true}),l.update({status:'active'})])
+                    let o = c.dataValues.Livraison.dataValues.Order 
+                    let l = c.dataValues.Livraison
+                    return Promise.all([c.update({used:true,order_id:o.dataValues.id}),l.update({status:'active'})])
                 }
                 else{
-                    return Promise.reject(new ValidationError({message:''}))
+                    return Promise.reject(new ValidationError({message:'رمز البطاقة خاطئ'}))
                 }
+            }).then(c=>{
+                return {message:'تم الدفع بنجاح'}
+
+
             })
 
 
