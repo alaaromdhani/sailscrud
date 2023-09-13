@@ -155,7 +155,7 @@ module.exports={
                     code:req.params.id,
                     addedBy:req.user.id,
                     status:{
-                        [Op.in]:['active','onhold']
+                        [Op.notIn]:['expired']
                     },
                 },include:[{
                     
