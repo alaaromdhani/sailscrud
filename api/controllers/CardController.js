@@ -48,10 +48,11 @@ module.exports = {
   },
   async find(req, res) {
     try {
-      const serie_id =req.query.serie_id 
+      const {serie_id,livraison_id} =req.query 
       if(!serie_id){
         return ErrorHandlor(req,new ValidationError('serie_id is required'),res)
       }
+      
       const page = parseInt(req.query.page)+1 || 1;
       const limit = req.query.limit || 10;
       const search = req.query.search;
@@ -70,9 +71,13 @@ module.exports = {
           })),
         }
         : {};
-        where = {
+        where = livraison_id?{
           ...where,
-          serie_id
+          serie_id,
+          livraison_id
+        }:{
+          ...where,
+          serie_id,
         }
 
       // Create the sorting order based on the sortBy and sortOrder parameters
