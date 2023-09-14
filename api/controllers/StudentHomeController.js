@@ -41,8 +41,7 @@ module.exports={
     },
     getCourses:async(req,res)=>{
         //const trimestre_id
-        const {MatiereId} = req.params 
-        const TrimestreId = req.query.TrimestreId || (await sails.services.configservice.getCurrentTrimestres()).id
+        const {MatiereId,TrimestreId} = req.params 
         let ann = req.user.AnneeNiveauUsers.filter(a=>a.trimestre_id===TrimestreId).at(0)
         let canAccessPrivate =false
         if(ann && ann.type=='paid'){
