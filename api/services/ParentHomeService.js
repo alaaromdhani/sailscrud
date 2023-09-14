@@ -120,7 +120,7 @@ module.exports = {
         }}})
     },
     addToCart:(req)=>{
-        console.log('wow')
+    
         let ordred
         let c
         let full 
@@ -290,6 +290,7 @@ module.exports = {
                 id:{
                     [Op.ne]:cd.id
                 },
+                addedBy:req.user.id
                 
              },include:{
                 model:Pack,
@@ -303,7 +304,7 @@ module.exports = {
                 return []
             }
         }).then(cardDetails=>{
-            //console.log(cardDetails)
+           // console.log(cardDetails.length)
             if(cardDetails.length &&!cardDetails.some(c=>c.price===c.priceAfterReduction)){
                 return cardDetails[0].update({priceAfterReduction:cardDetails[0].price,isReducted:false})
             }
@@ -342,32 +343,6 @@ module.exports = {
     },
     
     
-    calculateCartDetailPrice:(req,packs)=>{
-        let updatedValues = {}
-        let groupedPacks={}
-
-        packs.forEach(p=>{
-            groupedPacks[p.nbTrimestres]=p.price
-        })
-        return CartDetail.findAll({where:{
-            addedBy:req.user.id
-        },include:{
-            model:AnneeNiveauUser,
-            foreignKey:'cart_detail_id'
-        }}).then(all=>{
-            let grouped ={} 
-            all.forEach(cd=>{
-               if(grouped['cd-'+cd.id+'-a-'+cd.AnneeNiveauUser[0].user_id]){
-                    grouped['cd-'+cd.id+'-a-'+cd.AnneeNiveauUser[0].user_id]++
-               }
-               else{
-                grouped['cd-'+cd.id+'-a-'+cd.AnneeNiveauUser[0].user_id]=1  
-               }
-            })
-
-
-        })
-     },
     
   
     deleteOrder:(req,callback)=>{

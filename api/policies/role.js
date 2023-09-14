@@ -1,9 +1,10 @@
 
 module.exports = (req,res,next)=>{
- 
+    
     
     if(req.user){
         req.role = req.user.Role
+        
        return  next()
     }
     else{

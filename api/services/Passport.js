@@ -79,7 +79,19 @@ else{
         if(req.pass){
           if(req.pass.studentRoute){
             includeOptions.push({
-              
+              model:AnneeNiveauUser,
+              foreighKey:'user_id',
+              attributes:['annee_scolaire_id','niveau_scolaire_id'],
+              include:{
+                model:AnneeScolaire,
+                foreignKey:'annee_scolaire_id',
+                attributes:['startingYear','endingYear'],
+                where:{
+                  active:true
+                },
+               
+              },
+              required:false
               
             
            })
@@ -102,13 +114,15 @@ else{
         }
         
       return User.findOne({where:{id: id,isDeleted:false},
-        attributes:['id','email','profilePicture','firstName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt','country_id','state_id']
-        ,include:includeOptions}).then(function (user) {
-         
-          next(null, user || null);
+        attributes:['id','email','profilePicture','firstName','lastName','preferredLanguage','birthDate','sex','active','username','phonenumber','isDeleted','createdAt','country_id','state_id'],
+        include:includeOptions
+        }).then(function (user) {
+            next(null, user || null);
           
         })
-        .catch(next);
+        .catch(e=>{
+          console.log(e)
+        });
   
     });
   

@@ -1,4 +1,5 @@
 
     click to pay:multiply all the prices by 1000 
+    modify the current semestre
     
     
