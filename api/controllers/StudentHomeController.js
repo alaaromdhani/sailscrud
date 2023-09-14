@@ -106,7 +106,7 @@ module.exports={
     },
     getChildren:async (req,res)=>{
         try{
-            const  {courseId} = req.params
+            const  {courseId,TrimestreId} = req.params
         let course =  await Course.findOne({
             where:{
                 id:courseId,
@@ -121,7 +121,11 @@ module.exports={
             include:{
                   model:Trimestre,
                   through:'trimestres_modules',
-                   attributes:['id'] 
+                   attributes:['id'] ,
+                   where:{
+                    id:TrimestreId
+                    },
+                    required:true
             }
             },{
                model:CoursInteractive,
