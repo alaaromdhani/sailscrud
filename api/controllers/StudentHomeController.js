@@ -113,7 +113,7 @@ module.exports={
                 niveau_scolaire_id:req.current_niveau_scolaire,
                 active:true
             },
-            attributes:['id','niveau_scolaire_id','active'],
+            attributes:['id','niveau_scolaire_id','active','name'],
            include:[{
             model:Module,
             
@@ -162,7 +162,7 @@ module.exports={
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
         else{
-            return DataHandlor(req,{CoursDocuments:course.CoursDocuments,CoursVideos:course.CoursVideos,CoursInteractives:course.CoursInteractives,canAccessPrivate},res)
+            return DataHandlor(req,course,res)
 
         }       
  
