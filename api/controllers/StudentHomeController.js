@@ -3,6 +3,7 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const getCurrentTrimestre = require("../../utils/getCurrentTrimestre")
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
+const { Sequelize } = require("sequelize")
 
 module.exports={
     profileCallback:(req,res)=>{
@@ -171,7 +172,17 @@ module.exports={
         catch(e){
             return ErrorHandlor(req,new SqlError(e),res)
         }
+    },
+    availableTrimestres:(req,res)=>{
+        try{
+            return DataHandlor(req,req.user.AnneeNiveauUsers,res)
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+
+
     }
+    
 
 
 

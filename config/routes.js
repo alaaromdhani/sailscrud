@@ -126,6 +126,7 @@ module.exports.routes = {
   'GET /front/student/api/v1/courses/:MatiereId':'StudentHomeController.getCourses',
   'GET /front/student/api/v1/courses/children/:courseId':'StudentHomeController.getChildren',
   'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback',
+  'GET /front/student/api/v1/purchases':'StudentHomeController.availableTrimestres',
   
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',
