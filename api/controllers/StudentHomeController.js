@@ -41,8 +41,13 @@ module.exports={
     getCourses:async(req,res)=>{
         //const trimestre_id
         const {MatiereId} = req.params 
-        const TrimestreId = req.query.TrimestreId
-        
+        const TrimestreId = req.query.TrimestreId || (await sails.services.configservice.getCurrentTrimestres()).id
+        let ann = req.user.AnneeNiveauUsers.filter(a=>a.trimestre_id===TrimestreId).at(0)
+        let canAccessPrivate =false
+        if(ann && ann.type=='paid'){
+        canAccessPrivate =true      
+        }
+      
         let includeOptions = [{
             model:Course,
             foreignkey:'module_id',
@@ -86,7 +91,7 @@ module.exports={
            })
 
            if(metiere_niveau){
-                return DataHandlor(req,{modules:metiere_niveau.Modules,matiere:metiere_niveau.Matiere},res)  
+                return DataHandlor(req,{modules:metiere_niveau.Modules,matiere:metiere_niveau.Matiere,canAccessPrivate},res)  
            }
            else{
               return DataHandlor(req,[],res) 

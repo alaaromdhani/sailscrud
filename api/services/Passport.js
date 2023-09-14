@@ -81,7 +81,7 @@ else{
             includeOptions.push({
               model:AnneeNiveauUser,
               foreighKey:'user_id',
-              attributes:['annee_scolaire_id','niveau_scolaire_id'],
+              attributes:['annee_scolaire_id','niveau_scolaire_id','type'],
               include:{
                 model:AnneeScolaire,
                 foreignKey:'annee_scolaire_id',
@@ -120,9 +120,7 @@ else{
             next(null, user || null);
           
         })
-        .catch(e=>{
-          console.log(e)
-        });
+        .catch(next);
   
     });
   

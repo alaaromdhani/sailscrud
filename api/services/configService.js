@@ -442,7 +442,7 @@ module.exports = {
 
 
     },
-    getCurrentTrimestres:(req,callback)=>{
+    getCurrentTrimestres:()=>{
       let today =new Date(2001,2,16)
       return Trimestre.findAll({where:{
         
