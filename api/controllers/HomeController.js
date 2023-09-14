@@ -70,7 +70,7 @@ module.exports={
       }
       
     },
-   
+    
     updatePhoneNumber:(req,res)=>{
         sails.services.userservice.updatePhoneNumber(req,(err,data)=>{
 
@@ -85,9 +85,17 @@ module.exports={
 
 
     },
-    getMyCountry:(req)=>{
-      return Country.findByPk(req.user.country_id)
+    
+    getTrimestres:async (req,res)=>{
+      try{
+        return DataHandlor(req,await Trimestre.findAll({where:{
+          active:true
+        }}),res)
+      }catch(e){
+        return ErrorHandlor(req,new SqlError(e),res)
+      }
     }
+
    
     
 
