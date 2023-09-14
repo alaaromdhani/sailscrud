@@ -162,7 +162,7 @@ module.exports={
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
         else{
-            return DataHandlor(req,course,res)
+            return DataHandlor(req,{course,canAccessPrivate},res)
 
         }       
  
