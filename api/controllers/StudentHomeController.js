@@ -3,7 +3,7 @@ const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const getCurrentTrimestre = require("../../utils/getCurrentTrimestre")
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
-const { Sequelize } = require("sequelize")
+const { Sequelize,Op } = require("sequelize")
 
 module.exports={
     profileCallback:(req,res)=>{
@@ -173,9 +173,31 @@ module.exports={
             return ErrorHandlor(req,new SqlError(e),res)
         }
     },
-    availableTrimestres:(req,res)=>{
+    availableTrimestres:async (req,res)=>{
         try{
-            return DataHandlor(req,req.user.AnneeNiveauUsers,res)
+            let data = await AnneeNiveauUser.findAll({where:{
+                id:{
+                    [Op.in]:req.user.AnneeNiveauUsers.map(a=>a.id)
+                }
+            },
+            include:[{
+                model:Trimestre,
+                foreignkey:'trimestre_id',
+                attributes:['id','name_ar']
+            },{
+                model:AnneeScolaire,
+                foreignkey:'annee_scolaire_id',
+                attributes:['startingYear','endingYear']
+            },
+            {
+                model:NiveauScolaire,
+                foreignkey:'niveau_scolaire_id',
+                attributes:['name_ar']
+            }
+        ]
+            
+        })
+            return DataHandlor(req,data,res)
         }catch(e){
             return ErrorHandlor(req,new SqlError(e),res)
         }
