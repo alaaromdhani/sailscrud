@@ -116,14 +116,13 @@ module.exports={
            include:[{
             model:Module,
             
-            foreignkey:'parent',
-            attributes:['id','name','description','thumbnail','rating','status'],
-            where:{
-               validity:true,
-               active:true 
-            },
-            required:false
-        },{
+            foreignkey:'module_id',
+            include:{
+                  model:Trimestre,
+                  through:'trimestres_modules',
+                   attributes:['id'] 
+            }
+            },{
                model:CoursInteractive,
                
                foreignkey:'parent',
@@ -157,11 +156,12 @@ module.exports={
            }]
 
         }) 
+        let canAccessPrivate = course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id).some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))
         if(!course){
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
         else{
-            return DataHandlor(req,{CoursDocuments:course.CoursDocuments,CoursVideos:course.CoursVideos,CoursInteractives:course.CoursInteractives},res)
+            return DataHandlor(req,{CoursDocuments:course.CoursDocuments,CoursVideos:course.CoursVideos,CoursInteractives:course.CoursInteractives,canAccessPrivate},res)
 
         }       
           
