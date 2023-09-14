@@ -105,7 +105,8 @@ module.exports={
 
     },
     getChildren:async (req,res)=>{
-        const  {courseId} = req.params
+        try{
+            const  {courseId} = req.params
         let course =  await Course.findOne({
             where:{
                 id:courseId,
@@ -134,7 +135,7 @@ module.exports={
                required:false
            },
            {
-              attributes:['id','name','description','thumbnail','rating','status'],
+              attributes:['id','name','description','rating','status'],
                 model:CoursVideo,
                foreignkey:'parent',
                where:{
@@ -164,8 +165,12 @@ module.exports={
             return DataHandlor(req,{CoursDocuments:course.CoursDocuments,CoursVideos:course.CoursVideos,CoursInteractives:course.CoursInteractives,canAccessPrivate},res)
 
         }       
-          
+ 
+        }         
 
+        catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
     }
 
 
