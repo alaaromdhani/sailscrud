@@ -191,7 +191,8 @@ module.exports.policies = {
     'updateProfile':['lang','passport','role','auth','normalUserOnly','ppUploadernormalUser'],//normaluseronly
     'updatePhoneNumber':['lang','passport','role','auth','normalUserOnly'],//normaluseronly
     'profileCallback':['lang','passport','role','auth','teacher-parent'],
-    'getMatiereByNiveau':['lang','passport','role','auth','normalUserOnly']
+    'getMatiereByNiveau':['lang','passport','role','auth','normalUserOnly'],
+    'getTrimestres':['lang','passport','role','auth','normalUserOnly']
    },
    StudentController:{
     'create':['lang','parentPassport','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly
