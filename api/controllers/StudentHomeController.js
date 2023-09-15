@@ -215,7 +215,7 @@ module.exports={
 
     },
     accessCourse:(req,res)=>{
-           let where={id:req.params.id} 
+           let where={id:req.params.courseId,active:true,validity:true} 
             
             CoursInteractive.findOne({
                 where,
@@ -236,6 +236,7 @@ module.exports={
                 }
             
             }).then(ci=>{
+              //  console.log(c)
                     if(!ci){
                         return Promise.reject(new RecordNotFoundErr())
                     }
@@ -248,6 +249,8 @@ module.exports={
                         }
                         else{
                             const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
+                            console.log(req.user.AnneeNiveauUsers.filter(a=>a.type==='paid'))
+                            
                             return trimestres.some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))?ci:Promise.reject(new RecordNotFoundErr())
                         }
                      }
@@ -285,8 +288,8 @@ module.exports={
                   })
               }
             }).catch(e=>{
-      
-                return ErrorHandlor(req,new RecordNotFoundErr(),res)
+                console.log(e)
+                return ErrorHandlor(req,e,res)
             })      
                
 
