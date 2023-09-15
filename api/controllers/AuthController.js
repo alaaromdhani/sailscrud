@@ -27,7 +27,7 @@ module.exports = {
    */
   //authenticating
   callback: function (req, res) {
-     
+   //  console.log(req.body)
     if(req.user){
      
       return ErrorHandlor(req,new UnauthorizedError({specific:'you are already connected'}),res);

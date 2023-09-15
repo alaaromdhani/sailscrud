@@ -411,8 +411,116 @@ module.exports={
             return ErrorHandlor(req,resolveError(e),res)
         }
     },
-    payLivraison:(req)=>{
-        
+    getMatieres:async (req,res)=>{
+        try{
+            let data = await AnneeNiveauUser.findOne({where:{
+                id:req.params.id,
+            },
+            include:[{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['id'],
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            },]
+
+        })
+        if(!data){
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        else{
+            let ns = data.dataValues.niveau_scolaire_id
+            
+            let matieres = (await NiveauScolaire.findByPk(ns,{
+                include:{
+                    model:Matiere,
+                    through:MatiereNiveau
+                }
+            })).Matieres
+                return DataHandlor(req,matieres,res)
+            
+                
+        }
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+
+    },
+    getCourses:async (req,res)=>{
+        const {id,MatiereId} = req.params
+        try{
+            let data = await AnneeNiveauUser.findOne({where:{
+                id:id,
+            },
+            include:[{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['id'],
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            },]
+
+        })
+        if(!data){
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        else{
+            let ns = data.dataValues.niveau_scolaire_id
+            let TrimestreId = data.dataValues.trimestre_id
+            let includeOptions = [{
+                model:Course,
+                foreignkey:'module_id',
+                attributes:['id','name','rating','description'],
+                where:{
+                    active:true
+    
+                },
+                
+                required:false
+            },{
+                model:Trimestre,
+                through:'trimestres_modules',
+                where:{
+                    id: TrimestreId   
+                },
+                attributes:[],
+                
+    
+              }]
+           
+            let metiere_niveau = await MatiereNiveau.findOne({
+                where:{
+                  MatiereId,
+                  NiveauScolaireId:ns
+                },
+                include:  [{
+                  model:Module,
+                  foreignkey:'matiere_niveau_id',
+                  include:includeOptions,
+                 required:false
+                  
+                },{
+                    model:Matiere,
+                    foreignkey:'MatiereId'
+
+                }],
+                
+           })
+           
+           return DataHandlor(req,{matiere:metiere_niveau.Matiere,modules:metiere_niveau.dataValues.Modules,canAccessPrivate:(data.dataValues.type==='paid')},res)
+
+                
+        }
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+    
+
+
     }
    
     

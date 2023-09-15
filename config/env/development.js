@@ -38,7 +38,7 @@ module.exports = {
    cors: {
       allRoutes: true,
       allowCredentials: true, // Allows cookies and session through CORS from here
-      allowOrigins: ['http://localhost:3000','https://madar-landing-page.vercel.app','http://localhost:4200', 'http://127.0.0.1:3000', 'http://127.0.0.1','http://localhost:3001'], // Allows these origins through CORS
+      allowOrigins: ['http://127.0.0.1:5500','http://localhost:5500','http://localhost:3000','https://madar-landing-page.vercel.app','http://localhost:4200', 'http://127.0.0.1:3000', 'http://127.0.0.1','http://localhost:3001'], // Allows these origins through CORS
       allowResponseHeaders: 'set-cookie',
       allowRequestHeaders: 'content-type,cookie,Cookie' // I don't think this is necessary but I'm going crazy
     },
@@ -134,7 +134,7 @@ module.exports = {
           saveUninitialized: true,
           store:sequelizeSessionStore,
           cookie:{
-        //    sameSite:'none',
+         // sameSite:'none',
           secure:sails.config.environment==="production"
           }
           

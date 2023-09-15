@@ -276,12 +276,12 @@ module.exports={
                               let endpoint = sails.config.custom.lrsEndPoint
                              
                               let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                              return res.view("pages/player.ejs",{
+                                return DataHandlor(req,{
                                     ci:ci,
                                     url:fullUrl,
                                     username:req.user.firstName+' '+req.user.lastName,
                                     sex:req.user.sex.toLowerCase()
-                              })
+                              } ,res)
                             }
       
       
