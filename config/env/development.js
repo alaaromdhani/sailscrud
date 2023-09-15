@@ -100,11 +100,15 @@ module.exports = {
 
     })(),
     statics:(()=>{
+       
         console.log('setting static files')
-        return function(req,res,next){
-         
+        return async function(req,res,next){
           
-          
+          /*console.log(req.sessionID)
+          let s = await sequelizeSessionStore.Session.findOne({where:{
+            session_id:req.sessionID
+          }})
+          console.log(s)*/
           function setCustomCacheControl (res, path) {
             if (serveStatic.mime.lookup(path) === 'text/html') {
               // Custom Cache-Control for HTML files

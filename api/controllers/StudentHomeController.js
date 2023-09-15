@@ -116,7 +116,7 @@ module.exports={
             attributes:['id','niveau_scolaire_id','active','name'],
            include:[{
             model:Module,
-            
+            required:true,
             foreignkey:'module_id',
             include:{
                   model:Trimestre,
@@ -126,7 +126,8 @@ module.exports={
                     id:TrimestreId
                     },
                     required:true
-            }
+            },
+
             },{
                model:CoursInteractive,
                
@@ -152,7 +153,11 @@ module.exports={
                model:CoursDocument,
                foreignkey:'parent',
                attributes:['id','name','description','rating','status'],
-       
+               include:{
+                model:Upload,
+                foreignkey:'document',
+                attributes:['link']
+               }, 
                where:{
                   validity:true,
                   active:true 
@@ -161,11 +166,12 @@ module.exports={
            }]
 
         }) 
-        let canAccessPrivate = course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id).some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))
-        if(!course){
+         if(!course){
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
         else{
+            let canAccessPrivate = course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id).some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))
+       
             return DataHandlor(req,{course,canAccessPrivate},res)
 
         }       
@@ -173,6 +179,7 @@ module.exports={
         }         
 
         catch(e){
+            console.log(e)
             return ErrorHandlor(req,new SqlError(e),res)
         }
     },

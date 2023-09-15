@@ -19,22 +19,31 @@ module.exports={
                     }
                 })
             }).then(upload=>{
-                    let options={
-                        root:path.join(__dirname,'../../assets/'+upload.path)
-                    }
+                  if(upload.type==='doc'){
+                    return sails.services.uploadservice.documentGuard(req,upload)
+                  }
+                  else{
+                    return upload
+                  }
+                  
+            }).then(upload=>{
+              let options={
+                root:path.join(__dirname,'../../assets/'+upload.path)
+            }
 
-                    const filename = upload.file_name+'.'+upload.extension
+
+            const filename = upload.file_name+'.'+upload.extension
 
 
-                      res.sendFile(filename, options,err=>{
-                                if(err){
-                                  //console.log(err)
-                                  res.status(404).end()
-                                }
-                                else{
-                                    console.log(filename)
-                                }
-                            })
+              res.sendFile(filename, options,err=>{
+                        if(err){
+                          //console.log(err)
+                          res.status(404).end()
+                        }
+                        else{
+                            console.log(filename)
+                        }
+                    })
 
 
             }).catch(e=>{
@@ -64,24 +73,39 @@ module.exports={
                 }
             })
         }).then(upload=>{
-               
-
-                const filename = path.join(__dirname,'../../assets/'+upload.path+'/'+upload.file_name+'.'+upload.extension)
-                res.sendFile(filename,err=>{
-                    if(err){
-                      console.log(err)
-                      res.status(404).end()
-                    
-                    }
-                    else{
-                        console.log(filename)
-                    }
-                })
+          if(upload.type==='doc'){
+            return sails.services.uploadservice.documentGuard(req,upload)
+          }
+          else{
+            return upload
+          }
+          
+    }).then(upload=>{
+      let options={
+        root:path.join(__dirname,'../../assets/'+upload.path)
+    }
 
 
-        }).catch(e=>{
-            ErrorHandlor(req,e,res)
-        })
+    const filename = upload.file_name+'.'+upload.extension
+
+
+      res.sendFile(filename, options,err=>{
+                if(err){
+                  //console.log(err)
+                  res.status(404).end()
+                }
+                else{
+                    console.log(filename)
+                }
+            })
+
+
+    }).catch(e=>{
+        console.log(e)
+        ErrorHandlor(req,e,res)
+
+
+    })
     },
   downloadPrivateFile:async(req,res)=>{
     const filename = req.params.filename

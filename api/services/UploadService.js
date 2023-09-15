@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const UnkownError = require('../../utils/errors/UnknownError');
 const SqlError = require('../../utils/errors/sqlErrors');
-const {DataTypes} = require('sequelize');
+const {DataTypes, Op} = require('sequelize');
 const yauzl = require("yauzl")
 const xml2js = require('xml2js')
 const CoursInteractiveShema = require('../../utils/validations/CoursInteractiveSchema')
@@ -551,6 +551,85 @@ module.exports = {
         }
         catch(e){
             throw e
+        }
+
+      },
+      documentGuard:(req,upload)=>{
+        if(!req.user){
+          return Promise.reject(new RecordNotFoundErr())
+        }
+        else{
+         return CoursDocument.findOne({where:{
+          document:upload.dataValues.id,
+          
+
+         },include:{
+          model:Course,
+          foreignKey:'parent',
+          attributes:['id','niveau_scolaire_id'],
+          include:{
+            model:Module,
+            foreignKey:'module_id',
+            attributes:['id'],
+            include:{
+              model:Trimestre,
+              through:'trimestres_modules',
+              attributes:['id']
+            }
+          }
+        }}).then(c=>{
+          if(c){
+              if(!c){
+                console.log('there is no course')
+                return upload
+              }
+              if(c.dataValues.status==='public'){
+                console.log('the course is public')
+                return upload
+              }
+              else{
+                console.log('the course is private but there is a problem')
+                const {roles} = sails.config.custom 
+                let searchRole = Object.keys(roles).filter(k=>!roles[k].dashboardUser&&req.role.name===roles[k].name).at(0) 
+                if(!searchRole){
+                  return upload
+                }
+                else{
+                  if(searchRole==='student'){
+                    let courseNs = c.dataValues.Course.dataValues.niveau_scolaire_id
+                      let trimestresIds = c.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id)
+                      return AnneeNiveauUser.findAll({where:{
+                        user_id:req.user.id,
+                         niveau_scolaire_id:courseNs,
+                        type:'paid',
+                        trimestre_id:{
+                          [Op.in]:trimestresIds
+                        }
+                      }, include:{
+                        model:AnneeScolaire,
+                        foreignKey:'annee_scolaire_id',
+                        where:{
+                          active:true
+                        },
+                        required:true,
+                      },}).then(ann=>{
+                        if(ann.length){
+                          return upload
+                        }
+                        else{
+                          return Promise.reject(new RecordNotFoundErr())
+                        }
+                      })
+                  }
+                  else{
+                    return Promise.reject(new RecordNotFoundErr()) 
+                  }
+                }
+              }
+          }else{
+            return upload
+          }
+         })
         }
 
       }
