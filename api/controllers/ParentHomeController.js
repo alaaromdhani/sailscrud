@@ -600,6 +600,114 @@ module.exports={
             return ErrorHandlor(req,resolveError(e),res)
         }
     },
+    getResults : async (req,res)=>{
+        const {id,courseId} = req.params
+        let data = await AnneeNiveauUser.findOne({where:{
+                id:id,
+               },
+                include:[{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['id'],
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            },]
+        }) 
+        if(!data){
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }  
+        sails.services.lrsservice.generateAgent(data.dataValues.User,(err,data)=>{
+            if(!err){
+                CustomObject.findAll({where:{
+                    agent_id:data.id,
+                    c_interactive_id:courseId
+                }
+                }).then(objs=>{
+                    return new Promise((resolve,reject)=>{
+                        if(objs.length==0){
+                            return reject({data:{status:false,message:'user did not open the course because there are no statemnets'}})
+                        }
+                        else{
+                            return resolve(objs)
+                        }
+                    })
+                }).then(objects=>{
+                    
+                   return new Promise((resolve,reject)=>{
+                        let results ={}  
+                       let grouped = objects.reduce((pv,cv)=>{
+                                  const test = parseInt(cv.description)
+                                pv[cv.name]=test?test:cv.description
+                                return pv
+                        },{})
+                        
+                        if(grouped['QST']){
+                           //   console.log(grouped)                        
+                            //console.log(Object.keys(grouped))
+                                if(grouped['QST']!==NaN && typeof(grouped['QST'])=='number'){
+                                    results.numberOfQuestion =grouped['QST']
+                                    results.score =grouped['TOTAL_SCORE']
+                                    results.result_slide =(grouped['Results/RESULTS']==="true")?true:false
+                                
+                                    results.questions = []
+                                    for(let i=0;i<grouped['QST'];i++){
+                                        if(grouped[(i+1)+'QS/TA'] &&grouped[(i+1)+'QS/NA']){
+                                            results.questions.push({
+                                                name:(i+1)+'QS',
+                                                experienced:grouped[(i+1)+'QS/QS']=='true'?true:false,
+                                                results: {
+                                                  TA:  grouped[(i+1)+'QS/TA'],
+                                                  NA:grouped[(i+1)+'QS/NA']
+                                                }
+  
+                                            })
+  
+                                        }
+                                        else{
+                                            results.questions.push({
+                                                name:(i+1)+'QS',
+                                                experienced:grouped[(i+1)+'QS/TA']=='true'?true:false,
+                                            })
+                                        }     
+                                    }       
+                                    return resolve(results)
+                                }   
+                                else{
+                                    return reject({data:{status:false,message:'input error'}})
+                                } 
+                        }
+                        else{
+                            return reject({data:{status:false,message:'still not opened the course because the total questions is still null'}})
+  
+                        }
+                     
+                        
+                 
+                   })
+  
+  
+                }).then(d=>{
+                    res.status(200).send({data:d})
+                   }).catch(e=>{
+                    res.status(200).send({data:e})
+  
+                   })
+  
+            }
+            else{
+  
+              return ErrorHandlor(req,err,res)
+            }
+            
+  
+  
+        })
+  
+  
+  
+    },
    
     
 
