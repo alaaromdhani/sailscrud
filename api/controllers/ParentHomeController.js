@@ -436,6 +436,11 @@ module.exports={
             let matieres = (await NiveauScolaire.findByPk(ns,{
                 include:{
                     model:Matiere,
+                    include:{
+                        model:Upload,
+                        foreignKey:'image',
+                        attributes:['link']
+                    },
                     through:MatiereNiveau
                 }
             })).Matieres
@@ -521,7 +526,86 @@ module.exports={
     
 
 
-    }
+    },
+    getChildren:async (req,res)=>{
+        try{
+            const  {courseId,TrimestreId} = req.params
+        let course =  await Course.findOne({
+            where:{
+                id:courseId,
+                niveau_scolaire_id:req.current_niveau_scolaire,
+                active:true
+            },
+            attributes:['id','niveau_scolaire_id','active','name'],
+           include:[{
+            model:Module,
+            required:true,
+            foreignkey:'module_id',
+            include:{
+                  model:Trimestre,
+                  through:'trimestres_modules',
+                   attributes:['id'] ,
+                   where:{
+                    id:TrimestreId
+                    },
+                    required:true
+            },
+
+            },{
+               model:CoursInteractive,
+               
+               foreignkey:'parent',
+               attributes:['id','name','description','thumbnail','rating','status'],
+               where:{
+                  validity:true,
+                  active:true 
+               },
+               required:false
+           },
+           {
+              attributes:['id','name','description','rating','status'],
+                model:CoursVideo,
+               foreignkey:'parent',
+               where:{
+                  validity:true,
+                  active:true 
+               },
+               required:false
+           },
+           {
+               model:CoursDocument,
+               foreignkey:'parent',
+               attributes:['id','name','description','rating','status'],
+               include:{
+                model:Upload,
+                foreignkey:'document',
+                attributes:['link']
+               }, 
+               where:{
+                  validity:true,
+                  active:true 
+               },
+               required:false
+           }]
+
+        }) 
+         if(!course){
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        else{
+            let canAccessPrivate = course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id).some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))
+       
+            return DataHandlor(req,{course,canAccessPrivate},res)
+
+        }       
+ 
+        }         
+
+        catch(e){
+            console.log(e)
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+    },
    
     
 
