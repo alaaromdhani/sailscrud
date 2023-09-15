@@ -80,6 +80,8 @@ module.exports.routes = {
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'GET /front/api/v1/parent/matieres/:id':'ParentHomeController.getMatieres',
   'GET /front/api/v1/parent/courses/:MatiereId/:id':'ParentHomeController.getCourses',
+  'GET /front/api/v1/parent/courses/children/:courseId/:id':'ParentHomeController.getChildren',
+  
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
   

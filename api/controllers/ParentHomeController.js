@@ -528,12 +528,31 @@ module.exports={
 
     },
     getChildren:async (req,res)=>{
+        const {id,courseId} = req.params
         try{
-            const  {courseId,TrimestreId} = req.params
+            let data = await AnneeNiveauUser.findOne({where:{
+                id:id,
+            },
+            include:[{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['id'],
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            },]
+
+        })
+        if(!data){
+            throw new RecordNotFoundErr()
+        }
+       
+            
         let course =  await Course.findOne({
             where:{
                 id:courseId,
-                niveau_scolaire_id:req.current_niveau_scolaire,
+                niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true
             },
             attributes:['id','niveau_scolaire_id','active','name'],
@@ -546,7 +565,7 @@ module.exports={
                   through:'trimestres_modules',
                    attributes:['id'] ,
                    where:{
-                    id:TrimestreId
+                    id:data.dataValues.trimestre_id
                     },
                     required:true
             },
@@ -562,48 +581,23 @@ module.exports={
                },
                required:false
            },
-           {
-              attributes:['id','name','description','rating','status'],
-                model:CoursVideo,
-               foreignkey:'parent',
-               where:{
-                  validity:true,
-                  active:true 
-               },
-               required:false
-           },
-           {
-               model:CoursDocument,
-               foreignkey:'parent',
-               attributes:['id','name','description','rating','status'],
-               include:{
-                model:Upload,
-                foreignkey:'document',
-                attributes:['link']
-               }, 
-               where:{
-                  validity:true,
-                  active:true 
-               },
-               required:false
-           }]
+           ]
 
         }) 
          if(!course){
-            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+            throw new RecordNotFoundErr()
         }
         else{
-            let canAccessPrivate = course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id).some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))
-       
-            return DataHandlor(req,{course,canAccessPrivate},res)
+            
+            return DataHandlor(req,{course,canAccessPrivate:(data.dataValues.type==='paid')},res)
 
         }       
  
         }         
 
         catch(e){
-            console.log(e)
-            return ErrorHandlor(req,new SqlError(e),res)
+            
+            return ErrorHandlor(req,resolveError(e),res)
         }
     },
    
