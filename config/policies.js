@@ -212,7 +212,8 @@ module.exports.policies = {
   ParentHomeController:{
     '*':['lang','parentPassport','passport','role','tokenVerifier','parent'],
     'verifyPayement':['lang','parentPassport','passport']
-  }
+  },
+
 
 
 

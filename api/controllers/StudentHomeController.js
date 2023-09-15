@@ -213,6 +213,84 @@ module.exports={
         }
 
 
+    },
+    accessCourse:(req,res)=>{
+           let where={id:req.params.id} 
+            
+            CoursInteractive.findOne({
+                where,
+                include:{
+                    model:Course,
+                    foreignKey:'parent',
+                    attributes:['niveau_scolaire_id'],
+                    include:{
+                        model:Module,
+                        foreignKey:'module_id',
+                        attributes:['id'],
+                        include:{
+                            model:Trimestre,
+                            through:'trimestres_modules',
+                            attributes:['id']
+                        }
+                    }
+                }
+            
+            }).then(ci=>{
+                    if(!ci){
+                        return Promise.reject(new RecordNotFoundErr())
+                    }
+                    else{
+                        const courseNs = ci.dataValues.Course.dataValues.niveau_scolaire_id
+                   // const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
+                     if(req.current_niveau_scolaire===courseNs){
+                        if(ci.dataValues.Course.dataValues.status==='public'){
+                            return ci
+                        }
+                        else{
+                            const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
+                            return trimestres.some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))?ci:Promise.reject(new RecordNotFoundErr())
+                        }
+                     }
+                     else{
+                        return Promise.reject(new RecordNotFoundErr())  
+                     }
+                    }
+            }).then(ci=>{
+              if(!ci){
+                  return ErrorHandlor(req,new RecordNotFoundErr(),res)
+              }
+              else{
+                  sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                            if(err){
+                                  return ErrorHandlor(req,err,res)
+                            }
+                            else{
+                              const tincanActor = JSON.stringify({
+                                name: agent.account_name,
+                                account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                                objectType:'Agent'
+                              })
+                              let endpoint = sails.config.custom.lrsEndPoint
+                             
+                              let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
+                              return res.view("pages/player.ejs",{
+                                    ci:ci,
+                                    url:fullUrl,
+                                    username:req.user.firstName+' '+req.user.lastName,
+                                    sex:req.user.sex.toLowerCase()
+                              })
+                            }
+      
+      
+                  })
+              }
+            }).catch(e=>{
+      
+                return ErrorHandlor(req,new RecordNotFoundErr(),res)
+            })      
+               
+
+
     }
     
 
