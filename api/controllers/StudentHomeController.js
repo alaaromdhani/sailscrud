@@ -244,7 +244,7 @@ module.exports={
                         const courseNs = ci.dataValues.Course.dataValues.niveau_scolaire_id
                    // const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
                      if(req.current_niveau_scolaire===courseNs){
-                        if(ci.dataValues.Course.dataValues.status==='public'){
+                        if(ci.dataValues.status==='public'){
                             return ci
                         }
                         else{
