@@ -1,6 +1,7 @@
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const UnkownError = require("../../utils/errors/UnknownError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
+const resolveError = require("../../utils/errors/resolveError")
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
@@ -109,10 +110,17 @@ module.exports = {
             if(!activityState){
                 //i case the the results has been resetted so he has to repeat the course  
                 return ErrorHandlor(req,new UnauthorizedError({specific:'this course has been resetted so all statement will be depercated'}),res)
-            }   
+            }
             
             const obj = await Obj.findOne({where:{id:objectId}})// the 
             if(!obj){
+                try{
+                    await sails.services.subcourseservice.saveProgress(activityState,object);
+             
+                }catch(e){
+                    console.log(e)
+                    return ErrorHandlor(req,resolveError(e),res)
+                }
                 [custom_object,created] = await CustomObject.findOrCreate({
                     where:{
                         agent_id:agent.id,

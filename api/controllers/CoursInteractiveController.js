@@ -78,11 +78,12 @@ module.exports = {
          
       }
       else{
-
+          await sails.services.subcourseservice.getNbQuestions(data)
           fs.unlink(path.join(__dirname,'../../static/courses/'+req.upload.path+'/'+req.upload.file_name+'.'+req.upload.extension),(err)=>{
               if(err){
                   console.log(err)
               }
+               
                 return DataHandlor(req,data,res)
 
           })

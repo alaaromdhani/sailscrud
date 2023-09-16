@@ -117,6 +117,11 @@ module.exports = {
       type: DataTypes.INTEGER,
       allowNull:false
     },
+    nbQuestion:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+    }
+ 
 
     
 
@@ -136,6 +141,10 @@ module.exports = {
     CoursInteractive.hasMany(CoursComment,{
       foreignKey:'c_interactive_id'
     })
+    CoursInteractive.hasMany(ActivityState,{
+      foreignKey:'c_interactive_id'
+    })
+    
     
 
   }

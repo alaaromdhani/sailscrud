@@ -1,3 +1,4 @@
+const sequelize = require('sequelize')
 module.exports = async ()=>{
     //step 1
     let modules = await Module.findAll(
@@ -52,4 +53,38 @@ module.exports = async ()=>{
     });
     return await CoursDocument.bulkCreate(documentCourses)*/
     //done
+    // step number of question 
+    //toBE EXECUTED ONCE
+    let interactiveCourses = await CoursInteractive.findAll({where:{
+        nbQuestion:0
+    }})
+    let questionObjects = await Obj.findAll({
+        where:{
+            name:{
+                [sequelize.Op.like]:'%QS'
+            },
+            
+            
+            
+        },
+        attributes:[
+            [sequelize.fn('count',sequelize.col('name')),'nbQuestions'],
+            'c_interactive_id'],
+        group:'c_interactive_id'
+    
+    })
+    let groupedCourses = {}
+    let groupedNbQuestions = {}
+    questionObjects.forEach(q=>{
+        groupedNbQuestions[q.dataValues.c_interactive_id] = q.dataValues.nbQuestions
+    })
+   // console.log(groupedNbQuestions)
+    interactiveCourses.forEach(i=>{
+            i.nbQuestion = groupedNbQuestions[i.id] || i.nbQuestion 
+    })
+    
+    return await Promise.all(interactiveCourses.filter(i=>i.changed('nbQuestion')).map(i=>i.save()))
+
+
+
 }

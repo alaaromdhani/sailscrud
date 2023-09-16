@@ -1,3 +1,4 @@
+const sequelize= require("sequelize")
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
@@ -548,6 +549,44 @@ module.exports = {
               }
         })
 
+
+
+
+    },
+    getNbQuestions:(course)=>{
+     Obj.findAll({
+            where:{
+                name:{
+                    [sequelize.Op.like]:'%QS'
+                },
+                c_interactive_id:course.id
+            },
+            attributes:[
+                [sequelize.fn('count',sequelize.col('name')),'nbQuestions'],
+                'c_interactive_id'],
+            group:'c_interactive_id'
+        
+        }).then(objs=>{
+            if(objs.length){
+                return course.update({nbQuestion:objs[0].dataValues.nbQuestions})
+            }
+            else{
+                return 
+            }
+
+        })
+    },
+    saveProgress:(as,object)=>{
+        //QS/QS
+        let name = object.id.replace(as.dataValues.c_interactive_id+'/','')
+        if(name && name.endsWith('QS/QS')){
+             as.dataValues.progression=object.definition.name['en-US']
+             as.progression=object.definition.name['en-US']
+             return as.save()
+        }
+        else{
+            return Promise.resolve()
+        }   
 
 
 

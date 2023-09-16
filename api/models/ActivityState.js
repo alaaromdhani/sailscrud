@@ -51,6 +51,11 @@ const {
         },
         metadata:{
             type: DataTypes.STRING,
+        },
+        progression:{
+            type:DataTypes.INTEGER,
+            defaultValue:0
+        
         }
     },
     associations : function(){

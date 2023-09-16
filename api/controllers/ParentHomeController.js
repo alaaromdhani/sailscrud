@@ -579,6 +579,20 @@ module.exports={
                   validity:true,
                   active:true 
                },
+                 include:{
+                    model:ActivityState,
+                    foreignKey:'c_interactive_id',
+                    include:{
+                        model:Agent,
+                        foreignKey:'agent_id',
+                        where:{
+                           user_id: data.dataValues.user_id
+                        },
+                        required:true
+                    },
+                    required:true
+
+               },
                required:false
            },
            ]
