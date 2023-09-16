@@ -578,10 +578,11 @@ module.exports = {
     },
     saveProgress:(as,object)=>{
         //QS/QS
+
         let name = object.id.replace(as.dataValues.c_interactive_id+'/','')
         if(name && name.endsWith('QS/QS')){
-             as.dataValues.progression=object.definition.name['en-US']
-             as.progression=object.definition.name['en-US']
+            console.log('a little message for you ',name.replace('QS/QS',''))
+             as.progression=parseInt(name.replace('QS/QS',''))
              return as.save()
         }
         else{

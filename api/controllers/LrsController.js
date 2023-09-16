@@ -10,10 +10,13 @@ module.exports = {
     getActivityState:async (req,res)=>{
 
         const {agent,activityId} = req.query
-       
-        let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
+      // console.log(agent)
+        let dbAgent = await Agent.findOne({where:{account_name:JSON.parse(agent).name}})
         let activity = await CoursInteractive.findOne({where:{id:activityId}})
-            if(dbAgent&&activity){
+        //console.log('agent',dbAgent)
+        //console.log('activity',activity) 
+       
+        if(dbAgent&&activity){
                     let activityState = await ActivityState.findOne({where:{agent_id:dbAgent.id,c_interactive_id:activity.id,deprecated:false}})
                      if(!activityState){
                         const data = 'ActivityState('+activityId+'|'+agent+': resume'
@@ -53,8 +56,8 @@ module.exports = {
     },
     putState:async (req,res)=>{
          const {agent,activityId} = req.query
-        let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
-        let activity = await CoursInteractive.findOne({where:{id:activityId}})
+         let dbAgent = await Agent.findOne({where:{account_name:JSON.parse(agent).name}})
+       let activity = await CoursInteractive.findOne({where:{id:activityId}})
         if(dbAgent && activity){
             try{
                 console.log(req.body)
@@ -78,7 +81,7 @@ module.exports = {
             }
         }
         else{
-                return ErrorHandlor(req,new ValidationError({message:'agent and activity are required'}))
+                return ErrorHandlor(req,new ValidationError({message:'agent and activity are required'}),res)
         }
     },
     putStatement:async (req,res)=>{
