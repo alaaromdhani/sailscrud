@@ -134,6 +134,7 @@ module.exports.routes = {
   'GET /front/student/api/v1/interactive/:courseId':'StudentHomeController.accessCourse',
   'GET /front/student/api/v1/canAccessSoftSkills':'StudentHomeController.canAccessSoftSckills', 
   'GET /front/student/api/v1/softkills/themes':'StudentHomeController.getsoftSkillsThemes', 
+  'GET /front/student/api/v1/softkills':'StudentHomeController.getsoftSkillsChildren', 
  
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',

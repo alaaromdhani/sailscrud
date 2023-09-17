@@ -321,13 +321,49 @@ module.exports={
         const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
         if(nbPaidTrimstres.length>=2){
             
-             let data = await SoftSkills.findAll({
+           try{
+            let data = await SoftSkills.findAll({
+                attributes:['name','description','rating'],
+          
                 include:[{
                     model:NiveauScolaire,
+                    where:{
+                        id:req.current_niveau_scolaire
+                    },
                     through:'soft_skills_ns',
-                    attributes:['']
-                }]
-            })}
+                    attributes:['id']
+                },
+                    {
+                        model:SoftSkillsVideo,
+                        foreignKey:'parent',
+                        attributes:['id','name','description','rating','source','url']    
+                        
+                    },
+                    {
+                        model:SoftSkillsDocument,
+                        foreignKey:'parent',
+                        attributes:['id','name','description','rating'],
+                        include:{
+                            model:Upload,
+                            foreignKey:'document',
+                            attributes:['link']
+                        }    
+                    },
+                    {
+                        model:SoftSkillsInteractive,
+                        foreignKey:'parent',
+                        attributes:['id','name','description','thumbnail','rating','status'],
+                  
+                    }
+                ]
+            })
+            return  DataHandlor(req,data,res)
+           }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,new SqlError(e),res)
+           }
+        }
+            
         else{
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
