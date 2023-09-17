@@ -117,7 +117,7 @@ module.exports = {
           }
           console.log('passed by here')
           return serveStatic(path.join(__dirname, '../../static'), {
-            maxAge: '1d',
+            maxAge: '1m',
             setHeaders: setCustomCacheControl
           })(req,res,next)
         }

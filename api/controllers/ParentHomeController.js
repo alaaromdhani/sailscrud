@@ -574,7 +574,7 @@ module.exports={
                model:CoursInteractive,
                
                foreignkey:'parent',
-               attributes:['id','name','description','thumbnail','rating','status'],
+               attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
                where:{
                   validity:true,
                   active:true 
@@ -582,8 +582,10 @@ module.exports={
                  include:{
                     model:ActivityState,
                     foreignKey:'c_interactive_id',
+                    attributes:['agent_id','progression'],
                     include:{
                         model:Agent,
+                        attributes:['user_id'],
                         foreignKey:'agent_id',
                         where:{
                            user_id: data.dataValues.user_id
@@ -722,6 +724,9 @@ module.exports={
   
   
     },
+    
+
+
    
     
 

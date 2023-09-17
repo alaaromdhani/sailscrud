@@ -215,7 +215,8 @@ module.exports={
 
     },
     accessCourse:(req,res)=>{
-           let where={id:req.params.courseId,active:true,validity:true} 
+        console.log('thiis the page where i am')
+        let where={id:req.params.courseId,active:true,validity:true} 
             
             CoursInteractive.findOne({
                 where,
@@ -249,7 +250,6 @@ module.exports={
                         }
                         else{
                             const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
-                            console.log(req.user.AnneeNiveauUsers.filter(a=>a.type==='paid'))
                             
                             return trimestres.some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))?ci:Promise.reject(new RecordNotFoundErr())
                         }
@@ -259,40 +259,78 @@ module.exports={
                      }
                     }
             }).then(ci=>{
-              if(!ci){
-                  return ErrorHandlor(req,new RecordNotFoundErr(),res)
-              }
-              else{
-                  sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                            if(err){
-                                  return ErrorHandlor(req,err,res)
-                            }
-                            else{
-                              const tincanActor = JSON.stringify({
-                                name: agent.account_name,
-                                account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                                objectType:'Agent'
-                              })
-                              let endpoint = sails.config.custom.lrsEndPoint
-                             
-                              let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                                return DataHandlor(req,{
-                                    ci:ci,
-                                    url:fullUrl,
-                                    username:req.user.firstName+' '+req.user.lastName,
-                                    sex:req.user.sex.toLowerCase()
-                              } ,res)
-                            }
-      
-      
-                  })
-              }
+                console.log(ci)
+              
+                if(!ci){
+                    return ErrorHandlor(req,new RecordNotFoundErr(),res)
+                }
+                else{
+                    sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                              if(err){
+                                    return 
+                              }
+                              else{
+                                const tincanActor = JSON.stringify({
+                                  name: agent.account_name,
+                                  account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                                  objectType:'Agent'
+                                })
+                                let endpoint = sails.config.custom.lrsEndPoint
+                               
+                                let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
+                                return res.view("pages/player.ejs",{
+                                  ci:ci,
+                                  url:fullUrl,
+                                  username:req.user.firstName+' '+req.user.lastName,
+                                  sex:req.user.sex.toLowerCase()
+                                  })
+                              }
+        
+        
+                    })
+                }    
             }).catch(e=>{
                 console.log(e)
                 return ErrorHandlor(req,e,res)
             })      
                
 
+
+    },
+    canAccessSoftSckills:(req,res)=>{
+        const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
+        return DataHandlor(req,{canAccessSoftSckills:nbPaidTrimstres.length>=2},res)
+
+
+    },
+    getsoftSkillsThemes:async (req,res)=>{
+        const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
+        if(nbPaidTrimstres.length>=2){
+           return DataHandlor(req,await SoftSkillsTheme.findAll({
+            attributes:['name','id','description']
+           }),res
+           )
+        }
+        else{
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+
+    },
+   
+    getsoftSkillsChildren:async (req,res)=>{
+        const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
+        if(nbPaidTrimstres.length>=2){
+            
+             let data = await SoftSkills.findAll({
+                include:[{
+                    model:NiveauScolaire,
+                    through:'soft_skills_ns',
+                    attributes:['']
+                }]
+            })}
+        else{
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
 
     }
     

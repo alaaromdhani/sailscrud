@@ -131,7 +131,10 @@ module.exports.routes = {
   'GET /front/student/api/v1/courses/children/:courseId/:TrimestreId':'StudentHomeController.getChildren',
   'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback',
   'GET /front/student/api/v1/purchases':'StudentHomeController.availableTrimestres',
-  'GET /front/student/api/v1/interactive/:courseId':'StudentHomeController.accessCourse', 
+  'GET /front/student/api/v1/interactive/:courseId':'StudentHomeController.accessCourse',
+  'GET /front/student/api/v1/canAccessSoftSkills':'StudentHomeController.canAccessSoftSckills', 
+  'GET /front/student/api/v1/softkills/themes':'StudentHomeController.getsoftSkillsThemes', 
+ 
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',
   //sharedEndpoints
