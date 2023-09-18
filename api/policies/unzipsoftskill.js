@@ -22,10 +22,11 @@ const optionsGenerator=async (req,file,cb)=>{
             ss.parent = parseInt(ss.parent)
 
         }
+        
         const createSoftSkillsValidation =schemaValidation(SoftskillsinteractiveShema)(ss)
         if(createSoftSkillsValidation.isValid){
                 req.upload =fileOptions
-                console.log(req.upload)
+              
                 req.operation.data = fileOptions
                 return cb(null,true)
         }

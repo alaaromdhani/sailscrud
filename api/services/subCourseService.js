@@ -590,6 +590,75 @@ module.exports = {
 
 
 
+    },
+    accessCourse:(req)=>{
+        let type = req.params.type
+        let includeOptions= {}
+        if(!type ){
+             type='cours'
+                includeOptions={
+                    model:Module,
+                    foreignKey:'module_id',
+                    attributes:['id'],
+                    include:{
+                        model:Trimestre,
+                        through:'trimestres_modules',
+                        attributes:['id']
+                    }
+                }
+            }
+        else{
+            type='exam'
+        }
+        let bigInclude={
+            model:Course,
+            foreignKey:'parent',
+            include:includeOptions,
+            where:{
+                niveau_scolaire_id:req.current_niveau_scolaire,
+                type
+            },
+            required:true,
+           
+        }
+        if(type!='cours'){
+            delete bigInclude.include
+        }
+        return CoursInteractive.findOne(
+            {where:
+                {id:req.params.courseId,active:true,validity:true},
+                include:bigInclude
+            ,
+            
+          }).then(c=>{
+          
+            if(c){
+                if(c.status==='public'){
+                    return c
+                }
+                else{
+                        let  trimestres
+                        if(type==='exam'){
+                            trimestres = [c.dataValues.Course.dataValues.trimestre_id]
+                        }
+                        else{
+                            trimestres = c.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id)
+                        }
+                           
+                        if(req.user.AnneeNiveauUsers.filter(ann=>ann.type='paid').map(d=>d.dataValues.trimestre_id).some(d=>trimestres.includes(d))){
+                            return c
+                        }
+                        else{
+                            return Promise.reject(new RecordNotFoundErr())
+                        }
+                }
+                
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+
+          })
     }
     
     

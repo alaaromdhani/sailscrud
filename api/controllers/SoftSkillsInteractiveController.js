@@ -40,6 +40,7 @@ module.exports = {
 
       }
       else{
+        
         fs.unlink(path.join(__dirname,'../../static/softskills/'+req.upload.path+'/'+req.upload.file_name+'.'+req.upload.extension),(err)=>{
           if(err){
               console.log(err)

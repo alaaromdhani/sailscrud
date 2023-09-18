@@ -254,88 +254,7 @@ module.exports={
 
     },
     
-    accessCourse:(req,res)=>{
-        let where={id:req.params.courseId,active:true,validity:true} 
-            
-            CoursInteractive.findOne({
-                where,
-                include:{
-                    model:Course,
-                    foreignKey:'parent',
-                    attributes:['niveau_scolaire_id'],
-                    include:{
-                        model:Module,
-                        foreignKey:'module_id',
-                        attributes:['id'],
-                        include:{
-                            model:Trimestre,
-                            through:'trimestres_modules',
-                            attributes:['id']
-                        }
-                    }
-                }
-            
-            }).then(ci=>{
-              //  console.log(c)
-                    if(!ci){
-                        return Promise.reject(new RecordNotFoundErr())
-                    }
-                    else{
-                        const courseNs = ci.dataValues.Course.dataValues.niveau_scolaire_id
-                   // const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
-                     if(req.current_niveau_scolaire===courseNs){
-                        if(ci.dataValues.status==='public'){
-                            return ci
-                        }
-                        else{
-                            const trimestres =ci.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id) 
-                            
-                            return trimestres.some(t=>req.user.AnneeNiveauUsers.filter(a=>a.type==='paid').map(a=>a.trimestre_id).includes(t))?ci:Promise.reject(new RecordNotFoundErr())
-                        }
-                     }
-                     else{
-                        return Promise.reject(new RecordNotFoundErr())  
-                     }
-                    }
-            }).then(ci=>{
-                console.log(ci)
-              
-                if(!ci){
-                    return ErrorHandlor(req,new RecordNotFoundErr(),res)
-                }
-                else{
-                    sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                              if(err){
-                                    return 
-                              }
-                              else{
-                                const tincanActor = JSON.stringify({
-                                  name: agent.account_name,
-                                  account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                                  objectType:'Agent'
-                                })
-                                let endpoint = sails.config.custom.lrsEndPoint
-                               
-                                let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                                return res.view("pages/player.ejs",{
-                                  ci:ci,
-                                  url:fullUrl,
-                                  username:req.user.firstName+' '+req.user.lastName,
-                                  sex:req.user.sex.toLowerCase()
-                                  })
-                              }
-        
-        
-                    })
-                }    
-            }).catch(e=>{
-                console.log(e)
-                return ErrorHandlor(req,e,res)
-            })      
-               
-
-
-    },
+   
     canAccessSoftSckills:(req,res)=>{
         const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
         return DataHandlor(req,{canAccessSoftSckills:nbPaidTrimstres.length>=2},res)
@@ -623,6 +542,40 @@ module.exports={
             return ErrorHandlor(req,resolveError(e),res)
         }
 
+        },
+        accessCourse:async(req,res)=>{
+                try{
+                    let ci = await sails.services.subcourseservice.accessCourse(req)
+                      
+                    sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                                if(err){
+                                    return ErrorHandlor(req,new SqlError(err),res)
+                                }
+                                else{
+                                const tincanActor = JSON.stringify({
+                                    name: agent.account_name,
+                                    account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                                    objectType:'Agent'
+                                })
+                                let endpoint = sails.config.custom.lrsEndPoint
+                                
+                                let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
+                                return res.view("pages/player.ejs",{
+                                    ci:ci,
+                                    url:fullUrl,
+                                    username:req.user.firstName+' '+req.user.lastName,
+                                    sex:req.user.sex.toLowerCase()
+                                    })
+                                }
+        
+        
+                    })
+                } catch(e){
+                    console.log(e)
+                    return ErrorHandlor(req,resolveError(e),res)
+                }      
+            
+    
         },
         
        

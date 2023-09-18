@@ -86,7 +86,7 @@ module.exports.routes = {
   'GET /front/api/v1/parent/courses/results/:courseId/:id':'ParentHomeController.getResults',
   'GET /front/api/v1/parent/exams/:MatiereId/:id':'ParentHomeController.getExams',
   'GET /front/api/v1/parent/exams/children/:id/:courseId':'ParentHomeController.getExamsChildren',
-  //getMatieresWithStudentProgress
+  
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
   
@@ -137,6 +137,8 @@ module.exports.routes = {
   'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback',
   'GET /front/student/api/v1/purchases':'StudentHomeController.availableTrimestres',
   'GET /front/student/api/v1/interactive/:courseId':'StudentHomeController.accessCourse',
+  'GET /front/student/api/v1/interactive/:type/:courseId/':'StudentHomeController.accessCourse',
+  
   'GET /front/student/api/v1/canAccessSoftSkills':'StudentHomeController.canAccessSoftSckills', 
   'GET /front/student/api/v1/softkills/themes':'StudentHomeController.getsoftSkillsThemes', 
   'GET /front/student/api/v1/softkills':'StudentHomeController.getsoftSkillsChildren', 

@@ -260,6 +260,7 @@ module.exports = {
     });
   },
   zipFileUploader:(req,callback,homePath,type)=>{
+      console.log("type",type)
       if(req.operation){
           if(!type){
             type="interactive"
@@ -287,9 +288,12 @@ module.exports = {
                     zipFile.readEntry()
                     zipFile.once("end",()=>{
                       console.log('ended unzipping the file successfully')
-                     if(type=="interactive" || type==="other"){
-                         console.log(entries)
-                       if(type=='other'){
+                     if(type=="interactive" || type==="other" || type==='softskills'){
+                         
+                         if(type=='softskills'){
+                          req.operation.courseType="softskills"
+                         }
+                        else if(type=='other'){
                         req.operation.courseType="other"
                        }
                        else{
@@ -302,84 +306,87 @@ module.exports = {
                         return callback(null,{courseId})
                      }
                     })
-                    zipFile.on("entry",async (entry)=>{
+                    
+                      zipFile.on("entry",async (entry)=>{
                       
-                      if (/\/$/.test(entry.fileName)) {
-                        console.log('found directory ' , entry.fileName)
-                        fs.mkdir(path.join(uploadBasePath,entry.fileName),{recursive:true},err => {
-                          if(err){
-                              return callback(new SqlError(err),null) 
-                          }
-                          else{
-                              zipFile.readEntry()
-                          }
-                         })
-                      }
-                      else{
-                        entries.push(entry.fileName)
-                        
-                          const filePath = path.join(uploadBasePath,entry.fileName)
-                          const fileDirectory = path.dirname(filePath)
-                          if (!fs.existsSync(fileDirectory)) {
-                            fs.mkdirSync(fileDirectory, { recursive: true })
-                          }
-                        try{
-                          zipFile.openReadStream(entry,(err,readStream)=>{
+                        if (/\/$/.test(entry.fileName)) {
+                          console.log('found directory ' , entry.fileName)
+                          fs.mkdir(path.join(uploadBasePath,entry.fileName),{recursive:true},err => {
                             if(err){
-                            return  callback(new SqlError(err),null)
+                                return callback(new SqlError(err),null) 
                             }
                             else{
-                                     if(entry.fileName==='tincan.xml'){
-                                         readStream.on('data',async chunk=>{
-                                           await parser.parseString(chunk,(err,result)=>{
-                                               if(!err){
-                                               try{
-                                                result.tincan.activities[0].activity.forEach(element => {
-                                                  objs.push({
-                                                      id:element.$.id,
-                                                      type:element.$.type,
-                                                      name:element.name[0]._,
-                                                      description:element.name[0]._,
-                                                      course_id:null
-                                                  })
-                                          
-                                                  if(element.launch){
-                                                  courseId =element.$.id
-                                                  }
-                                                });
-                                               }
-                                               catch(e){
-                                                console.log(e)
-                                               }
-                                               }
-                                               else{
-                                                 console.log(err)
-                                               }
-                                           })
-                                         })
-                                       }
-                                     try{
-                                         readStream.on("end",()=>{
-                                           zipFile.readEntry()
-                                         })
-                                         readStream.pipe(fs.createWriteStream(path.join(uploadBasePath,entry.fileName)))
-                                       } 
-                                       catch(e){
-                                         console.log(e)
-                                         return callback(new SqlError(e))
- 
-                                       }
-                               } 
-                           
+                                zipFile.readEntry()
+                            }
                            })
-                        }catch(e){
-                          console.log(e)
-                          return callback(new ValidationError({message:'valid xapi cours is required'}))
                         }
-                      }
-                      
-                    })
-         
+                        else{
+                          entries.push(entry.fileName)
+                          
+                            const filePath = path.join(uploadBasePath,entry.fileName)
+                            const fileDirectory = path.dirname(filePath)
+                            if (!fs.existsSync(fileDirectory)) {
+                              fs.mkdirSync(fileDirectory, { recursive: true })
+                            }
+                          try{
+                            zipFile.openReadStream(entry,(err,readStream)=>{
+                              if(err){
+                              return  callback(new SqlError(err),null)
+                              }
+                              else{
+                                       if(entry.fileName==='tincan.xml'){
+                                           readStream.on('data',async chunk=>{
+                                             await parser.parseString(chunk,(err,result)=>{
+                                                 if(!err){
+                                                 try{
+                                                  result.tincan.activities[0].activity.forEach(element => {
+                                                    if(type!='softskills'){
+                                                      objs.push({
+                                                        id:element.$.id,
+                                                        type:element.$.type,
+                                                        name:element.name[0]._,
+                                                        description:element.name[0]._,
+                                                        course_id:null
+                                                    })
+                                                    }
+                                            
+                                                    if(element.launch){
+                                                    courseId =element.$.id
+                                                    }
+                                                  });
+                                                 }
+                                                 catch(e){
+                                                  console.log(e)
+                                                 }
+                                                 }
+                                                 else{
+                                                   console.log(err)
+                                                 }
+                                             })
+                                           })
+                                         }
+                                       try{
+                                           readStream.on("end",()=>{
+                                             zipFile.readEntry()
+                                           })
+                                           readStream.pipe(fs.createWriteStream(path.join(uploadBasePath,entry.fileName)))
+                                         } 
+                                         catch(e){
+                                           console.log(e)
+                                           return callback(new SqlError(e))
+   
+                                         }
+                                 } 
+                             
+                             })
+                          }catch(e){
+                            console.log(e)
+                            return callback(new ValidationError({message:'valid xapi cours is required'}))
+                          }
+                        }
+                        
+                      })
+                    
                   }
                 })      
               } 
@@ -389,10 +396,14 @@ module.exports = {
       }
     },
     saveCourse:async (req,objs,courseId,callback)=>{
+        console.log('course type',req.operation.courseType)
         if(!courseId){
             return callback(new ValidationError({message:'valid xapi course is required'}))
         }
         else{
+          if(req.operation.courseType==='softskills'){
+            return callback(null,{courseId})
+          }
         let course = req.body
 
        delete course.zipFile
@@ -463,15 +474,18 @@ module.exports = {
                 }
                 else{
                   console.log(Object.keys(result))
-                    result.tincan.activities[0].activity.forEach(element => {
-                    objs.push({
+                  
+                  result.tincan.activities[0].activity.forEach(element => {
+                
+                    if(req.operation.courseType!='softskills'){
+                      objs.push({
                         id:element.$.id,
                         type:element.$.type,
                         name:element.name[0]._,
                         description:element.name[0]._,
                         course_id:null
                     })
-            
+                    }
                     if(element.launch){
                     courseId =element.$.id
                     }

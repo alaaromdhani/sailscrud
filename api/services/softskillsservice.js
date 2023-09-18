@@ -527,11 +527,11 @@ module.exports={
                         
                 }
                 else{
-                    if(!data.courseId){
-                        return callback(new ValidationError({message:'valid xapi course is required'}))
-    
-                    }
+                  
                     let course = req.body
+                    if(req.body.parent){
+                        course.parent =parseInt(course.parent)
+                    }
                     course.rating = 0
                     course.id = data.courseId
                      course.url  = req.upload.path
