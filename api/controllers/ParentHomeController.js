@@ -483,7 +483,7 @@ module.exports={
                 attributes:['id','name','rating','description'],
                 where:{
                     active:true,
-                    type:'course'
+                    type:'cours'
     
                 },
                 
@@ -554,7 +554,7 @@ module.exports={
         let course =  await Course.findOne({
             where:{
                 id:courseId,
-                type:'course',
+                type:'cours',
                 niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true
             },
