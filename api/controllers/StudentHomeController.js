@@ -307,9 +307,31 @@ module.exports={
     getsoftSkillsThemes:async (req,res)=>{
         const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
         if(nbPaidTrimstres.length>=2){
-           return DataHandlor(req,await SoftSkillsTheme.findAll({
-            attributes:['name','id','description']
-           }),res
+           return DataHandlor(req,
+            await SoftSkills.findAll(
+                {
+                    group:'theme_id',
+                    include:[{
+
+                        model:NiveauScolaire,
+                        through:'soft_skills_ns',
+                        attributes:['id'],
+                        where:{
+                            id:req.current_niveau_scolaire
+                        }
+                    },
+                    {
+                        model:SoftSkillsTheme,
+                        foreignKey:'theme_id',
+                    }]
+
+                    ,
+                    attributes:['id']
+
+
+
+                })
+            ,res
            )
         }
         else{
@@ -329,9 +351,10 @@ module.exports={
                 include:[{
                     model:NiveauScolaire,
                     where:{
-                        id:req.current_niveau_scolaire
+                        id:req.current_niveau_scolaire,
                     },
                     through:'soft_skills_ns',
+                    required:true,
                     attributes:['id']
                 },
                     {
