@@ -179,7 +179,7 @@ module.exports={
                required:false,
            },
            {
-              attributes:['id','name','description','rating','status'],
+              attributes:['id','name','description','rating','status','url','source'],
                 model:CoursVideo,
                foreignkey:'parent',
                where:{
@@ -509,7 +509,7 @@ module.exports={
                 required:false
             },
             {
-               attributes:['id','name','description','rating','status'],
+               attributes:['id','name','description','rating','status','url','source'],
                  model:CoursVideo,
                 foreignkey:'parent',
                 where:{
