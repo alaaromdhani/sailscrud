@@ -310,7 +310,6 @@ module.exports = {
                       zipFile.on("entry",async (entry)=>{
                       
                         if (/\/$/.test(entry.fileName)) {
-                          console.log('found directory ' , entry.fileName)
                           fs.mkdir(path.join(uploadBasePath,entry.fileName),{recursive:true},err => {
                             if(err){
                                 return callback(new SqlError(err),null) 

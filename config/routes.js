@@ -141,7 +141,8 @@ module.exports.routes = {
   
   'GET /front/student/api/v1/canAccessSoftSkills':'StudentHomeController.canAccessSoftSckills', 
   'GET /front/student/api/v1/softkills/themes':'StudentHomeController.getsoftSkillsThemes', 
-  'GET /front/student/api/v1/softkills':'StudentHomeController.getsoftSkillsChildren', 
+  'GET /front/student/api/v1/softkills/parent/:theme_id':'StudentHomeController.getSoftSkills', 
+  'GET /front/student/api/v1/softkills/children/:id':'StudentHomeController.getsoftSkillsChildren', 
   
   'GET /front/student/api/v1/softskills/interactive/:id':'StudentHomeController.accessSoftSkills', 
   'GET /front/student/api/v1/exams/:TrimestreId/:MatiereId':'StudentHomeController.getExams', 
