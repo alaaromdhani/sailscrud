@@ -795,7 +795,7 @@ module.exports={
     },
     getExams:async (req,res)=>{
         try{
-            const {id} = req.params
+            const {id,MatiereId} = req.params
             let data = await AnneeNiveauUser.findOne({where:{
                 id,
               
@@ -816,6 +816,7 @@ module.exports={
             let exams = await Course.findAll({where:{
                 trimestre_id:data.dataValues.trimestre_id,
                 type:'exam',
+                matiere_id:MatiereId,
                 niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true,
                
@@ -831,11 +832,12 @@ module.exports={
 
     },
     getExamsChildren:async (req,res)=>{
+        console.log('where here')  
         try{
             const {id} = req.params
             let data = await AnneeNiveauUser.findOne({where:{
                 id,
-                include:{
+                }, include:{
                     model:User,
                     foreignKey:'user_id',
                     required:true,
@@ -845,7 +847,8 @@ module.exports={
                     },
                     attributes:['addedBy']
                 }
-            }}) 
+            })
+               
             if(!data){
                 throw new RecordNotFoundErr()
             }
@@ -855,39 +858,44 @@ module.exports={
                 type:'exam',
                 niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true,
+            
+                },    
                 attributes:['id','name','description','rating'],
-                include:{
-                    model:CoursInteractive,
-                    foreignKey:'parent',
-                    attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
-                    where:{
-                        validity:true,
-                        active:true 
-                     },
                     include:{
-                        
-                              model:ActivityState,
-                              foreignKey:'c_interactive_id',
-                              attributes:['agent_id','progression'],
-                              include:{
-                                  model:Agent,
-                                  attributes:['user_id'],
-                                  foreignKey:'agent_id',
-                                  where:{
-                                     user_id: data.dataValues.user_id
-                                  },
-                                  required:true
-                              },
-                              required:false
-          
-                    }
+                        model:CoursInteractive,
+                        foreignKey:'parent',
+                        attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
+                        where:{
+                            validity:true,
+                            active:true 
+                        },
+                        include:{
+                            
+                                model:ActivityState,
+                                foreignKey:'c_interactive_id',
+                                attributes:['agent_id','progression'],
+                                include:{
+                                    model:Agent,
+                                    attributes:['user_id'],
+                                    foreignKey:'agent_id',
+                                    where:{
+                                        user_id: data.dataValues.user_id
+                                    },
+                                    required:true
+                                },
+                                required:false
+            
+                        },
+                        required:false
                 }
-            }})
+
+                })
             if(!exams){
                 throw new RecordNotFoundErr() 
             }
             return DataHandlor(req,exams,res)
         }catch(e){
+            console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
 
         }
