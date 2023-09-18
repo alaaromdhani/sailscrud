@@ -546,7 +546,7 @@ module.exports={
     
    
         try{
-            let data = await Course.findAll({where:{
+            let data = await Course.findOne({where:{
                 trimestre_id:TrimestreId,
                 id:courseId,
                 type:'exam',
