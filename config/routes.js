@@ -80,12 +80,12 @@ module.exports.routes = {
   //orders
 
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
-  'GET /front/api/v1/parent/matieres/:id':'ParentHomeController.getMatieres',
+  'GET /front/api/v1/parent/matieres/:id':'ParentHomeController.getMatieresWithStudentProgress',
   'GET /front/api/v1/parent/courses/:MatiereId/:id':'ParentHomeController.getCourses',
   'GET /front/api/v1/parent/courses/children/:courseId/:id':'ParentHomeController.getChildren',
   'GET /front/api/v1/parent/courses/results/:courseId/:id':'ParentHomeController.getResults',
   'GET /front/api/v1/parent/exams/:MatiereId/:id':'ParentHomeController.getExams',
-  
+  //getMatieresWithStudentProgress
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
   
@@ -106,7 +106,6 @@ module.exports.routes = {
    
  
   //student management
-  'GET /front/student/api/v1/progression/:id':'ParentHomeController.getMatieresWithStudentProgress', 
  
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',
