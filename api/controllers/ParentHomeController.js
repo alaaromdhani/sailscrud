@@ -751,7 +751,12 @@ module.exports={
             include:[{
                 model:Matiere,
                 foreignKey:'MatiereId',
-                attributes:['name']
+                attributes:['name','id'],
+                include:{
+                    model:Upload,
+                    foreignKey:'image',
+                    attributes:['link']
+                }
             },{
                 model:Course,
                 foreignKey:'matiere_niveau_id',
@@ -781,7 +786,7 @@ module.exports={
             }]
         
             })
-            return DataHandlor(req,data,res)
+            return DataHandlor(req,data.map(d=>{ return {matiere:d.Matiere,total:(d.dataValues.sumNbQuestion!=='null'?d.dataValues.sumNbQuestion:0),attempted:(d.dataValues.sumProgression!=='null'?d.dataValues.sumProgression:0)}}),res)
         }
         else{
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
