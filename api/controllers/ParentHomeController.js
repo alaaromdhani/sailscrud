@@ -819,6 +819,11 @@ module.exports={
                 matiere_id:MatiereId,
                 niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true,
+                include:{
+                    model:Matiere,
+                    foreignKey:'matiere_id',
+                    attributes:['name']
+                }
                
             },
             attributes:['id','name','description','rating']})
@@ -832,7 +837,6 @@ module.exports={
 
     },
     getExamsChildren:async (req,res)=>{
-        console.log('where here')  
         try{
             const {id} = req.params
             let data = await AnneeNiveauUser.findOne({where:{
