@@ -532,12 +532,14 @@ module.exports={
 
                     type:'exam',
                     niveau_scolaire_id:req.current_niveau_scolaire,
-                    include:{
-                        model:Matiere,
-                        foreignKey:'matiere_id',
-                        attributes:['name']
-                    }
-                }}) 
+                   
+                },
+                include:{
+                    model:Matiere,
+                    foreignKey:'matiere_id',
+                    attributes:['name']
+                }
+            }) 
                 return DataHandlor(req,data,res)
             }catch(e){
                 return ErrorHandlor(req,resolveError(e),res)

@@ -819,12 +819,13 @@ module.exports={
                 matiere_id:MatiereId,
                 niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true,
-                include:{
-                    model:Matiere,
-                    foreignKey:'matiere_id',
-                    attributes:['name']
-                }
                
+               
+            },
+            include:{
+                model:Matiere,
+                foreignKey:'matiere_id',
+                attributes:['name']
             },
             attributes:['id','name','description','rating']})
             return DataHandlor(req,exams,res)
