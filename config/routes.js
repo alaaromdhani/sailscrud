@@ -74,14 +74,17 @@ module.exports.routes = {
   //cart
   'GET /front/parent/api/v1/cart':'ParentHomeController.readCart',
   'POST /front/parent/api/v1/cart':'ParentHomeController.addToCart',
+ 
   'delete /front/parent/api/v1/cart/:id':'ParentHomeController.deleteFromCart',
     
-  //orders 
+  //orders
+
   'POST /front/api/v1/parent/orders':'ParentHomeController.addOrder',
   'GET /front/api/v1/parent/matieres/:id':'ParentHomeController.getMatieres',
   'GET /front/api/v1/parent/courses/:MatiereId/:id':'ParentHomeController.getCourses',
   'GET /front/api/v1/parent/courses/children/:courseId/:id':'ParentHomeController.getChildren',
   'GET /front/api/v1/parent/courses/results/:courseId/:id':'ParentHomeController.getResults',
+  'GET /front/api/v1/parent/exams/:MatiereId/:id':'ParentHomeController.getExams',
   
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
@@ -103,6 +106,8 @@ module.exports.routes = {
    
  
   //student management
+  'GET /front/student/api/v1/progression/:id':'ParentHomeController.getMatieresWithStudentProgress', 
+ 
   'POST /front/api/v1/students': 'StudentController.create',
   'PATCH /front/api/v1/students/schoollevels/:id': 'StudentController.addSchoolLevel',
   'GET /front/api/v1/students/schoollevels/:id': 'StudentController.getStudentSchoolLevels',
@@ -135,7 +140,8 @@ module.exports.routes = {
   'GET /front/student/api/v1/canAccessSoftSkills':'StudentHomeController.canAccessSoftSckills', 
   'GET /front/student/api/v1/softkills/themes':'StudentHomeController.getsoftSkillsThemes', 
   'GET /front/student/api/v1/softkills':'StudentHomeController.getsoftSkillsChildren', 
- 
+  'GET /front/student/api/v1/softskills/interactive/:id':'StudentHomeController.accessSoftSkills', 
+  
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',
   //sharedEndpoints

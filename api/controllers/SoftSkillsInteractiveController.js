@@ -135,12 +135,12 @@ module.exports = {
     }
   },
   accessSoftSkills:(req,res)=>{
-    let where={id:req.params.id,validity:true,active:true} 
-    console.log('private courses',req.courses.private)
-    if(!req.courses.private){
-      where.status = "public"
-    }
-    SoftSkillsInteractive.findOne({where}).then(ci=>{
+    let where={} 
+    
+    SoftSkillsInteractive.findOne({where:{
+      id:req.params.id,validity:true,active:true
+      
+    }}).then(ci=>{
       if(!ci){
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
       }

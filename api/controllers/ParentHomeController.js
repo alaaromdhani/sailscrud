@@ -1,4 +1,5 @@
-const { Op } = require("sequelize")
+const { Op} = require("sequelize")
+const sequelize = require('sequelize')
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
@@ -481,7 +482,8 @@ module.exports={
                 foreignkey:'module_id',
                 attributes:['id','name','rating','description'],
                 where:{
-                    active:true
+                    active:true,
+                    type:'course'
     
                 },
                 
@@ -552,6 +554,7 @@ module.exports={
         let course =  await Course.findOne({
             where:{
                 id:courseId,
+                type:'course',
                 niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
                 active:true
             },
@@ -724,6 +727,126 @@ module.exports={
   
   
     },
+    getMatieresWithStudentProgress:async (req,res)=>{
+        const {id} = req.params
+        let ann = await AnneeNiveauUser.findOne({where:{
+                id:id,
+               },
+                include:[{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['id'],
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            },]
+        })
+        if(ann){
+            let data = await  MatiereNiveau.findAll({where:{
+                NiveauScolaireId:ann.dataValues.niveau_scolaire_id,
+            },    
+            group:'MatiereId',     
+            attributes:[[sequelize.fn('sum',sequelize.col('Courses->CoursInteractives`.`nbQuestion')),'sumNbQuestion'],[sequelize.fn('sum',sequelize.col(`Courses->CoursInteractives->ActivityStates.progression`)),'sumProgression']],
+            include:[{
+                model:Matiere,
+                foreignKey:'MatiereId',
+                attributes:['name']
+            },{
+                model:Course,
+                foreignKey:'matiere_niveau_id',
+                attributes:['id'],
+                include:{
+                    model:CoursInteractive,
+                    foreignKey:'parent',
+                    attributes:[[sequelize.col('nbQuestion'),'nb']],
+                    include:{
+                        model:ActivityState,
+                        foreignKey:'c_interactive_id',
+                        required:false,
+                        include:{
+                            model:Agent,
+                            foreignKey:'agent_id',
+                            where:{
+                                user_id:ann.dataValues.user_id
+                            },
+                            required:true,
+                            
+                        },
+                        attributes:['agent_id','progression']
+
+                    }
+
+                }
+            }]
+        
+            })
+            return DataHandlor(req,data,res)
+        }
+        else{
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+    },
+    getExams:async (req,res)=>{
+        const paidSemesters = AnneeNiveauUser.findOne({where:{
+            id:req.params.id,
+            type:'paid',
+            include:{
+                model:User,
+                foreignKey:'user_id',
+                where:{
+                    addedBy:req.user.id
+                },
+                required:true
+            }    
+
+        }})
+        if(paidSemesters){
+            try {
+                let courses = await Course.findAll({where:{
+                    type:'exam',
+                    trimestre_id:paidSemesters.dataValues.trimestre_id,
+                    attributes:['name','id','description','rating'],
+    
+                },include:[{
+                    model:CoursInteractive,
+                    
+                    foreignkey:'parent',
+                    attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
+                    where:{
+                       validity:true,
+                       active:true 
+                    },
+                      include:{
+                         model:ActivityState,
+                         foreignKey:'c_interactive_id',
+                         attributes:['agent_id','progression'],
+                         include:{
+                             model:Agent,
+                             attributes:['user_id'],
+                             foreignKey:'agent_id',
+                             where:{
+                                user_id: data.dataValues.user_id
+                             },
+                             required:true
+                         },
+                         required:false
+     
+                    },
+                    required:false
+                },]})
+                return DataHandlor(req,courses,res)
+            }
+            catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+        }
+        else{
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+
+
+    }
     
 
 

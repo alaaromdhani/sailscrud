@@ -214,6 +214,7 @@ module.exports={
 
 
     },
+    
     accessCourse:(req,res)=>{
         console.log('thiis the page where i am')
         let where={id:req.params.courseId,active:true,validity:true} 
@@ -368,8 +369,58 @@ module.exports={
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
 
-    }
-    
+    },
+    accessSoftSkills:(req,res)=>{
+        const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
+        if(nbPaidTrimstres.length>2){
+             
+        
+            SoftSkillsInteractive.findOne({where:{
+              id:req.params.id,validity:true,active:true,include:{
+                model:NiveauScolaire,
+                through:'soft_skills_ns',
+                attributes:['id'],
+                where:{
+                   id:req.current_niveau_scolaire 
+                }
+              }
+              
+            }}).then(ci=>{
+              if(!ci){
+                  return ErrorHandlor(req,new RecordNotFoundErr(),res)
+              }
+              else{
+                  sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                            if(err){
+                                  return ErrorHandlor(req,err,res)
+                            }
+                            else{
+                            
+                              //console.log(ci.url)
+                              let fullUrl =  sails.config.custom.baseUrl+'softskills/'+ci.url+"/"+'index_lms.html'
+                              return res.view("pages/player.ejs",{
+                                    url:fullUrl,
+                                    username:req.user.firstName +' '+req.user.firstName,
+                                    sex:req.user.sex.toLowerCase()
+                              })
+                            }
+        
+        
+                  })
+              }
+            }).catch(e=>{
+        
+                 ErrorHandlor(req,new RecordNotFoundErr(),res)
+            })  
+        
+        
+        
+          }else{
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+          }
+        
+        }
+       
 
 
 

@@ -62,6 +62,9 @@ module.exports = {
     }
   },
   associations:()=>{
+    Matiere.hasMany(Course,{
+      foreignKey:'matiere_id'
+    })
       Matiere.belongsTo(Upload,{
         foreignKey:'image'
       })
