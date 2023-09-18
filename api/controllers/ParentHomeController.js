@@ -852,6 +852,7 @@ module.exports={
             if(!data){
                 throw new RecordNotFoundErr()
             }
+            let canAccessPrivate=(data.dataValues.type==='paid')
             let exams = await Course.findOne({where:{
                 id:req.params.courseId,
                 trimestre_id:data.dataValues.trimestre_id,
@@ -893,7 +894,7 @@ module.exports={
             if(!exams){
                 throw new RecordNotFoundErr() 
             }
-            return DataHandlor(req,exams,res)
+            return DataHandlor(req,{exams,canAccessPrivate},res)
         }catch(e){
             console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
