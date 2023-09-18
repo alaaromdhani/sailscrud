@@ -529,9 +529,14 @@ module.exports={
                 let data = await Course.findAll({where:{
                     trimestre_id:TrimestreId,
                     matiere_id:MatiereId,
+
                     type:'exam',
                     niveau_scolaire_id:req.current_niveau_scolaire,
-
+                    include:{
+                        model:Matiere,
+                        foreignKey:'matiere_id',
+                        attributes:['name']
+                    }
                 }}) 
                 return DataHandlor(req,data,res)
             }catch(e){
@@ -541,8 +546,10 @@ module.exports={
         },
         getExamsChildren:async (req,res)=>{
         const {courseId,TrimestreId} = req.params 
-        let ann = req.user.AnneeNiveauUsers.filter(a=>a.trimestre_id===TrimestreId).at(0)
-        let canAccessPrivate =(ann && ann.type=='paid')
+        let ann = req.user.AnneeNiveauUsers.filter(a=>a.dataValues.trimestre_id===parseInt(TrimestreId)).at(0)
+        //console.log(req.user.AnneeNiveauUsers)
+        let canAccessPrivate =(ann && ann.type=='paid')?true:false
+        //console.log("canAccessPrivate",canAccessPrivate)
     
    
         try{
@@ -605,10 +612,13 @@ module.exports={
                 },
                 required:false
             }]})
-            return DataHandlor(req,{exams:data,canAccessPrivate},res)
+            if(!data){
+                throw new RecordNotFoundErr()
+            }
+            return DataHandlor(req,{"course":data,canAccessPrivate},res)
         }catch(e){
  
-            return ErrorHandlor(req,new SqlError(e),res)
+            return ErrorHandlor(req,resolveError(e),res)
         }
 
         },
