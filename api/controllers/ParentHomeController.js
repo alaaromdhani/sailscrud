@@ -6,6 +6,7 @@ const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMess
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const resolveError = require("../../utils/errors/resolveError")
 
+
 module.exports={
     getThemes:async (req,res)=>{
         try{
@@ -793,52 +794,103 @@ module.exports={
         }
     },
     getExams:async (req,res)=>{
-        
-        if(paidSemesters){
-            try {
-                let courses = await Course.findAll({where:{
-                    type:'exam',
-                    trimestre_id:paidSemesters.dataValues.trimestre_id,
-                    attributes:['name','id','description','rating'],
-    
-                },include:[{
+        try{
+            const {id} = req.params
+            let data = await AnneeNiveauUser.findOne({where:{
+                id,
+              
+            },
+            include:{
+                model:User,
+                foreignKey:'user_id',
+                required:true,
+                where:{
+                    addedBy:req.user.id,
+                },
+                attributes:['addedBy']
+
+            }}) 
+            if(!data){
+                throw new RecordNotFoundErr()
+            }
+            let exams = await Course.findAll({where:{
+                trimestre_id:data.dataValues.trimestre_id,
+                type:'exam',
+                niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
+                active:true,
+               
+            },
+            attributes:['id','name','description','rating']})
+            return DataHandlor(req,exams,res)
+        }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+
+        }
+            
+     
+
+    },
+    getExamsChildren:async (req,res)=>{
+        try{
+            const {id} = req.params
+            let data = await AnneeNiveauUser.findOne({where:{
+                id,
+                include:{
+                    model:User,
+                    foreignKey:'user_id',
+                    required:true,
+                    where:{
+                        addedBy:req.user.id,
+                        
+                    },
+                    attributes:['addedBy']
+                }
+            }}) 
+            if(!data){
+                throw new RecordNotFoundErr()
+            }
+            let exams = await Course.findOne({where:{
+                id:req.params.courseId,
+                trimestre_id:data.dataValues.trimestre_id,
+                type:'exam',
+                niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
+                active:true,
+                attributes:['id','name','description','rating'],
+                include:{
                     model:CoursInteractive,
-                    
-                    foreignkey:'parent',
+                    foreignKey:'parent',
                     attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
                     where:{
-                       validity:true,
-                       active:true 
-                    },
-                      include:{
-                         model:ActivityState,
-                         foreignKey:'c_interactive_id',
-                         attributes:['agent_id','progression'],
-                         include:{
-                             model:Agent,
-                             attributes:['user_id'],
-                             foreignKey:'agent_id',
-                             where:{
-                                user_id: data.dataValues.user_id
-                             },
-                             required:true
-                         },
-                         required:false
-     
-                    },
-                    required:false
-                },]})
-                return DataHandlor(req,courses,res)
+                        validity:true,
+                        active:true 
+                     },
+                    include:{
+                        
+                              model:ActivityState,
+                              foreignKey:'c_interactive_id',
+                              attributes:['agent_id','progression'],
+                              include:{
+                                  model:Agent,
+                                  attributes:['user_id'],
+                                  foreignKey:'agent_id',
+                                  where:{
+                                     user_id: data.dataValues.user_id
+                                  },
+                                  required:true
+                              },
+                              required:false
+          
+                    }
+                }
+            }})
+            if(!exams){
+                throw new RecordNotFoundErr() 
             }
-            catch(e){
-                return ErrorHandlor(req,resolveError(e),res)
-            }
-        }
-        else{
-            return ErrorHandlor(req,new RecordNotFoundErr(),res)
-        }
+            return DataHandlor(req,exams,res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
 
-
+        }
     }
     
 

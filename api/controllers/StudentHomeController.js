@@ -4,7 +4,8 @@ const SqlError = require("../../utils/errors/sqlErrors")
 const getCurrentTrimestre = require("../../utils/getCurrentTrimestre")
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
 const { Sequelize,Op } = require("sequelize")
-
+const resolveError = require("../../utils/errors/resolveError")
+const sequelize = require('sequelize')
 module.exports={
     profileCallback:(req,res)=>{
         return DataHandlor(req,req.user,res)
@@ -12,31 +13,52 @@ module.exports={
     },
     getMatieres:async (req,res)=>{
         //console.log("niveau_scolaire :",req.current_niveau_scolaire)
-       const data = await NiveauScolaire.findByPk(req.current_niveau_scolaire,{
-            include:{
+            let data = await  MatiereNiveau.findAll({where:{
+                NiveauScolaireId:req.current_niveau_scolaire,
+            },    
+            group:'MatiereId',     
+            attributes:[[sequelize.fn('sum',sequelize.col('Courses->CoursInteractives`.`nbQuestion')),'sumNbQuestion'],[sequelize.fn('sum',sequelize.col(`Courses->CoursInteractives->ActivityStates.progression`)),'sumProgression']],
+            include:[{
                 model:Matiere,
-                through:MatiereNiveau,
-                attributes:['id','name','color','description'],
+                foreignKey:'MatiereId',
+                attributes:['name','id','color','description'],
                 include:{
                     model:Upload,
-                    foreignkey:'image',
+                    foreignKey:'image',
                     attributes:['link']
-                },
-                where:{
-                    active:true
-                },
-                required:false
-            }
+                }
+            },{
+                model:Course,
+                foreignKey:'matiere_niveau_id',
+                attributes:['id'],
+                include:{
+                    model:CoursInteractive,
+                    foreignKey:'parent',
+                    attributes:[[sequelize.col('nbQuestion'),'nb']],
+                    include:{
+                        model:ActivityState,
+                        foreignKey:'c_interactive_id',
+                        required:false,
+                        include:{
+                            model:Agent,
+                            foreignKey:'agent_id',
+                            where:{
+                                user_id:req.user.id
+                            },
+                            required:true,
+                            
+                        },
+                        attributes:['agent_id','progression']
 
-        })
-        if(!data){
-            return ErrorHandlor(req,new RecordNotFoundErr(),res)
-        }
-        else{
-            return DataHandlor(req,data.Matieres,res)
-        }
+                    }
 
-
+                }
+            }]
+        
+            })
+            return DataHandlor(req,data.map(d=>{ return {matiere:d.Matiere,total:(d.dataValues.sumNbQuestion!=='null'?d.dataValues.sumNbQuestion:0),attempted:(d.dataValues.sumProgression!=='null'?d.dataValues.sumProgression:0)}}),res)
+        
+        
 
     },
     getCourses:async(req,res)=>{
@@ -137,7 +159,24 @@ module.exports={
                   validity:true,
                   active:true 
                },
-               required:false
+               include:{
+                        
+                model:ActivityState,
+                foreignKey:'c_interactive_id',
+                attributes:['agent_id','progression'],
+                    include:{
+                        model:Agent,
+                        attributes:['user_id'],
+                        foreignKey:'agent_id',
+                        where:{
+                        user_id: req.user.id
+                        },
+                        required:true
+                    },
+                    required:false
+
+                },
+               required:false,
            },
            {
               attributes:['id','name','description','rating','status'],
@@ -216,7 +255,6 @@ module.exports={
     },
     
     accessCourse:(req,res)=>{
-        console.log('thiis the page where i am')
         let where={id:req.params.courseId,active:true,validity:true} 
             
             CoursInteractive.findOne({
@@ -307,45 +345,86 @@ module.exports={
     getsoftSkillsThemes:async (req,res)=>{
         const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
         if(nbPaidTrimstres.length>=2){
-           return DataHandlor(req,
-            await SoftSkills.findAll(
-                {
-                    group:'theme_id',
-                    include:[{
-
-                        model:NiveauScolaire,
-                        through:'soft_skills_ns',
-                        attributes:['id'],
-                        where:{
-                            id:req.current_niveau_scolaire
-                        }
-                    },
+           try{
+            return DataHandlor(req,
+                await SoftSkills.findAll(
                     {
-                        model:SoftSkillsTheme,
-                        foreignKey:'theme_id',
-                    }]
-
-                    ,
-                    attributes:['id']
-
-
-
-                })
-            ,res
-           )
+                        group:'theme_id',
+                        include:[{
+    
+                            model:NiveauScolaire,
+                            through:'soft_skills_ns',
+                            attributes:['id'],
+                            where:{
+                                id:req.current_niveau_scolaire
+                            }
+                        },
+                        {
+                            model:SoftSkillsTheme,
+                            foreignKey:'theme_id',
+                        }]
+    
+                        ,
+                        attributes:['id']
+    
+    
+    
+                    })
+                ,res
+               )
+           }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+           }
         }
         else{
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
 
     },
+    getSoftSkills:async (req,res)=>{
+        const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
+        if(nbPaidTrimstres.length>=2){
+          try{
+            const {theme_id} = req.params
+            let data = await SoftSkills.findAll({
+                where:{
+                    theme_id
+                },
+                attributes:['name','description','rating'],
+          
+                include:[{
+                    model:NiveauScolaire,
+                    where:{
+                        id:req.current_niveau_scolaire,
+                    },
+                    through:'soft_skills_ns',
+                    required:true,
+                    attributes:['id']
+                },]
+            })
+            return DataHandlor(req,data,res)
+          
+          }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,new SqlError(e),res)
+          }      
+        }
+        else{
+            return ErrorHandlor(req,new RecordNotFoundErr(),res)
+        }
+        
+    },
    
     getsoftSkillsChildren:async (req,res)=>{
+
         const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
         if(nbPaidTrimstres.length>=2){
             
            try{
-            let data = await SoftSkills.findAll({
+            let data = await SoftSkills.findOne({
+                where:{
+                    id:req.params.id
+                },
                 attributes:['name','description','rating'],
           
                 include:[{
@@ -383,7 +462,7 @@ module.exports={
             })
             return  DataHandlor(req,data,res)
            }catch(e){
-            console.log(e)
+           
             return ErrorHandlor(req,new SqlError(e),res)
            }
         }
@@ -442,6 +521,96 @@ module.exports={
             return ErrorHandlor(req,new RecordNotFoundErr(),res)
           }
         
+        },
+        
+        getExams:async (req,res)=>{
+           const {TrimestreId,MatiereId} = req.params
+            try{
+                let data = await Course.findAll({where:{
+                    trimestre_id:TrimestreId,
+                    matiere_id:MatiereId,
+                    type:'exam',
+                    niveau_scolaire_id:req.current_niveau_scolaire,
+
+                }}) 
+                return DataHandlor(req,data,res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+
+        },
+        getExamsChildren:async (req,res)=>{
+        const {courseId,TrimestreId} = req.params 
+        let ann = req.user.AnneeNiveauUsers.filter(a=>a.trimestre_id===TrimestreId).at(0)
+        let canAccessPrivate =(ann && ann.type=='paid')
+    
+   
+        try{
+            let data = await Course.findAll({where:{
+                trimestre_id:TrimestreId,
+                id:courseId,
+                type:'exam',
+                niveau_scolaire_id:req.current_niveau_scolaire,
+                active:true
+            },include:[{
+                model:CoursInteractive,
+                
+                foreignkey:'parent',
+                attributes:['id','name','description','thumbnail','rating','status'],
+                where:{
+                   validity:true,
+                   active:true 
+                },
+                include:{
+                        
+                    model:ActivityState,
+                    foreignKey:'c_interactive_id',
+                    attributes:['agent_id','progression'],
+                    include:{
+                            model:Agent,
+                            attributes:['user_id'],
+                            foreignKey:'agent_id',
+                            where:{
+                            user_id: req.user.id
+                            },
+                            required:true
+                          },
+                        required:false
+
+                    }, 
+                required:false
+            },
+            {
+               attributes:['id','name','description','rating','status'],
+                 model:CoursVideo,
+                foreignkey:'parent',
+                where:{
+                   validity:true,
+                   active:true 
+                },
+                required:false
+            },
+            {
+                model:CoursDocument,
+                foreignkey:'parent',
+                attributes:['id','name','description','rating','status'],
+                include:{
+                 model:Upload,
+                 foreignkey:'document',
+                 attributes:['link']
+                }, 
+                where:{
+                   validity:true,
+                   active:true 
+                },
+                required:false
+            }]})
+            return DataHandlor(req,{exams:data,canAccessPrivate},res)
+        }catch(e){
+ 
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+
         },
         
        
