@@ -751,7 +751,7 @@ module.exports={
             include:[{
                 model:Matiere,
                 foreignKey:'MatiereId',
-                attributes:['name','id'],
+                attributes:['name','id','color','description'],
                 include:{
                     model:Upload,
                     foreignKey:'image',
@@ -793,19 +793,7 @@ module.exports={
         }
     },
     getExams:async (req,res)=>{
-        const paidSemesters = AnneeNiveauUser.findOne({where:{
-            id:req.params.id,
-            type:'paid',
-            include:{
-                model:User,
-                foreignKey:'user_id',
-                where:{
-                    addedBy:req.user.id
-                },
-                required:true
-            }    
-
-        }})
+        
         if(paidSemesters){
             try {
                 let courses = await Course.findAll({where:{
