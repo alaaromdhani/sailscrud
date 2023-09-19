@@ -905,6 +905,25 @@ module.exports={
             return ErrorHandlor(req,resolveError(e),res)
 
         }
+    },
+    getCtypes:async (req,res)=>{
+        try{
+            let data = await sails.services.otherfrontservice.getCtypes(req)
+            return DataHandlor(req,data,res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+
+    },
+    getOtherCourse:async (req,res)=>{
+        try{
+            let data = await sails.services.otherfrontservice.getOthersByCtype(req)
+            return DataHandlor(req,data,res)
+        }
+        catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
     }
     
 

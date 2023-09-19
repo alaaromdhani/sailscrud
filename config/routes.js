@@ -86,7 +86,9 @@ module.exports.routes = {
   'GET /front/api/v1/parent/courses/results/:courseId/:id':'ParentHomeController.getResults',
   'GET /front/api/v1/parent/exams/:MatiereId/:id':'ParentHomeController.getExams',
   'GET /front/api/v1/parent/exams/children/:id/:courseId':'ParentHomeController.getExamsChildren',
-  
+  'GET /front/api/v1/parent/ctypes/:id':'ParentHomeController.getCtypes',
+  'GET /front/api/v1/parent/ctypes/:id/:cTypeId':'ParentHomeController.getOtherCourse',
+    
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
   

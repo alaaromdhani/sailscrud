@@ -309,17 +309,9 @@ module.exports={
                 where:{
                     theme_id
                 },
-                attributes:['name','description','rating'],
+                attributes:['id','name','description','rating'],
           
-                include:[{
-                    model:NiveauScolaire,
-                    where:{
-                        id:req.current_niveau_scolaire,
-                    },
-                    through:'soft_skills_ns',
-                    required:true,
-                    attributes:['id']
-                },]
+                
             })
             return DataHandlor(req,data,res)
           
