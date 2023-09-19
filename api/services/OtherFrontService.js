@@ -3,6 +3,17 @@ const resolveError = require("../../utils/errors/resolveError")
 
 module.exports={
   //parent space
+    getAllParentPerchases:(req)=>{
+        return AnneeNiveauUser.findAll({include:{
+            model:User,
+            foreignKey:'user_id',
+            attributes:['addedBy'],
+            where:{
+                addedBy:req.user.id
+            },
+            required:true
+        }})
+    },
     getParentPurchase:(req)=>{
     const {id} = req.params
     return AnneeNiveauUser.findOne({where:{
@@ -97,6 +108,57 @@ module.exports={
 
 
   },
+  getOtherChildren:()=>{
+    return sails.services.otherfrontservice.getAllParentPerchases(req).
+         then(ann=>{
+           
+            if(!ann.map()){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                let where ={id:cTypeId}
+                if(ann.dataValues.type!=='paid'){
+                    where.free=true
+                }
+            
+              return  CType.findOne({where,
+                    include:[{
+                        model:NiveauScolaire,
+                        through:'types_ns',
+                        where:{
+                            id:ann.dataValues.niveau_scolaire_id
+                        },
+                        attributes:['id'],
+                        required:true
+                    },
+                    {
+                        model:OtherCourse,
+                        foreignKey:'type',
+                        required:false
+                       
+                    }
+                    ]
+                })
+            }
+          }).then(c=>{
+            if(!c){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                return c
+            }
+          })
+        
+        
+        
+
+   
+
+
+   
+
+  }
+
 
   
 

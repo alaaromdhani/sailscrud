@@ -1,6 +1,6 @@
 const joi = require('joi')
 const CTypeShemaWithUpload = joi.object({
-    name:joi.string().required(),
+    name:joi.string(),
     description:joi.string(),
     ns:joi.array().items(joi.number().integer())
 })
@@ -9,7 +9,7 @@ const UpdateCTypeShema = joi.object({
     description:joi.string(),
     active:joi.boolean(),
     free:joi.boolean(),
-    thumbnail:joi.number().integer().required(),
+    thumbnail:joi.number().integer(),
     ns:joi.array().items(joi.number().integer())
 })
 const UpdateCTypeShemaWithUpload = joi.object({
@@ -20,7 +20,7 @@ const UpdateCTypeShemaWithUpload = joi.object({
     ns:joi.array().items(joi.number().integer())
 })
 const CTypeShema = joi.object({
-    name:joi.string().required(),
+    name:joi.string(),
     description:joi.string(),
     thumbnail:joi.number().integer().required(),
     ns:joi.array().items(joi.number().integer())

@@ -73,6 +73,7 @@ module.exports = {
           through:'types_ns',
           attributes:['id','name_ar','name_fr']
         }],
+        distinct:true,
 
         order,
         limit: parseInt(limit, 10),

@@ -12,7 +12,7 @@ const UnauthorizedError = require('../../utils/errors/UnauthorizedError');
 const { OthercourseShema, UpdateOthercourseShema } = require('../../utils/validations/OthercourseSchema');
 const { default: axios } = require('axios');
 const converter = {
-  ctype:{validation:{withFile:{create:CTypeShemaWithUpload,update:UpdateCTypeShemaWithUpload},withoutFile:{create:CTypeShema,update:CTypeShemaWithUpload}},hasUpload:true,uploadKey:"image"},
+  ctype:{validation:{withFile:{create:CTypeShemaWithUpload,update:UpdateCTypeShemaWithUpload},withoutFile:{create:CTypeShema,update:UpdateCTypeShema}},hasUpload:true,uploadKey:"image"},
   othercourse:{validation:{create:OthercourseShema,update:UpdateOthercourseShema},hasUpload:false}
 }
 module.exports = {
@@ -59,7 +59,6 @@ module.exports = {
     if(req.body.active && (req.body.active=="true" || req.body.active=="false")){
       req.body.active=="true"?req.body.active=true:req.body.active=false 
     }
-    
     const {validation,hasUpload,uploadKey} = converter['ctype']
     let bodyData ={}
     let relatedNs
