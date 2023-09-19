@@ -569,6 +569,32 @@ module.exports={
             
     
         },
+        getCtypes:async (req,res)=>{
+            try{
+                let data = await sails.services.otherfrontservice.getCtypesStudent(req)            
+                return DataHandlor(req,data,res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }   
+
+        },
+        getCtypesChildren:async (req,res)=>{
+            try{
+                let data = await sails.services.otherfrontservice.getCtypesChildren(req)            
+                return DataHandlor(req,data,res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }   
+
+        },
+        getOthersChildren:async (req,res)=>{
+            try{
+                let data = await sails.services.otherfrontservice.getOthersChildrenStudent(req)            
+                return DataHandlor(req,data,res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }   
+        }
         
        
 

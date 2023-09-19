@@ -88,6 +88,7 @@ module.exports.routes = {
   'GET /front/api/v1/parent/exams/children/:id/:courseId':'ParentHomeController.getExamsChildren',
   'GET /front/api/v1/parent/ctypes/:id':'ParentHomeController.getCtypes',
   'GET /front/api/v1/parent/ctypes/:id/:cTypeId':'ParentHomeController.getOtherCourse',
+  'GET /front/api/v1/parent/ctypes/children/:id/:other_id':'ParentHomeController.getOtherChildren',
     
   'POST /front/api/v1/parent/pay/:id/:type':'ParentHomeController.payOrder',
   'GET /front/api/v1/verify-payement':'ParentHomeController.verifyPayement',
@@ -149,6 +150,9 @@ module.exports.routes = {
   'GET /front/student/api/v1/softskills/interactive/:id':'StudentHomeController.accessSoftSkills', 
   'GET /front/student/api/v1/exams/:TrimestreId/:MatiereId':'StudentHomeController.getExams', 
   'GET /front/student/api/v1/exams/children/:TrimestreId/:courseId':'StudentHomeController.getExamsChildren', 
+  'GET /front/student/api/v1/ctypes':'StudentHomeController.getCtypes', 
+  'GET /front/student/api/v1/ctypes/:cTypeId':'StudentHomeController.getCtypesChildren', 
+  'GET /front/student/api/v1/ctypes/others/children/:other_id':'StudentHomeController.getOthersChildren', 
   
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',

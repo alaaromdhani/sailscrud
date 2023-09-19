@@ -8,5 +8,11 @@ add matiere (maths)
 adding exams from dashboard for (school level 4 and 6 ) for maths 
 parent exam 1 trimestre 1 ,matiere 9ira2a(1) :i7tira9 chm3a(2 intercative courses) niveau scolaire 6
 parent exam 2 trimestre 2 ,matiere 9ira2a(2) :okawinou zok omma al a3ded(3 intercative courses) niveau_scolaire 6
-
-
+###testing others : ()
+---->                                   
+                           |---------->   
+     niveau_scolaire-------|
+                           |---------->   
+                          |---------->
+      paid----------------|   
+                          |---------->      

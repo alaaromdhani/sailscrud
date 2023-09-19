@@ -931,6 +931,7 @@ module.exports={
             let data = await sails.services.otherfrontservice.getOtherChildren(req)
             return DataHandlor(req,data,res)
         }catch(e){
+            console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
         }   
 

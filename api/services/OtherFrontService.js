@@ -115,12 +115,12 @@ module.exports={
 
 
   },
-  getOtherChildren:()=>{
+  getOtherChildren:(req)=>{
+    
     return sails.services.otherfrontservice.getAllParentPerchases(req).
          then(result=>{
             let {ann,where} =result
-            where.id = req.params.cTypeId  
-              return  CType.findOne({where,
+             return  CType.findOne({where,
                     include:[{
                         model:NiveauScolaire,
                         through:'types_ns',
@@ -133,7 +133,10 @@ module.exports={
                     {
                         model:OtherCourse,
                         foreignKey:'type',
-                        required:false,
+                        required:true,
+                        where:{
+                            id:req.params.other_id  
+                        },
                         include:{
                             model:OtherInteractive,
                             include:{
@@ -172,15 +175,149 @@ module.exports={
             }
           })
         
+    },
+    //student space
+    canAccessCtypes:(req)=>{
+        const {nb_paid_tremestres} = sails.config.custom.others
+        return (req.user.AnneeNiveauUsers.filter(ann=>ann.type==='paid').length>nb_paid_tremestres)    
+    },
+    getCtypesStudent:(req)=>{
+        const canAccessPrivate = sails.services.otherfrontservice.canAccessCtypes(req)
         
+        return CType.findAll({
+            attributes:['id','name','thumbnail','description'],
+        include:[{
+            model:NiveauScolaire,
+            attributes:['id'],
+            through:'types_ns',
+            where:{
+                id:req.current_niveau_scolaire
+            },required:true
+        },{
+            model:Upload,
+            foreignKey:'thumbnail',
+            attributes:['link']
+        }]
+        }).then(types=>{
+            return {types,canAccessPrivate}   
+        })
+    },
+    getCtypesChildren:(req)=>{
+         let canAccessPrivate =  sails.services.otherfrontservice.canAccessCtypes(req)    
+         let where={id:req.params.cTypeId}
+         if(!canAccessPrivate){
+            where.free=false        
+         }       
+        return  CType.findOne({where,
+                include:[{
+                            model:NiveauScolaire,
+                            through:'types_ns',
+                            where:{
+                                id:req.current_niveau_scolaire
+                            },
+                            attributes:['id'],
+                            required:true
+                        },
+                        {
+                            model:OtherCourse,
+                            foreignKey:'type',
+                            required:false
+                           
+                        }
+                        ]
+                    })
+                .then(c=>{
+                if(!c){
+                    return Promise.reject(new RecordNotFoundErr())
+                }
+                else{
+                    return {types:c,canAccessPrivate}
+                }
+              })
+            
         
+    },
+    getOthersChildrenStudent:(req)=>{
+        let canAccessPrivate =  sails.services.otherfrontservice.canAccessCtypes(req)    
+        let where={}
+        if(!canAccessPrivate){
+            where={free:false}
+        }
+        return  CType.findOne({where,
+            include:[{
+                model:NiveauScolaire,
+                through:'types_ns',
+                where:{
+                    id:req.current_niveau_scolaire
+                },
+                attributes:['id'],
+                required:true
+            },
+            {
+                model:OtherCourse,
+                foreignKey:'type',
+                required:true,
+                where:{
+                    id:req.params.other_id  
+                },
+                include:[{
+                    model:OtherInteractive,
+                    include:{
+                        model:ActivityState,
+                        foreignKey:'other_interactive_id',
+                        attributes:['agent_id','progression'],
+                        include:{
+                            model:Agent,
+                            foreignKey:'agent_id',
+                            attributes:['user_id'],
+                            where:{
+                                user_id:ann.user_id
+                            },
+                            required:true    
+                        },
+                        required:false,
 
-   
+                    },
+                    foreignKey:'parent',
+                   
+                    required:false
+                },
+                 { 
+                    model:OtherDocument,
+                    attributes:['id','name','description'], 
+                    include:{
+                        model:Upload,
+                        foreignKey:'document',
+                        attributes:['link']
+                    },   
+                    foreignKey:'parent',
+                    
+                },
+                { 
+                    model:OtherVideo,
+                    attributes:['id','name','description','source','url'], 
+                    
+                    foreignKey:'parent',
+                    
+                }
+                ]
+               
+            }
+            ]
+        }).then(t=>{
+            if(!t){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                return t
+            }
+        })
+
+    
+
+    },
 
 
-   
-
-  }
 
 
   
