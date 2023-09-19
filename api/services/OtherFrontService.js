@@ -12,7 +12,21 @@ module.exports={
                 addedBy:req.user.id
             },
             required:true
-        }})
+        }}).then(ann=>{
+            const {nb_paid_tremestres} = sails.config.custom.others
+            let where={}
+            let a = ann.filter(a=>a.id==parseInt(req.params.id))[0]
+            if(!a){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            if(ann.map(a=>a.type).filter(a=>a.type="paid").length<nb_paid_tremestres){
+                where={free:true}
+            }
+            else{
+                return {ann:a,where }
+            }
+
+        })
     },
     getParentPurchase:(req)=>{
     const {id} = req.params
@@ -28,14 +42,9 @@ module.exports={
     }})
   },
   getCtypes:async (req)=>{
-        let ann =await sails.services.otherfrontservice.getParentPurchase(req)
+        let {ann,where} =await sails.services.otherfrontservice.getAllParentPerchases(req)
         if(ann){
-            let where={}
-            if(ann.dataValues.type!=='paid'){
-                where = {
-                    free:true
-                }
-            }
+            
             return CType.findAll({
                 where,
                 attributes:['id','name','thumbnail','description'],
@@ -61,17 +70,15 @@ module.exports={
   getOthersByCtype:async (req)=>{
     const {cTypeId} = req.params
         
-    return sails.services.otherfrontservice.getParentPurchase(req).
-         then(ann=>{
-            
+    return sails.services.otherfrontservice.getAllParentPerchases(req).
+         then(result=>{
+            let {ann,where}=result
             if(!ann){
                 return Promise.reject(new RecordNotFoundErr())
             }
             else{
-                let where ={id:cTypeId}
-                if(ann.dataValues.type!=='paid'){
-                    where.free=true
-                }
+                where.id =cTypeId
+                
             
               return  CType.findOne({where,
                     include:[{
