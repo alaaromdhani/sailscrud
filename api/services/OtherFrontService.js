@@ -52,6 +52,7 @@ module.exports={
         
     return sails.services.otherfrontservice.getParentPurchase(req).
          then(ann=>{
+            
             if(!ann){
                 return Promise.reject(new RecordNotFoundErr())
             }
@@ -61,7 +62,7 @@ module.exports={
                     where.free=true
                 }
             
-              return  Ctype.findOne({where,
+              return  CType.findOne({where,
                     include:[{
                         model:NiveauScolaire,
                         through:'types_ns',

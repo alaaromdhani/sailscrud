@@ -30,6 +30,7 @@ module.exports = {
 
   async find(req, res) {
     try {
+      const {trimestre} = req.query
       const matiere_id = req.query.matiere
       const type = req.query.type?req.query.type:"cours"
        if(type!="exam" && type!="cours" ){
@@ -100,6 +101,9 @@ module.exports = {
           model:Trimestre,
           foreignKey:'trimestre_id'
         })
+        if(trimestre){
+          where.trimestre_id=trimestre
+        }
        }
       const order = [[sortBy, sortOrder]];
       if(req.role.name===sails.config.custom.roles.intern_teacher.name || req.role.name===sails.config.custom.roles.inspector.name ){
@@ -117,8 +121,7 @@ module.exports = {
           })
        } 
       // Perform the database query with pagination, filtering, sorting, and ordering
-      console.log(whereNs)
-      console.log(where) 
+     
            let { count, rows } = await Course.findAndCountAll({
       
         where,
