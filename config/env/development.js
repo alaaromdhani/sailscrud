@@ -166,6 +166,12 @@ module.exports = {
 
 
   custom: {
+    softskills:{
+      nb_paid_tremestres:2
+    },
+    others:{
+      nb_paid_tremestres:2
+    },
     serie:{
       name:'madar',
       path:'seeders/default_serie.jpg'
@@ -195,6 +201,7 @@ module.exports = {
       2:10,
       3:20
     },
+
     nb_chapitres:30,
     roles:{
       superadmin:{

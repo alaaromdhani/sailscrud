@@ -141,7 +141,7 @@ module.exports = {
         totalPages: Math.ceil(count / parseInt(limit, 10)),
       },res)
     } catch (error) {
-      console.log(error)
+      
       return ErrorHandlor(req,new SqlError(error),res)
     }
   },

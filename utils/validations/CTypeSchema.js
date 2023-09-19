@@ -5,7 +5,7 @@ const CTypeShemaWithUpload = joi.object({
     ns:joi.array().items(joi.number().integer())
 })
 const UpdateCTypeShema = joi.object({
-    name:joi.string().required(),
+    name:joi.string(),
     description:joi.string(),
     active:joi.boolean(),
     free:joi.boolean(),
@@ -13,7 +13,7 @@ const UpdateCTypeShema = joi.object({
     ns:joi.array().items(joi.number().integer())
 })
 const UpdateCTypeShemaWithUpload = joi.object({
-    name:joi.string().required(),
+    name:joi.string(),
     description:joi.string(),
     active:joi.boolean(),
     free:joi.boolean(),
