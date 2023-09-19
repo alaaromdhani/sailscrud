@@ -476,7 +476,7 @@ module.exports={
                 model:CoursInteractive,
                 
                 foreignkey:'parent',
-                attributes:['id','name','description','thumbnail','rating','status'],
+                attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
                 where:{
                    validity:true,
                    active:true 

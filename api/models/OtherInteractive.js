@@ -133,6 +133,9 @@ module.exports = {
     OtherInteractive.hasMany(CustomRate,{
       foreignKey:'other_interactive_id'
     })
+    OtherInteractive.hasMany(ActivityState,{
+      foreignKey:'other_interactive_id'
+    })
    
 
   }

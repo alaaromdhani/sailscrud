@@ -117,17 +117,9 @@ module.exports={
   },
   getOtherChildren:()=>{
     return sails.services.otherfrontservice.getAllParentPerchases(req).
-         then(ann=>{
-           
-            if(!ann.map()){
-                return Promise.reject(new RecordNotFoundErr())
-            }
-            else{
-                let where ={id:cTypeId}
-                if(ann.dataValues.type!=='paid'){
-                    where.free=true
-                }
-            
+         then(result=>{
+            let {ann,where} =result
+            where.id = req.params.cTypeId  
               return  CType.findOne({where,
                     include:[{
                         model:NiveauScolaire,
@@ -141,12 +133,36 @@ module.exports={
                     {
                         model:OtherCourse,
                         foreignKey:'type',
-                        required:false
+                        required:false,
+                        include:{
+                            model:OtherInteractive,
+                            include:{
+                                model:ActivityState,
+                                foreignKey:'other_interactive_id',
+                                attributes:['agent_id','progression'],
+                                include:{
+                                    model:Agent,
+                                    foreignKey:'agent_id',
+                                    attributes:['user_id'],
+                                    where:{
+                                        user_id:ann.user_id
+                                    },
+                                    required:true    
+                                },
+                                required:false,
+
+                            },
+                            foreignKey:'parent',
+                            where:{
+                                tracked:true
+                            },
+                            required:false
+                        }
                        
                     }
                     ]
                 })
-            }
+         
           }).then(c=>{
             if(!c){
                 return Promise.reject(new RecordNotFoundErr())
