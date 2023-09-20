@@ -37,6 +37,9 @@ module.exports = {
         }
 
     },
+    getPayableTrimestre:(req)=>{
+        
+    }
 
 
 }

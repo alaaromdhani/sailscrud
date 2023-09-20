@@ -163,8 +163,8 @@ module.exports.routes = {
   //teacher-routes
   'POST /front/teacher/api/v1/classrooms':'TeacherHomeController.createClassroom',
   'GET /front/teacher/api/v1/classrooms':'TeacherHomeController.getAllClassRooms',
-  'GET /front/teacher/api/v1/niveauscolaires':'TeacherHomeController.getAvailableSchoolLevels'
-
+  'GET /front/teacher/api/v1/niveauscolaires':'TeacherHomeController.getAvailableSchoolLevels',
+  'GET /front/teacher/api/v1/classrooms/trimestres/:id':'TeacherHomeController.getTrimestres'
   
 
 

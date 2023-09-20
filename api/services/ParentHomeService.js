@@ -31,7 +31,7 @@ module.exports = {
                 cart_detail_id:null,
                 order_id:null,
                 type:{
-                    [Op.ne]:'archive'
+                    [Op.notIn]:['archive','paid']
                 }
             },include:{
                 model:Trimestre,

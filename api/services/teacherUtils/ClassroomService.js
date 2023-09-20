@@ -70,7 +70,7 @@ module.exports={
     getAllClassRooms:(req)=>{
         return Classroom.findAll({where:{
             addedBy:req.user.id,
-        },attributes:['id','name','niveau_scolaire_id','type'],
+        },attributes:['id','niveau_scolaire_id','type'],
         include:{
             model:NiveauScolaire,
             foreignKey:'niveau_scolaire_id',
@@ -103,7 +103,8 @@ module.exports={
                 })
             }
         })
-    }
+    },
+    
 
 
 
