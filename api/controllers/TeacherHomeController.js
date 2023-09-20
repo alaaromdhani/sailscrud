@@ -37,9 +37,25 @@ module.exports = {
         }
 
     },
-    getPayableTrimestre:(req)=>{
-        
-    }
+    getPayableTrimestre:async(req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.cart.getPayableTrimestres(req),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    canAddFourthTrimestre:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.cart.canAddFourthTrimestre(req),res)
+        }
+        catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+
+
 
 
 }

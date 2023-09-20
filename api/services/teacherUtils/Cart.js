@@ -5,7 +5,7 @@ const ValidationError = require('../../../utils/errors/validationErrors')
 const RecordNotFoundErr = require('../../../utils/errors/recordNotFound')
 module.exports={
     getPayableTrimestres:(req)=>{
-        let {classroom_id} = req.q
+        let {classroom_id} = req.params
         return TeacherPurchase.findAll({where:{
             addedBy:req.user.id,
             classroom_id,
@@ -41,10 +41,7 @@ module.exports={
          return TeacherPurchase.findAll({where:{
                 id:{
                     [sequelize.Op.in]:annee_niveau_classrooms,
-                    addedBy:req.user.id,
-                    cart_id:{
-                        [sequelize.Op.ne]:null
-                    }
+                    
                 }
             }})
         }).then((purchases)=>{
@@ -57,20 +54,58 @@ module.exports={
                             [sequelize.Op.notIn]:annee_niveau_classrooms,
                         },
                         classroom_id:purchases[0].classroom_id,
-                        addedBy:req.user.id           
+                        addedBy:req.user.id,
+                        cart_detail_id:{
+                            [sequelize.Op.ne]:null
+                        }          
                 }})
             }
             else{
                 return Promise.reject(new RecordNotFoundErr())
             }
         }).then(perchases=>{
+            
             allPersuses = allPersuses.concat(perchases)
-            if(inRequestPersuses.length==4 || (inRequestPersuses.length==3 && !inRequestPersuses.map(p=>p.trimestre_id).includes(4))){
+            console.log(allPersuses.length)
+            if(allPersuses.length==4 || (allPersuses.length==3 && !allPersuses.map(p=>p.trimestre_id).includes(4))){
                 return {canAddForthTrimestre:true} 
             }
             else{
                 return {canAddForthTrimestre:false}
             }
         })
+    },
+    addToCart:(req)=>{
+        return new Promise((resolve,reject)=>{
+            const bodyValidation = schemaValidation(TeacherperchaseShema)(req.body)
+            if(bodyValidation.isValid){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError())
+            }
+        }).then(()=>{
+            let {annee_niveau_classrooms} =req.body
+            return TeacherPurchase.findAll({where:{
+                id:{
+                    [sequelize.Op.in]:annee_niveau_classrooms,
+                    addedBy:req.user.id
+                }
+            }})
+        }).then(purchases=>{
+            if(purchases.length){
+                let classroom_id = p[0].classroom_id
+                if(purchases.every(p=>p.classroom_id==classroom_id)){
+                    
+                }
+                else{
+                    return Promise.reject(new ValidationError())
+                }
+            }
+            else{
+                return Promise.reject(new ValidationError())
+            }
+        })
+
     }
 }

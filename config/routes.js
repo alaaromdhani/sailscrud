@@ -164,8 +164,10 @@ module.exports.routes = {
   'POST /front/teacher/api/v1/classrooms':'TeacherHomeController.createClassroom',
   'GET /front/teacher/api/v1/classrooms':'TeacherHomeController.getAllClassRooms',
   'GET /front/teacher/api/v1/niveauscolaires':'TeacherHomeController.getAvailableSchoolLevels',
-  'GET /front/teacher/api/v1/classrooms/trimestres/:id':'TeacherHomeController.getTrimestres'
-  
+  'GET /front/teacher/api/v1/classrooms/trimestres/:id':'TeacherHomeController.getTrimestres',
+  'GET /front/teacher/api/v1/classrooms/trimestres/:id':'TeacherHomeController.getTrimestres',
+  'GET /front/teacher/api/v1/purchase/trimestres/:classroom_id':'TeacherHomeController.getPayableTrimestre',
+  'post /front/api/v1/trimestres/choose':'TeacherHomeController.canAddFourthTrimestre'
 
 
   
