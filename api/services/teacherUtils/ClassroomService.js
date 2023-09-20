@@ -61,7 +61,7 @@ module.exports={
         }).then(ids=>{
             return NiveauScolaire.findAll({where:{
                 id:{
-                    [sequelize.Op.notIn]:ids.map(i=>i.id)
+                    [sequelize.Op.notIn]:ids.map(i=>i.dataValues.niveau_scolaire_id)
                 },
                 active:true
             },attributes:['name_ar','id']})
