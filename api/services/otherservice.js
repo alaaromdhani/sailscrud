@@ -473,7 +473,45 @@ module.exports={
 
 
 
-      }
+      },
+      getNbQuestions:(course)=>{
+        Obj.findAll({
+               where:{
+                   name:{
+                       [sequelize.Op.like]:'%QS'
+                   },
+                   other_interactive_id:course.id
+               },
+               attributes:[
+                   [sequelize.fn('count',sequelize.col('name')),'nbQuestions'],
+                   'other_interactive_id'],
+               group:'other_interactive_id'
+           
+           }).then(objs=>{
+               if(objs.length){
+                   return course.update({nbQuestion:objs[0].dataValues.nbQuestions})
+               }
+               else{
+                   return 
+               }
+   
+           })
+       },
+       saveProgress:(as,object)=>{
+           //QS/QS
+   
+           let name = object.id.replace(as.dataValues.other_interactive_id+'/','')
+           if(name && name.endsWith('QS/QS')){
+                as.progression=parseInt(name.replace('QS/QS',''))
+                return as.save()
+           }
+           else{
+               return Promise.resolve()
+           }   
+   
+   
+   
+       },
 
 
 

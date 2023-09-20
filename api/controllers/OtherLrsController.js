@@ -113,6 +113,13 @@ module.exports = {
             
             const obj = await Obj.findOne({where:{id:objectId}})// the 
             if(!obj){
+                try{
+                    await sails.services.otherservice.saveProgress(activityState,object);
+             
+                }catch(e){
+                    console.log(e)
+                    return ErrorHandlor(req,resolveError(e),res)
+                }
                 [custom_object,created] = await CustomObject.findOrCreate({
                     where:{
                         agent_id:agent.id,

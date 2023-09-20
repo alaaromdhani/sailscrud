@@ -153,6 +153,7 @@ module.exports.routes = {
   'GET /front/student/api/v1/ctypes':'StudentHomeController.getCtypes', 
   'GET /front/student/api/v1/ctypes/:cTypeId':'StudentHomeController.getCtypesChildren', 
   'GET /front/student/api/v1/ctypes/others/children/:other_id':'StudentHomeController.getOthersChildren', 
+  'GET /front/student/api/v1/ctypes/others/interactive/:id':'StudentHomeController.accessOthersCourse', 
   
   //config
   'GET /front/api/v1/matieres/:NiveauScolaireId':'HomeController.getMatiereByNiveau',

@@ -120,6 +120,10 @@ module.exports = {
       allowNull:false,  
       defaultValue: false
     },
+    nbQuestion:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+    }
 
 
   },

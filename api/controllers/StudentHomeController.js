@@ -592,8 +592,39 @@ module.exports={
                 let data = await sails.services.otherfrontservice.getOthersChildrenStudent(req)            
                 return DataHandlor(req,data,res)
             }catch(e){
+                console.log(e)
                 return ErrorHandlor(req,resolveError(e),res)
             }   
+        },
+        accessOthersCourse:async (req,res)=>{
+
+            let ci = await sails.services.otherfrontservice.accessCourse(req)
+            if(!ci){
+                return ErrorHandlor(req,new RecordNotFoundErr(),res)
+            }
+            sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                            if(err){
+                                return ErrorHandlor(req,err,res)
+                            }
+                            else{
+                            const tincanActor = JSON.stringify({
+                                name: agent.account_name,
+                                account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                                objectType:'Agent'
+                            })
+                            let endpoint = sails.config.custom.lrsOtherPoint
+                            
+                            let fullUrl =  sails.config.custom.baseUrl+'other/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
+                            return res.view("pages/player.ejs",{
+                                    ci:ci,
+                                    url:fullUrl,
+                                    username:req.user.firstName+' '+req.user.lastName,
+                                    sex:req.user.sex.toLowerCase()
+                            })
+                            }
+
+
+                })
         }
         
        

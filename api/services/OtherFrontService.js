@@ -185,7 +185,7 @@ module.exports={
         const canAccessPrivate = sails.services.otherfrontservice.canAccessCtypes(req)
         
         return CType.findAll({
-            attributes:['id','name','thumbnail','description'],
+            attributes:['id','name','thumbnail','description','free'],
         include:[{
             model:NiveauScolaire,
             attributes:['id'],
@@ -206,7 +206,7 @@ module.exports={
          let canAccessPrivate =  sails.services.otherfrontservice.canAccessCtypes(req)    
          let where={id:req.params.cTypeId}
          if(!canAccessPrivate){
-            where.free=false        
+            where.free=true        
          }       
         return  CType.findOne({where,
                 include:[{
@@ -241,7 +241,7 @@ module.exports={
         let canAccessPrivate =  sails.services.otherfrontservice.canAccessCtypes(req)    
         let where={}
         if(!canAccessPrivate){
-            where={free:false}
+            where={free:true}
         }
         return  CType.findOne({where,
             include:[{
@@ -271,7 +271,7 @@ module.exports={
                             foreignKey:'agent_id',
                             attributes:['user_id'],
                             where:{
-                                user_id:ann.user_id
+                                user_id:req.user.id
                             },
                             required:true    
                         },
@@ -316,6 +316,55 @@ module.exports={
     
 
     },
+    accessCourse:(req)=>{
+         let canAccessPrivate = sails.services.otherfrontservice.canAccessCtypes(req)
+         
+         if(canAccessPrivate){
+            return OtherInteractive.findOne({
+                where:{
+                    id:req.params.id
+                }
+            },{
+                include:{
+                    mode:NiveauScolaire,
+                    through:'types_ns',
+                    where:{
+                        id:req.current_niveau_scolaire
+                    }
+                }
+            })
+         }
+         else{
+            return OtherInteractive.findByPk({where:{
+                id:req.params.id
+            },include:{
+                model:OtherCourse,
+               
+                attributes:['id'],
+                include:{
+                    model:CType,
+                    foreignKey:'type',
+                    attributes:['id'],
+                    where:{
+                        free:true
+                    },
+                    
+                    include:{
+                        model:NiveauScolaire,
+                        through:'types_ns',
+                        where:{
+                            id:req.current_niveau_scolaire         
+                        },
+                        attributes:['id'],
+                        required:true,
+                    },
+                    required:true,
+                },
+                required:true
+            }})
+         }
+
+    }
 
 
 

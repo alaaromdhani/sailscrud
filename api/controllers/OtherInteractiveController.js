@@ -51,7 +51,8 @@ module.exports = {
          
       }
       else{
-
+        await sails.services.otherservice.getNbQuestions(data)
+        
           fs.unlink(path.join(__dirname,'../../static/other/'+req.upload.path+'/'+req.upload.file_name+'.'+req.upload.extension),(err)=>{
               if(err){
                   console.log(err)
