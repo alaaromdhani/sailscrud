@@ -167,7 +167,13 @@ module.exports.routes = {
   'GET /front/teacher/api/v1/classrooms/trimestres/:id':'TeacherHomeController.getTrimestres',
   'GET /front/teacher/api/v1/classrooms/trimestres/:id':'TeacherHomeController.getTrimestres',
   'GET /front/teacher/api/v1/purchase/trimestres/:classroom_id':'TeacherHomeController.getPayableTrimestre',
-  'post /front/api/v1/trimestres/choose':'TeacherHomeController.canAddFourthTrimestre'
+  'post /front/teacher/api/v1/trimestres/choose':'TeacherHomeController.canAddFourthTrimestre',
+  'post /front/teacher/api/v1/cart':'TeacherHomeController.addToCart',
+  'GET /front/teacher/api/v1/cart':'TeacherHomeController.readCart',
+  'DELETE /front/teacher/api/v1/cart/:id':'TeacherHomeController.removeFromCart'
+
+
+
 
 
   

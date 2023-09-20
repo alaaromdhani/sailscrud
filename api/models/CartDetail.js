@@ -49,6 +49,9 @@ const {
        CartDetail.hasMany(AnneeNiveauUser,{
         foreignKey:'cart_detail_id'
        })
+       CartDetail.hasMany(TeacherPurchase,{
+        foreignKey:'cart_detail_id'
+       })
        CartDetail.belongsTo(Cart,{
         foreignKey:'cart_id'
        })

@@ -54,6 +54,32 @@ module.exports = {
             return ErrorHandlor(req,resolveError(e),res)
         }
     },
+    addToCart:async (req,res)=>{
+        try{
+            await sails.services.teacherhomeservice.cart.addToCart(req)
+            return DataHandlor(req,{message:'تمت الإضافة إلى سلة التسوق بنجاح'},res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+
+    },
+    readCart:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.cart.readCart(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    removeFromCart:async (req,res)=>{
+        try{
+            await sails.services.teacherhomeservice.cart.removeFromCart(req)
+            return DataHandlor(req,{message:'تم الحذف من سلة التسوق بنجاح'},res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    }
+
 
 
 
