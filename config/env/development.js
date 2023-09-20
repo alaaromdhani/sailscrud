@@ -166,6 +166,9 @@ module.exports = {
 
 
   custom: {
+    classrooms:{
+      max_per_teacher:3
+    },
     softskills:{
       nb_paid_tremestres:2
     },

@@ -160,7 +160,11 @@ module.exports.routes = {
   //sharedEndpoints
   'GET /front/student/api/v1/trimestres':'HomeController.getTrimestres',
   
- 
+  //teacher-routes
+  'POST /front/teacher/api/v1/classrooms':'TeacherHomeController.createClassroom',
+  'GET /front/teacher/api/v1/classrooms':'TeacherHomeController.getAllClassRooms',
+  'GET /front/teacher/api/v1/niveauscolaires':'TeacherHomeController.getAvailableSchoolLevels'
+
   
 
 

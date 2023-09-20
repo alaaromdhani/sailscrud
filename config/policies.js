@@ -213,6 +213,10 @@ module.exports.policies = {
     '*':['lang','parentPassport','passport','role','tokenVerifier','parent'],
     'verifyPayement':['lang','parentPassport','passport']
   },
+  TeacherHomeController:{
+    '*':['lang','teacherPassport','passport','role','tokenVerifier','teacher'],
+   
+  },
 
 
 
