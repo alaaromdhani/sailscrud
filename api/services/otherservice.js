@@ -8,6 +8,7 @@ const { OtherVideoShema, UpdateOtherVideoShema } = require("../../utils/validati
 const { OthercourseShema, UpdateOthercourseShema } = require("../../utils/validations/OthercourseSchema")
 const { OtherdocumentShemaWithUpload, OtherdocumentShema, UpdatedocumentShemaWithUpload, UpdatedocumentShema } = require("../../utils/validations/OtherdocumentSchema")
 const { setMaxListeners } = require("events")
+const sequelize= require('sequelize')
 const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMessage")
 const RateShema = require("../../utils/validations/RateSchema")
 
@@ -501,8 +502,12 @@ module.exports={
            //QS/QS
    
            let name = object.id.replace(as.dataValues.other_interactive_id+'/','')
+           console.log('name of object',name)
+          
            if(name && name.endsWith('QS/QS')){
-                as.progression=parseInt(name.replace('QS/QS',''))
+            console.log('name of object',name)
+          
+            as.progression=parseInt(name.replace('QS/QS',''))
                 return as.save()
            }
            else{

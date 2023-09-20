@@ -53,6 +53,9 @@ module.exports = {
          const {agent,activityId} = req.query
         let dbAgent = await Agent.findOne({where:{mbox:JSON.parse(agent).account.name}})
         let activity = await OtherInteractive.findOne({where:{id:activityId}})
+        if(!activity.dataValues.tracked){
+            return DataHandlor(req,{},res)
+        }
         if(dbAgent && activity){
             try{
                
@@ -113,6 +116,7 @@ module.exports = {
             
             const obj = await Obj.findOne({where:{id:objectId}})// the 
             if(!obj){
+                console.log('custom obj is here')
                 try{
                     await sails.services.otherservice.saveProgress(activityState,object);
              

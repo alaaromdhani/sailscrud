@@ -320,18 +320,34 @@ module.exports={
          let canAccessPrivate = sails.services.otherfrontservice.canAccessCtypes(req)
          
          if(canAccessPrivate){
+        
+            console.log('viewing access' ,req.user.username)
             return OtherInteractive.findOne({
                 where:{
                     id:req.params.id
-                }
-            },{
+                },
                 include:{
-                    mode:NiveauScolaire,
-                    through:'types_ns',
-                    where:{
-                        id:req.current_niveau_scolaire
-                    }
+                    model:OtherCourse,
+                    foreignKey:'parent',
+                    include:{
+                        model:CType,
+                        foreignKey:'type',
+                        include:{
+                            model:NiveauScolaire,
+                            through:'types_ns',
+                            where:{
+                                id:req.current_niveau_scolaire
+                            },
+                            required:true
+                            
+
+                        },
+                        required:true
+                    },
+                    required:true
+                    
                 }
+ 
             })
          }
          else{
