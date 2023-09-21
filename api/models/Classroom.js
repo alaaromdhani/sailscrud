@@ -44,6 +44,9 @@ const {
         Classroom.belongsTo(NiveauScolaire,{
             foreignKey:'niveau_scolaire_id'
         })
+        Classroom.hasMany(TeacherPurchase,{
+            foreignKey:'classroom_id'
+        })
 
 
     }

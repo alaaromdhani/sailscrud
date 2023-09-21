@@ -68,22 +68,33 @@ module.exports={
         })
     },
     getAllClassRooms:(req)=>{
-        return Classroom.findAll({where:{
-            addedBy:req.user.id,
-        },attributes:['id','niveau_scolaire_id','type'],
-        include:{
-            model:NiveauScolaire,
-            foreignKey:'niveau_scolaire_id',
-            attributes:['name_ar']
-        }
-  
+        return Classroom.findAll({
+            where:{
+                addedBy:req.user.id
+            },
+            group:'`Classroom`.`id`',
+            attributes:['niveau_scolaire_id','id',
+            
+            [sequelize.literal(' case when sum( case when `TeacherPurchases`.type=\'trial\' then 0 else 1 end)=0 then \'trial\' when sum( case when `TeacherPurchases`.type=\'trial\' then 0 else 1 end )=count(`Classroom`.`id`) then \'paid\' else \'halfpaid\' end'),'type']
+            
+            ],
+
+            include:[{
+                model:NiveauScolaire,
+                foreignKey:'niveau_scolaire_id',
+                attributes:['name_ar']
+            },{
+                model:TeacherPurchase,
+                foreignKey:'classroom_id',
+                attributes:[]
+            }]
         })
     },
     getTrimestres:(req)=>{
-        return Classroom.findOne({
+        return Classroom.findOne({where:{
             addedBy:req.user.id,
             id:req.params.id
-        }).then(c=>{
+        }}).then(c=>{
             if(!c){
                 return Promise.reject(new RecordNotFoundErr())
             }
