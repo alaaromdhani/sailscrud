@@ -128,6 +128,100 @@ module.exports={
             })
         
     },
+    getCoursesChildren:(req)=>{
+        let canAccessPrivate
+        let {courseId} = req.params 
+        return sails.services.teacherhomeservice.courses.getPurchase(req).then(data=>{
+            canAccessPrivate=(data.dataValues.type==='paid')
+            return Course.findOne({
+                where:{
+                    id:courseId,
+                    type:'cours',
+                    niveau_scolaire_id:data.dataValues.niveau_scolaire_id,
+                    active:true
+                },
+                attributes:['id','niveau_scolaire_id','active','name'],
+               include:[{
+                model:Module,
+                required:true,
+                foreignkey:'module_id',
+                include:{
+                      model:Trimestre,
+                      through:'trimestres_modules',
+                       attributes:['id'] ,
+                       where:{
+                        id:data.dataValues.trimestre_id
+                        },
+                        required:true
+                },
+    
+                },{
+                   model:CoursInteractive,
+                   
+                   foreignkey:'parent',
+                   attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
+                   where:{
+                      validity:true,
+                      active:true 
+                   },
+                     include:{
+                        model:ActivityState,
+                        foreignKey:'c_interactive_id',
+                        attributes:['agent_id','progression'],
+                        include:{
+                            model:Agent,
+                            attributes:['user_id'],
+                            foreignKey:'agent_id',
+                            where:{
+                               user_id: req.user.id
+                            },
+                            required:true
+                        },
+                        required:false
+    
+                   },
+                   required:false
+               },
+               {
+                attributes:['id','name','description','rating','status','url','source'],
+                  model:CoursVideo,
+                 foreignkey:'parent',
+                 where:{
+                    validity:true,
+                    active:true 
+                 },
+                 required:false
+             },
+             {
+                 model:CoursDocument,
+                 foreignkey:'parent',
+                 attributes:['id','name','description','rating','status'],
+                 include:{
+                  model:Upload,
+                  foreignkey:'document',
+                  attributes:['link']
+                 }, 
+                 where:{
+                    validity:true,
+                    active:true 
+                 },
+                 required:false
+             }
+               ]
+    
+            })
+
+
+        }).then(course=>{
+            if(!course){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                return {course,canAccessPrivate}
+            }
+        })
+    }
+
     
 
 

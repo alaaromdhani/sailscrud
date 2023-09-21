@@ -196,6 +196,15 @@ module.exports = {
             console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
         }
+    },
+    getCoursesChildren:async (req,res)=>{
+        try{    
+            return DataHandlor(req,await sails.services.teacherhomeservice.courses.getCoursesChildren(req),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)           
+        }
+
     }
 
     
