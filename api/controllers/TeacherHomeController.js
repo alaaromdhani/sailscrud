@@ -181,6 +181,22 @@ module.exports = {
         }
 
     },
+    getMatieres:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.courses.getMatieres(req),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    getCourses:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.courses.getCourses(req),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    }
 
     
 

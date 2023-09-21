@@ -181,7 +181,8 @@ module.exports.routes = {
   'delete /front/teacher/api/v1/adresses/:id':'TeacherHomeController.deleteAdresse',
   'post /front/teacher/api/v1/livraisons':'TeacherHomeController.createLivraison',
   'POST /front/api/v1/teacher/pay/:id/:type':'TeacherHomeController.payOrder',
- 
+  'GET /front/teacher/api/v1/matieres/:id':'TeacherHomeController.getMatieres',
+  'GET /front/api/v1/teacher/courses/:MatiereId/:id':'TeacherHomeController.getCourses',
  
    
 
