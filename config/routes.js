@@ -173,8 +173,14 @@ module.exports.routes = {
   'DELETE /front/teacher/api/v1/cart/:id':'TeacherHomeController.removeFromCart',
   'POST /front/teacher/api/v1/orders':'TeacherHomeController.createOrder',
   'GET /front/teacher/api/v1/orders/:id':'TeacherHomeController.getOrder',
-  'GET /front/teacher/api/v1/orders/type/:type':'TeacherHomeController.findAllOrders'
-
+  'GET /front/teacher/api/v1/orders/type/:type':'TeacherHomeController.findAllOrders',
+  'POST /front/api/v1/teacher/orders/coupon/:id':'TeacherHomeController.applicateCoupon',
+  'POST /front/api/v1/teacher/orders/coupon/:id':'TeacherHomeController.applicateCoupon',
+  'POST /front/teacher/api/v1/adresses':      'TeacherHomeController.createAdresse',
+  'delete /front/teacher/api/v1/adresses/:id':'TeacherHomeController.deleteAdresse',
+  'post /front/teacher/api/v1/livraisons':'TeacherHomeController.createLivraison',
+ 
+   
 
 
 

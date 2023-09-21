@@ -1,6 +1,9 @@
 const ValidationError = require("../../../utils/errors/validationErrors")
 const sequelize = require('sequelize')
 const { DataHandlor } = require("../../../utils/translateResponseMessage")
+const RecordNotFoundErr = require("../../../utils/errors/recordNotFound")
+const schemaValidation = require("../../../utils/validations")
+const { prepaidCartPayment } = require("../../../utils/validations/OrderSchema")
 module.exports={
     createOrder:(req)=>{
         let ordered
@@ -146,6 +149,34 @@ module.exports={
 
 
     },
+    applicateCoupon:(req)=>{
+        return sails.services.orderfrontservice.applicateCoupon(req)
+    },
+   
+    createAdresse:(req)=>{
+        return sails.services.orderfrontservice.createAdresse(req)
+    },
+    
+    deleteAdresse:(req)=>{
+        return sails.services.orderfrontservice.deleteAdresse(req)
+
+    },
+    createLivraison:(req)=>{
+        return sails.services.orderfrontservice.createLivraision(req)
+    },
+    payUsingVirement:(req)=>{
+        return sails.services.orderfrontservice.payUsingVirement(req)
+    },
+    payLivraison:(req)=>{
+        return sails.services.orderfrontservice.payLivraison(req)
+
+    },
+    payUsingPrepaidCart:(req)=>{
+        return sails.services.orderfrontservice.payUsingPrepaidCart(req)
+
+    }
+
+
     
 
 

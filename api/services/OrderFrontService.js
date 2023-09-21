@@ -98,7 +98,7 @@ module.exports={
                return Coupon.findOne({where:{
                 code:req.body.code,
                 used:{
-                   [Op.lt]:Sequelize.col("limit")
+                   [Op.lte]:Sequelize.col("limit")
                 }  
                },
                
@@ -133,7 +133,7 @@ module.exports={
            }).then(c=>{
               // console.log(coqupon)
 
-                return Promise.all([order.update({priceAfterReduction:(c.type==='percentage')?order.priceAfterReduction-((order.priceAfterReduction*c.reduction)/100):order.priceAfterReduction-c.reduction,coupon_id:c.id})
+                return Promise.all([order.update({priceAfterReduction:(c.type==='percentage')?order.priceAfterReduction-((order.priceAfterReduction*c.reduction)/100):order.priceAfterReduction-c.reduction,coupon_id:c.id,isCombined:true})
                 ,c.update({used:c.used+1})   
                ])
              }).then(c=>{

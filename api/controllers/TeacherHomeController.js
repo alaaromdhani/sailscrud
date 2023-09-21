@@ -1,4 +1,5 @@
 const resolveError = require("../../utils/errors/resolveError")
+const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
 
 module.exports = {
@@ -104,10 +105,65 @@ module.exports = {
             return ErrorHandlor(req,resolveError(e),res)
 
         }
+    },
+    applicateCoupon:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.cart.applicateCoupon(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+     },
+     createAdresse:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.cart.createAdresse(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+     },
+     deleteAdresse:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.cart.deleteAdresse(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+     },
+     createLivraison:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.order.createLivraison(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+     },
+     payOrder:async (req,res)=>{
+        const {type} = req.params
+       if(type==='prepaidCard'){
+                try{
+                    return DataHandlor(req,await sails.services.teacherhomeservice.order.payUsingPrepaidCart(req),res)
+                }catch(e){
+                    return ErrorHandlor(req,resolveError(e),res)
+        
+                }
+        }
+        else if(type==='virement'){
+            try{
+                return DataHandlor(req,await sails.services.teacherhomeservice.order.payUsingVirement(req),res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+        }
+        else if(type==='livraison'){
+            try{
+                return DataHandlor(req,await sails.services.teacherhomeservice.order.payLivraison(req),res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+        }
+        else{
+            return ErrorHandlor(req,new ValidationError({message:'الرجاء إدخال نوع دفع صالح'}),res)
+        }
 
+    },
 
-
-    }
     
 
 

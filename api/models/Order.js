@@ -44,10 +44,22 @@ const {
                order.expiredDate = sails.config.custom.payment.expiredDate?dayjs().add(sails.config.custom.payment.expiredDate,'minute').toISOString():dayjs().add(20,'minute').toISOString()
           }
           if(order.changed('status') && order.status==='active'){
-           await AnneeNiveauUser.findAll({where:{order_id:order.id}}).then(ans=>{
-                  return Promise.all(ans.map(a=>a.update({type:'paid'})))
-                })
-          }
+            let user = await User.findByPk(order.addedBy,{attributes:['role_id'],include:{
+              model:Role,
+              attributes:['name']
+            }})
+            if(user.Role.name = sails.config.custom.roles.parent.name){
+              await AnneeNiveauUser.findAll({where:{order_id:order.id}}).then(ans=>{
+                return Promise.all(ans.map(a=>a.update({type:'paid'})))
+              })
+            }
+            if(user.Role.name = sails.config.custom.roles.teacher.name){
+              await TeacherPurchase.findAll({where:{order_id:order.id}}).then(ans=>{
+                return Promise.all(ans.map(a=>a.update({type:'paid'})))
+              })
+            }
+
+           }
           
 
         }
