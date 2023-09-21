@@ -5,6 +5,6 @@ else{
     let teacherhomeservice = {}
     teacherhomeservice.classroom=require('./teacherUtils/ClassroomService')
     teacherhomeservice.cart=require('./teacherUtils/Cart')
-  
+    teacherhomeservice.order = require('./teacherUtils/OrderService')
     module.exports = teacherhomeservice
 }

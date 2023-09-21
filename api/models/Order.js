@@ -105,7 +105,7 @@ const {
       Order.belongsToMany(Pack,{
         through:'orders_packs'
        })
-       
+      
       
        Order.belongsTo(PayConfig,{
         foreignKey:'payment_type_id'
@@ -117,6 +117,9 @@ const {
         foreignKey:'coupon_id'
        })
        Order.hasMany(AnneeNiveauUser,{
+        foreignKey:'order_id'
+       })
+       Order.hasMany(TeacherPurchase,{
         foreignKey:'order_id'
        })
        

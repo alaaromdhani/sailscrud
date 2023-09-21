@@ -78,7 +78,37 @@ module.exports = {
             console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
         }
+    },
+    createOrder:async(req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.order.createOrder(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+
+
+    },
+    getOrder:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.order.getOrder(req),res)
+        }
+        catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
+    findAllOrders:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.order.findAllOrders(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+
+        }
+
+
+
     }
+    
 
 
 
