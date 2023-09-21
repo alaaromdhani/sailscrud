@@ -175,10 +175,13 @@ module.exports.routes = {
   'GET /front/teacher/api/v1/orders/:id':'TeacherHomeController.getOrder',
   'GET /front/teacher/api/v1/orders/type/:type':'TeacherHomeController.findAllOrders',
   'POST /front/api/v1/teacher/orders/coupon/:id':'TeacherHomeController.applicateCoupon',
-  'POST /front/api/v1/teacher/orders/coupon/:id':'TeacherHomeController.applicateCoupon',
   'POST /front/teacher/api/v1/adresses':      'TeacherHomeController.createAdresse',
+  'GET /front/teacher/api/v1/adresses':      'TeacherHomeController.getAdresses',
+  
   'delete /front/teacher/api/v1/adresses/:id':'TeacherHomeController.deleteAdresse',
   'post /front/teacher/api/v1/livraisons':'TeacherHomeController.createLivraison',
+  'POST /front/api/v1/teacher/pay/:id/:type':'TeacherHomeController.payOrder',
+ 
  
    
 

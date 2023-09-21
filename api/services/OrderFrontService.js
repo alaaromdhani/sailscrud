@@ -431,15 +431,15 @@ module.exports={
                 if(l){
                     return Promise.reject(new ValidationError())
                 }
-                return Order.findOne({where:{
+                return Promise.all([Order.findOne({where:{
                     code:req.body.order_code,
                     addedBy:req.user.id,
                     status:'onhold'
-                }})
+                }}),Adresse.findByPk(req.body.adresse_id)])
 
 
-            }).then(l=>{
-                if(!l){
+            }).then(([l,a])=>{
+                if(!l || !a){
                     return Promise.reject(new RecordNotFoundErr())
                 }
              return   Promise.all([Livraison.create({

@@ -108,18 +108,36 @@ module.exports = {
     },
     applicateCoupon:async (req,res)=>{
         try{
-            return DataHandlor(req,await sails.services.teacherhomeservice.cart.applicateCoupon(req),res)
+            return DataHandlor(req,await sails.services.teacherhomeservice.order.applicateCoupon(req),res)
         }catch(e){
             return ErrorHandlor(req,resolveError(e),res)
         }
      },
      createAdresse:async (req,res)=>{
         try{
-            return DataHandlor(req,await sails.services.teacherhomeservice.cart.createAdresse(req),res)
+            return DataHandlor(req,await sails.services.teacherhomeservice.order.createAdresse(req),res)
         }catch(e){
             return ErrorHandlor(req,resolveError(e),res)
         }
      },
+     getAdresses:async (req,res)=>{
+        try{
+            let data =await  Adresse.findAll({
+                where:{
+                  addedBy:req.user.id
+                },
+                attributes:['adresse','postal_code','phonenumber','state_id'],
+                include:{
+                    model:State,
+                    foreignKey:'state_id',
+                    attributes:['name']
+                }
+            })
+            return DataHandlor(req,data,res)
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
+    },
      deleteAdresse:async (req,res)=>{
         try{
             return DataHandlor(req,await sails.services.teacherhomeservice.cart.deleteAdresse(req),res)
