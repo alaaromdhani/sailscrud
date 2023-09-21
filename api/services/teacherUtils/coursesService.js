@@ -220,6 +220,46 @@ module.exports={
                 return {course,canAccessPrivate}
             }
         })
+    },
+    findCourseByPerchase:(courseId,purchase)=>{
+        let where = {id:courseId}
+        if(purchase.dataValues.type!=='paid'){
+            where.status='public'
+        }
+        return CoursInteractive.findOne({where},{
+            include:{
+                model:Course,
+                where:{type:'cours'},
+                attributes:['niveau_scolaire_id'],
+                include:{
+                    model:Module,
+                    attributes:['id'],
+                    include:{
+                        model:Trimestre,
+                        through:'trimestres_modules',
+                        where:{
+                            id:data.dataValues.trimestre_id
+                        }
+                    }
+                }
+            }
+        }).then(c=>{
+            if(!c || c.dataValues.Course.dataValues.niveau_scolaire_id!=purchase.dataValues.niveau_scolaire_id){
+                return Promise.reject(RecordNotFoundErr())
+            }
+            else{
+                return c
+            }
+        })
+
+    },
+    accessCourse:(req)=>{
+        return sails.services.teacherhomeservice.courses.getPurchase(req).then(data=>{
+            return sails.services.teacherhomeservice.courses.findCourseByPerchase(req.params.id,data)
+
+        })
+
+
     }
 
     

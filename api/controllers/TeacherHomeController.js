@@ -205,6 +205,13 @@ module.exports = {
             return ErrorHandlor(req,resolveError(e),res)           
         }
 
+    },
+    accessCourse:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.courses.accessCourse(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        }
     }
 
     
