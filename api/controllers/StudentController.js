@@ -156,12 +156,11 @@ module.exports={
         },include:[{
           model:NiveauScolaire,
           foreignKey:'niveau_scolaire_id',
-          attributes:['name_ar','id']
+          
           
         },{
           model:AnneeScolaire,
           foreignKey:'annee_scolaire_id',
-          attributes:['startingYear','endingYear']
           
         },{
           model:Trimestre,
