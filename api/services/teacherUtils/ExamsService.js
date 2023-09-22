@@ -51,7 +51,7 @@ module.exports={
                         
                             model:ActivityState,
                             foreignKey:'c_interactive_id',
-                            attributes:['agent_id','progression'],
+                            attributes:['agent_id','progression','deprecated'],
                             include:{
                                 model:Agent,
                                 attributes:['user_id'],
