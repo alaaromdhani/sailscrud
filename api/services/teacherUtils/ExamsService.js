@@ -1,3 +1,5 @@
+const RecordNotFoundErr = require("../../../utils/errors/recordNotFound")
+
 module.exports={
     getExams:async (req,res)=>{
         
@@ -95,5 +97,33 @@ module.exports={
         }).then(exams=>{
             return {exams,canAccessPrivate}
         })   
+        },
+    findCourseByPerchase:(courseId,purchase)=>{
+        let where = {id:courseId}
+        if(purchase.dataValues.type!=='paid'){
+            where.status='public'
         }
+        return CoursInteractive.findOne({where,
+            include:{
+                model:Course,
+                where:{type:'exam',trimestre_id:purchase.dataValues.trimestre_id,niveau_scolaire_id:purchase.dataValues.niveau_scolaire_id},
+                attributes:['niveau_scolaire_id'],
+                
+            }},).then(c=>{
+            if(!c){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                return c
+            }
+        })
+
+    },    
+    accessExams:(req)=>{
+        return sails.services.teacherhomeservice.courses.getPurchase(req).then(data=>{
+            return sails.services.teacherhomeservice.exams.findCourseByPerchase(req.params.courseId,data)
+
+        })
+
+    }
 }

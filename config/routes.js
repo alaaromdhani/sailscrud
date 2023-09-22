@@ -187,10 +187,12 @@ module.exports.routes = {
   'GET /front/api/v1/teacher/courses/children/:courseId/:id':'TeacherHomeController.getCoursesChildren',
   'GET /front/teacher/api/v1/interactive/:id/:courseId':'TeacherHomeController.accessCourse',
   'GET /front/teacher/api/v1/results/:courseId':'TeacherHomeController.getResults',
+  'delete /front/teacher/api/v1/results/:courseId':'TeacherHomeController.clearHistory',
  
   //exams teacher
   'GET /front/api/v1/teacher/exams/:MatiereId/:id':'TeacherHomeController.getExams',
   'GET /front/api/v1/teacher/exams/children/:id/:courseId':'TeacherHomeController.getExamsChildren',
+  'GET /front/api/v1/teacher/exams/interactive/:id/:courseId':'TeacherHomeController.accessExams',
 
   
    
