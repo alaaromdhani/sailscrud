@@ -2,7 +2,7 @@ const RecordNotFoundErr = require("../../../utils/errors/recordNotFound")
 
 module.exports={
     getExams:async (req,res)=>{
-        
+
             const {id,MatiereId} = req.params
            return sails.services.teacherhomeservice.courses.getPurchase(req)
            .then(data=>{
@@ -60,6 +60,9 @@ module.exports={
                                     user_id: req.user.id
                                 },
                                 required:true
+                            },
+                            where:{
+                                deprecated:false
                             },
                             required:false
         
