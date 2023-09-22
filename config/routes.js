@@ -189,7 +189,7 @@ module.exports.routes = {
   'GET /front/teacher/api/v1/results/:courseId':'TeacherHomeController.getResults',
  
   //exams teacher
-  'GET /front/api/v1/teacher/exams/:MatiereId/:id':'TeacherHomeController.getCourses',
+  'GET /front/api/v1/teacher/exams/:MatiereId/:id':'TeacherHomeController.getExams',
   'GET /front/api/v1/teacher/exams/children/:courseId/:id':'TeacherHomeController.getExamsChildren',
 
   

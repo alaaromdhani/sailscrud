@@ -375,6 +375,7 @@ module.exports = {
         try{
             return DataHandlor(req,await sails.services.teacherhomeservice.exams.getExams(req),res)
         }catch(e){
+            console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
         } 
       },
