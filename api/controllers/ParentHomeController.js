@@ -628,7 +628,7 @@ module.exports={
                 include:[{
                 model:User,
                 foreignKey:'user_id',
-                attributes:['id'],
+             
                 where:{
                     addedBy:req.user.id
                 },
