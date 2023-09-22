@@ -297,7 +297,7 @@ module.exports={
 
             }
             else{
-                return c.destory()
+                return c.destroy()
             }
 
            }

@@ -68,6 +68,7 @@ module.exports={
       
 
     },
+   
     getCourses:(req)=>{
         let canAccessPrivate
         let {MatiereId}=req.params
@@ -226,7 +227,7 @@ module.exports={
         if(purchase.dataValues.type!=='paid'){
             where.status='public'
         }
-        return CoursInteractive.findOne({where},{
+        return CoursInteractive.findOne({where,
             include:{
                 model:Course,
                 where:{type:'cours'},
@@ -238,14 +239,15 @@ module.exports={
                         model:Trimestre,
                         through:'trimestres_modules',
                         where:{
-                            id:data.dataValues.trimestre_id
-                        }
-                    }
+                            id:purchase.dataValues.trimestre_id
+                        },
+                        required:true
+                    },
+                    required:true
                 }
-            }
-        }).then(c=>{
+            }},).then(c=>{
             if(!c || c.dataValues.Course.dataValues.niveau_scolaire_id!=purchase.dataValues.niveau_scolaire_id){
-                return Promise.reject(RecordNotFoundErr())
+                return Promise.reject(new RecordNotFoundErr())
             }
             else{
                 return c
@@ -255,9 +257,14 @@ module.exports={
     },
     accessCourse:(req)=>{
         return sails.services.teacherhomeservice.courses.getPurchase(req).then(data=>{
-            return sails.services.teacherhomeservice.courses.findCourseByPerchase(req.params.id,data)
+            return sails.services.teacherhomeservice.courses.findCourseByPerchase(req.params.courseId,data)
 
         })
+
+
+    },
+    
+    getExams:(req)=>{
 
 
     }
