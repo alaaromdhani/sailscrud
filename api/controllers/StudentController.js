@@ -157,7 +157,8 @@ module.exports={
           foreignKey:'niveau_scolaire_id'
         },{
           model:Trimestre,
-          foreignKey:'trimestre_id'
+          foreignKey:'trimestre_id',
+          where:{active:true}
         }]
         })
         if(data){

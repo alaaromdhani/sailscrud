@@ -75,6 +75,7 @@ module.exports={
                             include:[{
                                 model:Trimestre,
                                 foreignKey:'trimestre_id',
+                                where:{active:true}
                             },{
                                 model:AnneeScolaire,
                                 foreignKey:'annee_scolaire_id',
@@ -117,8 +118,8 @@ module.exports={
     },
     addToCart:async (req,res)=>{
         try{
-            console.log('wow')
-            let data = await sails.services.parenthomeservice.addToCart(req)
+           
+             await sails.services.parenthomeservice.addToCart(req)
             return DataHandlor(req,{message:'تمت الإضافة إلى سلة التسوق بنجاح'},res )
         }catch(e){
             console.log(e)
@@ -146,7 +147,7 @@ module.exports={
             await sails.services.parenthomeservice.deleteFromCart(req)
             return DataHandlor(req,{},res)
         }catch(e){
-            console.log(e)
+            
             return ErrorHandlor(req,resolveError(e),res)
         }
     },

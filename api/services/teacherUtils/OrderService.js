@@ -123,7 +123,7 @@ module.exports={
       },
 
     findAllOrders: (req)=>{
-        let allowedTypes=['onhold','paid','shipping']
+        let allowedTypes=['onhold','active','shipping']
         
         const {type} = req.params 
         if(!allowedTypes.includes(type) && type!='all'){
