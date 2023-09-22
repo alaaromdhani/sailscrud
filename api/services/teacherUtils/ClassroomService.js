@@ -38,9 +38,9 @@ module.exports={
 
         }).then(([trimestres,annee_scolaire_active])=>{
             let perchases = []
-            trimestres.forEach(t=>{
+            for(let i=1;i<=4;i++){
                 perchases.push({
-                    trimestre_id:t.id,
+                    trimestre_id:i,
                     annee_scolaire_id:annee_scolaire_active.dataValues.id,
                     niveau_scolaire_id:createdClassroom.niveau_scolaire_id,
                     classroom_id:createdClassroom.id,
@@ -48,7 +48,7 @@ module.exports={
                     type:'trial',
 
                 })
-            })
+            }
             return TeacherPurchase.bulkCreate(perchases)
         })  
 
@@ -86,7 +86,13 @@ module.exports={
             },{
                 model:TeacherPurchase,
                 foreignKey:'classroom_id',
-                attributes:[]
+                attributes:[],
+                include:{
+                    model:Trimestre,
+                    where:{
+                        active:true
+                    }
+                }    
             }]
         })
     },

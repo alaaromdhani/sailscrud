@@ -165,7 +165,8 @@ module.exports={
         },{
           model:Trimestre,
           foreignKey:'trimestre_id',
-          attributes:['name_ar','id']
+          attributes:['name_ar','id'],
+          where:{active:true}
         }],
         group:['annee_scolaire_id','niveau_scolaire_id']
         })

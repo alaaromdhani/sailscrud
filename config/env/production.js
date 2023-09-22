@@ -94,7 +94,7 @@ module.exports = {
             return octetStreamBodyParser(req,res,next)
         }
         else{
-          console.log('json content')
+        
           return bodyParser()(req,res,next)
         }
     }
@@ -102,7 +102,6 @@ module.exports = {
 
     })(),
     statics:(()=>{
-      console.log('setting static files')
       return function(req,res,next){
        
         
@@ -123,7 +122,6 @@ module.exports = {
 
   })(),
     ex_session:(()=>{
-      console.log('the session hook for sails have been disaibled ...')
       return function(req,res,next){
           console.log('req usest is ')
         return expressSession({
@@ -172,6 +170,24 @@ module.exports = {
 
 
   custom: {
+    classrooms:{
+      max_per_teacher:3
+    },
+    softskills:{
+      nb_paid_tremestres:2
+    },
+    others:{
+      nb_paid_tremestres:2
+    },
+    serie:{
+      name:'madar',
+      path:'seeders/default_serie.jpg'
+    },
+    security:{
+      recaptcha:{
+        key:'6LfzbI0nAAAAAJVjT9_5O40dEwPsWT9G5NtJhXJ7'
+      }
+    },
     database:{
       connections,
       session:{
@@ -179,7 +195,20 @@ module.exports = {
       },
       sequelize:Sequelize
     },
-    
+    payment:{
+      username:'1160070015',
+      password:'pFym63C9',
+      returnUrl:'http://localhost:3000/payment-success',
+      failUrl:'http://localhost:3000/payment-error',
+      expiredDate:20
+
+    },
+    remises:{
+      1:0,
+      2:10,
+      3:20
+    },
+
     nb_chapitres:30,
     roles:{
       superadmin:{
@@ -204,8 +233,18 @@ module.exports = {
         },
         parent:{
           name:'Parent',
-          weight:25,
+          weight:500,
           dashboardUser:false
+        },
+        teacher:{
+          name:'Teacher',
+          weight:400,
+          dashboardUser:false
+        },
+        seller:{
+          name:'Seller',
+          weight:60,
+          dashboardUser:true
         }
     },
     dafault_user_image:{
@@ -236,16 +275,23 @@ module.exports = {
       expires:{
         value:3,
         unit:'minute'
-      },//m for minutes h for hours D for days W for week 
-      authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
-      sender:'2160000'
+      },
+      resend:{
+        time:{
+          value:1,
+          unit:'minute'
+        }
+      }
+      //m for minutes h for hours D for days W for week 
+      /*authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
+      sender:'2160000'*/
 
     },
     ratings:{
         maxValue:5,
         minValue:0
     },
-    
+
     files:{
       extensions:{
         images:['gif','png','jpg','jpeg','webp','svg','ico'],
@@ -261,7 +307,6 @@ module.exports = {
         private:'v/uploads/'
       }
     },
-
 
   },
 
