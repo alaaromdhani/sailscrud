@@ -24,8 +24,10 @@ module.exports={
            })
        },
        getExamsChildren:(req)=>{
+        let canAccessPrivate 
         return sails.services.teacherhomeservice.courses.getPurchase(req)
         .then(data=>{
+            canAccessPrivate = (data.dataValues.type==='paid')
         return Course.findOne({where:{
             id:req.params.courseId,
             trimestre_id:data.dataValues.trimestre_id,
@@ -53,7 +55,7 @@ module.exports={
                                 attributes:['user_id'],
                                 foreignKey:'agent_id',
                                 where:{
-                                    user_id: data.dataValues.user_id
+                                    user_id: req.user.id
                                 },
                                 required:true
                             },
@@ -90,6 +92,8 @@ module.exports={
 
             })
        
+        }).then(exams=>{
+            return {exams,canAccessPrivate}
         })   
         }
 }
