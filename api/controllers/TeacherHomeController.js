@@ -331,6 +331,60 @@ module.exports = {
   
   
     },
+    clearHistory:(req,res)=>{
+        sails.services.lrsservice.generateAgent(req.user,async (err,data)=>{
+            if(err){
+              return ErrorHandlor(req,err,res)
+            }
+            else{
+                const agent_id = data.id
+                const c_interactive_id = req.params.id
+                try{
+                  await Statement.destroy({
+                    where:{
+                      agent_id,
+                      c_interactive_id
+                    }
+                  })
+                  await ActivityState.update({deprecated:true},{
+                    where:{
+                      agent_id,
+                      c_interactive_id
+                    }
+                  })
+                  await CustomObject.destroy({
+                    where:{
+                      agent_id,
+                      c_interactive_id
+                    }
+                  })
+                  return DataHandlor(req,{},res)
+                 
+                }catch(e){
+               //   console.log(e)
+                  return ErrorHandlor(req,new SqlError(e),res)
+                }
+              }
+            })
+    
+    
+    
+    
+      },
+      getExams:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.exams.getExams(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        } 
+      },
+      getExamsChildren:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.teacherhomeservice.exams.getExamsChildren(req),res)
+        }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+        } 
+      }
     
 
     

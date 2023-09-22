@@ -264,10 +264,7 @@ module.exports={
 
     },
     
-    getExams:(req)=>{
-
-
-    }
+   
 
     
 
