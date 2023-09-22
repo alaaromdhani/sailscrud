@@ -163,19 +163,23 @@ module.exports = {
         })
         .then(anneescolaire=>{
                 if(anneescolaire){
-                    let annee_niveau_user=[]
-                    //    return annee_niveau_user
-                          for(let i=1;i<=4;i++){
+                    return Trimestre.findAll({
+                        where:{active:true}
+                    }).then(trimestres=>{
+                        let annee_niveau_user = []
+                        trimestres.forEach(t=>{
                             annee_niveau_user.push({
                                 user_id:req.params.id,
                                 annee_scolaire_id:anneescolaire.id,
-                                trimestre_id:i,
+                                trimestre_id:t.id,
                                 niveau_scolaire_id:req.body.niveau_scolaire_id,
                                 type:'trial'
-                            })  
-                        }
+                            })
+                        })
                         return AnneeNiveauUser.bulkCreate(annee_niveau_user)
-              
+                    })
+                        
+                        
                 }else{
                     return []
                 }

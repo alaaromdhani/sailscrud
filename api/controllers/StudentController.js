@@ -3,7 +3,7 @@ const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
 const { updateStudentSchema } = require("../../utils/validations/StudentSchema")
-
+const sequelize = require('sequelize')
 module.exports={
     create:async (req,res)=>{
         if(req.operation){
@@ -146,20 +146,29 @@ module.exports={
           return ErrorHandlor(req,new RecordNotFoundErr(),res)
         }
         const data = await AnneeNiveauUser.findAll({
-         
+          attributes:['id',
+          [sequelize.literal(' case when sum( case when `AnneeNiveauUser`.type=\'trial\' then 0 else 1 end)=0 then \'trial\' when sum( case when `AnneeNiveauUser`.type=\'trial\' then 0 else 1 end )=count(*) then \'paid\' else \'halfpaid\' end'),'type']
+           
+          ],
+
           where:{
           user_id:req.params.id
         },include:[{
-          model:AnneeScolaire, 
-          foreignKey:'annee_scolaire_id'
-        },{
           model:NiveauScolaire,
-          foreignKey:'niveau_scolaire_id'
+          foreignKey:'niveau_scolaire_id',
+          attributes:['name_ar','id']
+          
+        },{
+          model:AnneeScolaire,
+          foreignKey:'annee_scolaire_id',
+          attributes:['startingYear','endingYear']
+          
         },{
           model:Trimestre,
           foreignKey:'trimestre_id',
-          where:{active:true}
-        }]
+          attributes:['name_ar','id']
+        }],
+        group:['annee_scolaire_id','niveau_scolaire_id']
         })
         if(data){
           try{
@@ -170,21 +179,8 @@ module.exports={
           //  console.log(e)
             canAdd=false
           }
-          let tab = data.reduce((prev,curr)=>{
-            if(!prev.some(p=>p.id===curr.niveau_scolaire_id)){
-              
-              let object = {
-                ...curr.NiveauScolaire.dataValues,
-                  AnneeScolaire:curr.AnneeScolaire,
-                type:data.filter(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id).every(d=>d.type==='archive')?'archive':(data.filter(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id).every(d=>d.type==='paid')?'paid':(data.some(d=>d.niveau_scolaire_id===curr.niveau_scolaire_id && d.type==='paid')?'halfpaid':'trial'))
-              }    
-
-              prev.push(object)
-            }
-            
-            return prev
-          },[])
-          return DataHandlor(req, {niveau_scolaires:tab,canAdd},res)
+     
+          return DataHandlor(req, {niveau_scolaires:data,canAdd},res)
         }
         else{
           return DataHandlor(req, {niveau_scolaires:[],canAdd},res)

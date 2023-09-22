@@ -232,7 +232,8 @@ module.exports={
             include:[{
                 model:Trimestre,
                 foreignkey:'trimestre_id',
-                attributes:['id','name_ar']
+                attributes:['id','name_ar'],
+                where:{active:true}
             },{
                 model:AnneeScolaire,
                 foreignkey:'annee_scolaire_id',

@@ -36,7 +36,9 @@ module.exports = {
             },include:{
                 model:Trimestre,
                 foreignKey:'trimestre_id',
-                attributes:['id','name_ar']
+                attributes:['id','name_ar'],
+                where:{active:true},
+                required:true
             }})
 
 
