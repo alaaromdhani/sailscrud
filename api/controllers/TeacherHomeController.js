@@ -338,7 +338,7 @@ module.exports = {
             }
             else{
                 const agent_id = data.id
-                const c_interactive_id = req.params.id
+                const c_interactive_id = req.params.courseId
                 try{
                   await Statement.destroy({
                     where:{
@@ -361,7 +361,7 @@ module.exports = {
                   return DataHandlor(req,{},res)
                  
                 }catch(e){
-               //   console.log(e)
+                  console.log(e)
                   return ErrorHandlor(req,new SqlError(e),res)
                 }
               }
