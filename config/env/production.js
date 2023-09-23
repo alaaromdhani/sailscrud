@@ -130,6 +130,7 @@ module.exports = {
           saveUninitialized: true,
           store:sequelizeSessionStore,
           cookie:{
+            httpOnly: false,
             sameSite:'none',
             secure:sails.config.environment==="production"
           }
