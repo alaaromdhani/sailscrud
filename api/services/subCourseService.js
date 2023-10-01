@@ -591,6 +591,85 @@ module.exports = {
 
 
     },
+    
+    calculateScore:async (req,as,object)=>{
+        let course
+        let {student} =sails.config.custom.roles         
+        if(req.role.name!=student.name){
+            return Promise.resolve()
+        }
+        
+        let name = object.id.replace(as.dataValues.c_interactive_id+'/','')
+        if(name ==='TOTAL_SCORE'){
+            let currenTrimestre = await sails.services.configservice.getCurrentTrimestres();
+        
+            return CoursInteractive.findByPk(as.dataValues.c_interactive_id,{
+                attributes:['id'],
+                include:{
+                    model:Course,
+                    foreignKey:['parent'],
+                    attributes:['id','matiere_id'],
+                    include:{
+                        model:Module,
+                        attributes:['id'],
+                        foreignKey:'module_id',
+                        include:{
+                            model:Trimestre,
+                            through:'trimestres_modules',
+                            attributes:['id']
+                        }
+                    }
+                }
+             }).then((c)=>{
+                course = c
+                return StudentScore.findOne({where:{
+                  user_id:req.user.id,  
+                  niveau_scolaire_id:req.user.AnneeNiveauUsers[0].niveau_scolaire_id,
+                  annee_scolaire_id:req.user.AnneeNiveauUsers[0].annee_scolaire_id,
+                  matiere_id:c.Course.matiere_id,
+                  c_interactive_id:as.dataValues.c_interactive_id   
+                }})
+            }).then(score=>{
+
+                let sentScore = parseInt(object.definition.name['en-US'])
+                
+                if(score){
+                    let updated = {currentScore:sentScore}
+                    if(!score.dataValues.trimestre_id){
+                        console.log('cheking if the courses trimestres are the same as the current ',currenTrimestre.id,"with courses trimestres :",course.Course.Module.Trimestres.map(i=>i.id))
+                        if(course.Course.Module.Trimestres.map(i=>i.id).includes(currenTrimestre.id)){
+                            updated.trimestre_id = currenTrimestre.id
+                        }
+                        
+                    }
+                    return score.update(updated)
+                }
+                else{
+                    let created = {
+                        niveau_scolaire_id:req.user.AnneeNiveauUsers[0].niveau_scolaire_id,
+                        annee_scolaire_id:req.user.AnneeNiveauUsers[0].annee_scolaire_id,
+                        matiere_id:course.Course.matiere_id,
+                        c_interactive_id:as.dataValues.c_interactive_id,
+                        currentScore:sentScore,
+                        user_id:req.user.id,
+                        totalScore:100  
+                    }
+                    if(course.Course.Module.Trimestres.map(i=>i.id).includes(currenTrimestre.id)){
+                        created.trimestre_id = currenTrimestre.id
+                    }
+                    return StudentScore.create(created)
+                }
+
+
+            })
+        }
+        else{
+            return Promise.resolve()
+        }   
+
+
+
+    },
     accessCourse:(req)=>{
         let type = req.params.type
         let includeOptions= {}

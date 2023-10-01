@@ -85,6 +85,7 @@ module.exports = {
         }
     },
     
+    
     putStatement:async (req,res)=>{
         let timestamp = req.body.timestamp
         let statementId = req.body.id 
@@ -121,6 +122,7 @@ module.exports = {
                 try{
                    
                     await sails.services.subcourseservice.saveProgress(activityState,object);
+                    await sails.services.subcourseservice.calculateScore(req,activityState,object);
                 }catch(e){
                     console.log(e)
                     return ErrorHandlor(req,resolveError(e),res)
@@ -195,7 +197,6 @@ module.exports = {
     
        return res.status(200).json({data:{mess:'object is created successfully'}})
     },
-    
     getStatements:async (req,res)=>{
         const courseId = req.query.courseId
         if(courseId){

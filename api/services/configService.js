@@ -442,18 +442,35 @@ module.exports = {
 
     },
     getCurrentTrimestres:()=>{
-      let today =new Date(2001,2,16)
+      let today =new Date()
       return Trimestre.findAll({where:{
         
         startMonth:{
             [Op.lte]:today.getMonth()
         },
-        startDay:{
-          [Op.lte]:today.getDate()
-        },
+       
        
 
-      },order:[['startMonth','DESC']],limit:1}).then(c=>c.at(0))
+      },order:[['startMonth','DESC']],limit:2}).then(c=>{
+          if(c.length===1){
+            return c[0]
+          }else{
+            if(c[0].startMonth ===today.getMonth()){
+              if(c[0].startDay>today.getDate()){
+                return c[1] 
+              }
+              else{
+                return c[0]
+              }
+            }
+            else{
+              return c[0]
+            }
+
+          }
+
+
+      })
 
     },
     canAddSchoolLevel:async (student_id)=>{
@@ -472,7 +489,6 @@ module.exports = {
         return  sails.services.configservice.getCurrentTrimestres()     
       }).then(t=>{
 
-          console.log("currenttrimestre",t)
         if(studentHistory.length){
         
           if(t.id===3 && studentHistory.every(h=>h.AnneeScolaire.active)){
@@ -496,6 +512,16 @@ module.exports = {
 
 
     },
+    getCurrentSchoolYear:(attributes)=>{
+      return AnneeScolaire.findOne({
+        attributes,
+        where:{
+          active:true
+        }
+    })
+
+
+    }
     
 
 

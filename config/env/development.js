@@ -127,14 +127,14 @@ module.exports = {
     ex_session:(()=>{
       console.log('the session hook for sails have been disaibled ...')
       return function(req,res,next){
-          console.log('req usest is ')
+         
         return expressSession({
           secret: 'hhh try-hack-me',
           resave: false,
           saveUninitialized: true,
           store:sequelizeSessionStore,
           cookie:{
-            httpOnly: false,
+            //httpOnly: false,
        //  sameSite:'none',
           secure:sails.config.environment==="production"
           }
@@ -252,6 +252,8 @@ module.exports = {
     },
     lrsEndPoint:databaseCredentials.baseUrl+"lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
     lrsOtherPoint:databaseCredentials.baseUrl+"lrs/other/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
+    lrsStudentEndPoint:databaseCredentials.baseUrl+"lrs/student/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
+    
     baseUrl: databaseCredentials.baseUrl,
     internalEmailAddress: databaseCredentials.internalEmailAddress,
 

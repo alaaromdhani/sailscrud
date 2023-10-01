@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const UnauthorizedError = require("../../utils/errors/UnauthorizedError");
 const UnkownError = require("../../utils/errors/UnknownError");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
@@ -9,6 +9,7 @@ const schemaValidation = require("../../utils/validations")
 const { createStudentSchema } = require("../../utils/validations/StudentSchema")
 const { v4: uuidv4 } = require('uuid');
 const resolveError = require("../../utils/errors/resolveError");
+const scoreSchema = require("../../utils/validations/UserScoreSchema");
 
 
 
@@ -241,6 +242,44 @@ module.exports = {
 
 
     },
+    getStudentStatistics:(req)=>{
+        return new Promise((resolve,reject)=>{
+            const validation = schemaValidation(scoreSchema)(req.query)
+            if(validation.isValid){
+                return resolve()
+            }
+            else{
+                return reject(new ValidationError({message:validation.message}))
+            }
+        }).then(()=>{
+            let where = {}
+            Object.keys(req.query).filter(k=>k!='limit').forEach(k=>{
+                where[k] = req.query[k]
+            })
+            const limit = req.query.limit?parseInt(req.query.limit):3
+            
+        return StudentScore.findAll({
+            where,
+            include:[{
+                model:NiveauScolaire,
+                foreignKey:'niveau_scolaire_id',
+                attributes:['name_ar'],
+            },{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['profilePicture','firstName','lastName'],
+            }],
+            attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total']],
+            group:'user_id',
+            order:[['userScore','DESC']],
+            limit
+
+        }) 
+
+        })
+        
+
+    }
     
     
    

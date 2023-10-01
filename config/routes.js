@@ -34,6 +34,9 @@ module.exports.routes = {
   'GET /lrs/activities/state':'LrsController.getActivityState',
   'PUT /lrs/activities/state':'LrsController.putState',
   'PUT /lrs/statements':'LrsController.putStatement',
+  'GET /lrs/student/activities/state':'LrsStudentController.getActivityState',
+  'PUT /lrs/student/activities/state':'LrsStudentController.putState',
+  'PUT /lrs/student/statements':'LrsStudentController.putStatement',
   'GET /api/v1/results/:id':'CoursInteractiveController.getResults',
   'POST /api/v1/comment_interactive_cours/:id':'CoursInteractiveController.commentCourse',
   'POST /api/v1/comment_video_cours/:id':'CoursVideoController.commentCourse',
@@ -193,7 +196,8 @@ module.exports.routes = {
   'GET /front/api/v1/teacher/exams/:MatiereId/:id':'TeacherHomeController.getExams',
   'GET /front/api/v1/teacher/exams/children/:id/:courseId':'TeacherHomeController.getExamsChildren',
   'GET /front/api/v1/teacher/exams/interactive/:id/:courseId':'TeacherHomeController.accessExams',
-
+  //score 
+  'GET /front/stats/api/v1/score':'HomeController.getTopStudent'
   
    
 

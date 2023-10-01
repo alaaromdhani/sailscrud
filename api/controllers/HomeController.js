@@ -94,6 +94,17 @@ module.exports={
       }catch(e){
         return ErrorHandlor(req,new SqlError(e),res)
       }
+    },
+    getTopStudent:async (req,res)=>{
+      try{
+        return DataHandlor(req,await sails.services.studentservice.getStudentStatistics(req)
+        ,res)
+      }catch(e){
+        console.log(e)
+        return ErrorHandlor(req,new SqlError(e),res)
+
+      }
+
     }
 
    

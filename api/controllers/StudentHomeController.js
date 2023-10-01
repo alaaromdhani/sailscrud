@@ -550,7 +550,7 @@ module.exports={
                                     account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
                                     objectType:'Agent'
                                 })
-                                let endpoint = sails.config.custom.lrsEndPoint
+                                let endpoint = sails.config.custom.lrsStudentEndPoint
                                 
                                 let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
                                 return res.view("pages/player.ejs",{

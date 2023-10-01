@@ -104,6 +104,9 @@ module.exports.policies = {
   LrsController:{
     '*':['lang','passport','role','tokenVerifier']//shared
   },
+  LrsStudentController:{
+    '*':['lang','studentPassport','passport','role','tokenVerifier','student']
+  },
   OtherLrsController:{
     '*':['lang','passport','role','tokenVerifier'],//shared
   },
@@ -192,7 +195,8 @@ module.exports.policies = {
     'updatePhoneNumber':['lang','passport','role','auth','normalUserOnly'],//normaluseronly
     'profileCallback':['lang','passport','role','auth','teacher-parent'],
     'getMatiereByNiveau':['lang','passport','role','auth','normalUserOnly'],
-    'getTrimestres':['lang','passport','role','auth','normalUserOnly']
+    'getTrimestres':['lang','passport','role','auth','normalUserOnly'],
+    'getTopStudent':['lang','passport','role']
    },
    StudentController:{
     'create':['lang','parentPassport','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly
