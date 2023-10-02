@@ -145,6 +145,10 @@ module.exports = {
       foreignKey:'c_interactive_id'
     })
     
+    CoursInteractive.hasMany(StudentScore,{
+      foreignKey:'c_interactive_id'
+    })
+    
     
 
   }

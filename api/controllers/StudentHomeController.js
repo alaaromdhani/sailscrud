@@ -14,19 +14,21 @@ module.exports={
     getMatieres:async (req,res)=>{
         //console.log("niveau_scolaire :",req.current_niveau_scolaire)
             let data = await  MatiereNiveau.findAll({where:{
-                NiveauScolaireId:req.current_niveau_scolaire,
+                NiveauScolaireId:req.current_niveau_scolaire,//
             },    
             group:'MatiereId',     
-            attributes:[[sequelize.fn('sum',sequelize.col('Courses->CoursInteractives`.`nbQuestion')),'sumNbQuestion'],[sequelize.fn('sum',sequelize.col(`Courses->CoursInteractives->ActivityStates.progression`)),'sumProgression']],
+            distict:true,
+            attributes:[[sequelize.fn('sum',sequelize.col('Courses->CoursInteractives`.`nbQuestion')),'sumNbQuestion'],[sequelize.fn('sum',sequelize.col(`Courses->CoursInteractives->ActivityStates.progression`)),'sumProgression',]],
             include:[{
                 model:Matiere,
                 foreignKey:'MatiereId',
                 attributes:['name','id','color','description'],
-                include:{
+                include:[{
                     model:Upload,
                     foreignKey:'image',
                     attributes:['link']
-                }
+                },],
+
             },{
                 model:Course,
                 foreignKey:'matiere_niveau_id',
@@ -56,8 +58,25 @@ module.exports={
             }]
         
             })
-            return DataHandlor(req,data.map(d=>{ return {matiere:d.Matiere,total:(d.dataValues.sumNbQuestion!=='null'?d.dataValues.sumNbQuestion:0),attempted:(d.dataValues.sumProgression!=='null'?d.dataValues.sumProgression:0)}}),res)
-        
+            let scores = (await StudentScore.findAll({
+                attributes:['matiere_id',[sequelize.fn('sum',sequelize.col(`currentScore`)),'nb_diamonds',]],
+                where:{
+                    matiere_id:{
+                        [sequelize.Op.in]:data.map(d=>d.Matiere.id)
+                    },
+                    annee_scolaire_id:req.user.AnneeNiveauUsers[0].annee_scolaire_id,
+                    niveau_scolaire_id:req.current_niveau_scolaire,
+                    user_id:req.user.id
+
+                },
+                group:['matiere_id']
+            })).reduce((prev,curr)=>{
+                prev[curr.dataValues.matiere_id] = curr.dataValues.nb_diamonds 
+                return prev
+            },{})
+            return DataHandlor(req,data.map(d=>{
+                return  {nb_diamonds:scores[''+d.Matiere.id+'']?scores[''+d.Matiere.id+'']:0,total:d.dataValues.sumNbQuestion?d.dataValues.sumNbQuestion:0,attempted:d.dataValues.sumProgression?d.dataValues.sumProgression:0,matiere:d.Matiere}
+            }),res)
         
 
     },

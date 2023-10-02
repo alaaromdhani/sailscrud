@@ -77,6 +77,9 @@ module.exports = {
       Matiere.hasMany(Course,{
         foreignKey:'matiere_id'
       })
+      Matiere.hasMany(StudentScore,{
+        foreignKey:'matiere_id'
+      })
 
   }
 
