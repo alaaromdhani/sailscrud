@@ -80,6 +80,7 @@ module.exports={
         
 
     },
+
     getCourses:async(req,res)=>{
         //const trimestre_id
         const {MatiereId,TrimestreId} = req.params 
@@ -645,6 +646,22 @@ module.exports={
 
 
                 })
+        },
+        getCurrentPoints:async (req,res)=>{
+          try{
+            let scores = await StudentScore.findAll({
+                attributes:[[sequelize.fn('sum',sequelize.col('currentScore')),'nb_diamonds']],
+                where:{
+                user_id:req.user.id,
+                niveau_scolaire_id:req.current_niveau_scolaire,
+                annee_scolaire_id:req.user.AnneeNiveauUsers.annee_scolaire_id
+                },
+                group:'user_id'
+                })
+            return DataHandlor(req,scores,res )
+          } catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+          }
         }
         
        
