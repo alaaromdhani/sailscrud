@@ -654,12 +654,13 @@ module.exports={
                 where:{
                 user_id:req.user.id,
                 niveau_scolaire_id:req.current_niveau_scolaire,
-                annee_scolaire_id:req.user.AnneeNiveauUsers.annee_scolaire_id
+                annee_scolaire_id:req.user.AnneeNiveauUsers[0].annee_scolaire_id
                 },
                 group:'user_id'
                 })
             return DataHandlor(req,scores,res )
           } catch(e){
+            console.log(e)
             return ErrorHandlor(req,new SqlError(e),res)
           }
         }

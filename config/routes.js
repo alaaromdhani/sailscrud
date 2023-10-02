@@ -197,7 +197,8 @@ module.exports.routes = {
   'GET /front/api/v1/teacher/exams/children/:id/:courseId':'TeacherHomeController.getExamsChildren',
   'GET /front/api/v1/teacher/exams/interactive/:id/:courseId':'TeacherHomeController.accessExams',
   //score 
-  'GET /front/stats/api/v1/score':'HomeController.getTopStudent'
+  'GET /front/stats/api/v1/score':'HomeController.getTopStudent',
+  'GET /front/student/api/v1/score':'StudentHomeController.getCurrentPoints'
   
    
 
