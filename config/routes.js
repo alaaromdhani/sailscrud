@@ -126,9 +126,10 @@ module.exports.routes = {
   'GET /front/api/v1/students/:id': 'StudentController.findOneStudent',
   //schoolYearsHistory
   'GET /front/api/v1/students/years-history/:id': 'StudentController.schoolYearsHistory',
-  
+  //coaching videos
   'GET /front/parent/api/v1/themes': 'ParentHomeController.getThemes',
   'GET /front/parent/api/v1/coachingvideos': 'ParentHomeController.getCoachingVideos',
+  'GET /front/parent/api/v1/coachingvideos/access': 'ParentHomeController.canAccessCoachingVideos',
  
   //normal user profile 
   'GET /front/api/v1/profile':'HomeController.profileCallback',
@@ -143,6 +144,7 @@ module.exports.routes = {
   'GET /front/student/api/v1/profile':'StudentHomeController.profileCallback',
   'GET /front/student/api/v1/purchases':'StudentHomeController.availableTrimestres',
   'GET /front/student/api/v1/interactive/:courseId':'StudentHomeController.accessCourse',
+  'GET /front/student/api/v1/interactive/info/:type/:courseId':'StudentHomeController.getInfoCourse',
   'GET /front/student/api/v1/interactive/:type/:courseId/':'StudentHomeController.accessCourse',
   
   'GET /front/student/api/v1/canAccessSoftSkills':'StudentHomeController.canAccessSoftSckills', 
@@ -198,7 +200,8 @@ module.exports.routes = {
   'GET /front/api/v1/teacher/exams/interactive/:id/:courseId':'TeacherHomeController.accessExams',
   //score 
   'GET /front/stats/api/v1/score':'HomeController.getTopStudent',
-  'GET /front/student/api/v1/score':'StudentHomeController.getCurrentPoints'
+  'GET /front/student/api/v1/score':'StudentHomeController.getCurrentPoints',
+  'GET /front/404':'StudentHomeController.errorHtml'
   
    
 

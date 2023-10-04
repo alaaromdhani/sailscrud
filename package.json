@@ -16,6 +16,7 @@
     "express-session-sequelize": "^2.3.0",
     "fs": "^0.0.1-security",
     "grunt": "1.0.4",
+    "helmet": "^7.0.0",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
     "loadash": "^1.0.0",

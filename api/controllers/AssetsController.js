@@ -187,6 +187,9 @@ module.exports={
       ErrorHandlor(req,e,res)
     })
   },
+  errorHtml:(req,res)=>{
+      return res.view("404.ejs")
+  }
  
 
 

@@ -7,6 +7,8 @@ const databaseCredentials = require('../../utils/constants');
 const sessionStore = require('express-session-sequelize')(expressSession.Store)
 const {initConnections,datastores,Sequelize} = require('../../utils/sequelize');
 const path = require('path');
+const { ErrorHandlor } = require('../../utils/translateResponseMessage');
+const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 let connections = initConnections()
 let sequelizeSessionStore = new sessionStore({
   db:connections['default'],
@@ -103,23 +105,23 @@ module.exports = {
        
         console.log('setting static files')
         return async function(req,res,next){
+          if(req.headers && req.headers.accept && req.headers.accept.includes('text/html')){
+            console.log(req.query)
+            console.log('content :',req.headers['sec-fetch-dest'])
+            
+            
+         }
           
-          /*console.log(req.sessionID)
-          let s = await sequelizeSessionStore.Session.findOne({where:{
-            session_id:req.sessionID
-          }})
-          console.log(s)*/
-          function setCustomCacheControl (res, path) {
-            if (serveStatic.mime.lookup(path) === 'text/html') {
-              // Custom Cache-Control for HTML files
-              res.setHeader('Cache-Control', 'public, max-age=0')
+            function setCustomCacheControl (res, path) {
+              if (serveStatic.mime.lookup(path) === 'text/html') {
+                res.setHeader('Cache-Control', 'public, max-age=0')
+              }
             }
-          }
-          console.log('passed by here')
-          return serveStatic(path.join(__dirname, '../../static'), {
-            maxAge: '1m',
-            setHeaders: setCustomCacheControl
-          })(req,res,next)
+            return serveStatic(path.join(__dirname, '../../static'), {
+              maxAge: '1m',
+              setHeaders: setCustomCacheControl
+            })(req,res,next)
+          
         }
 
 

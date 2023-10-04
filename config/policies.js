@@ -44,7 +44,8 @@ module.exports.policies = {
     streamPublicFile:['lang','passport','role'],//shared
     downloadPublicFile:['lang','passport','role'],//shared
     streamPrivateFile:['lang','passport','role','tokenVerifier'],//shared
-    downloadPrivateFile:['lang','passport','role','tokenVerifier']//shared
+    downloadPrivateFile:['lang','passport','role','tokenVerifier'],//shared,
+    errorHtml:['lang']
 
   },
   TestController:{
