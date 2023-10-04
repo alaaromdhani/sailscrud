@@ -456,6 +456,9 @@ module.exports = {
             })
 
     },
+    canAccessCoachingVideos:(req)=>{
+        return Order.findOne({where:{status:'active',addedBy:req.user.id}})
+    }
    
     
     

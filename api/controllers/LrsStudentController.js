@@ -87,115 +87,13 @@ module.exports = {
     
     
     putStatement:async (req,res)=>{
-        let timestamp = req.body.timestamp
-        let statementId = req.body.id 
-       let agentName = req.body.actor.name
-       let verbId = req.body.verb.id
-       let verbName = req.body.verb.display['en-US']
-       let objectId = req.body.object.id
-       
-
-
-       if(timestamp && statementId && agentName && verbId && verbName && objectId){
-            let custom_object
-            let created  
-            const object =req.body.object 
-            const courseId =object.id.split('/')[0]
-            const c = await CoursInteractive.findByPk(courseId)
-            if(!c){
-                return ErrorHandlor(req,new RecordNotFoundErr(),res)
-            }
-            else{
-                    if(!c.tracked){
-                        return DataHandlor(req,{},res)
-                    }
-            }
-        const agent = await Agent.findOne({where:{account_name:agentName}})
-        let activityState = await ActivityState.findOne({where:{agent_id:agent.id,c_interactive_id:courseId,deprecated:false}})
-            if(!activityState){
-                //i case the the results has been resetted so he has to repeat the course  
-                return ErrorHandlor(req,new UnauthorizedError({specific:'this course has been resetted so all statement will be depercated'}),res)
-            }
-            
-            const obj = await Obj.findOne({where:{id:objectId}})// the 
-            if(!obj){
-                try{
-                   
-                    await sails.services.subcourseservice.saveProgress(activityState,object);
-                    await sails.services.subcourseservice.calculateScore(req,activityState,object);
-                }catch(e){
-                    console.log(e)
-                    return ErrorHandlor(req,resolveError(e),res)
-                }
-                [custom_object,created] = await CustomObject.findOrCreate({
-                    where:{
-                        agent_id:agent.id,
-                        c_interactive_id:courseId,
-                        und:object.id
-                    },
-                    defaults:{
-                        und:object.id,
-                        type:object.objectType,
-                        name:object.id.replace(courseId+'/',''),
-                        description:object.definition.name['en-US'],
-                        c_interactive_id:object.id.split('/')[0],
-                        agent_id:agent.id
-                    }
-                })
-
-                if(!created && object.definition.name['en-US']!==custom_object.description){
-                    custom_object.description = object.definition.name['en-US']
-                      await custom_object.save()  
-                }
-            }
-            if((agent && obj) || (agent && custom_object)){
-                try{
-                    const verb = await Verb.findOrCreate({where:{id:verbId},defaults:{id:verbId,display:verbName}})
-                    if(custom_object){
-                        await Statement.create({
-                            id:statementId,
-                            jsonData:req.body,
-                            custom_object_id:custom_object.id,
-                            c_interactive_id: courseId,
-                            verb_id:verbId,
-                            timeStamp:timestamp,
-                            agent_id:agent.id
-                            
-    
-                        })
-                    }
-                    else{
-                        await Statement.create({
-                            id:statementId,
-                            jsonData:req.body,
-                            obj_id:obj.id,
-                            c_interactive_id: obj.c_interactive_id,
-                            verb_id:verbId,
-                            timeStamp:timestamp,
-                            agent_id:agent.id
-                            
-    
-                        })
-                    }
-
-                        
-                }
-                catch(e){
-                    console.log(e)
-                    return ErrorHandlor(req,new SqlError(e),res)
-                }
-            }
-            else{
-                    return ErrorHandlor(req,new UnkownError(),res)
-
-            }
-     }
-       else {
-             return ErrorHandlor(req,new ValidationError(),res)   
+       try{
+        return DataHandlor(req,await sails.services.lrsservice.handleXapiStatement(req),res)
+       }catch(e){
+        console.log(e)
+        return ErrorHandlor(req,resolveError(e),res)
        }
-        
-    
-       return res.status(200).json({data:{mess:'object is created successfully'}})
+
     },
     getStatements:async (req,res)=>{
         const courseId = req.query.courseId

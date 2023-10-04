@@ -5,20 +5,32 @@ const ValidationError = require("../../utils/errors/validationErrors")
 const { DataHandlor, ErrorHandlor } = require("../../utils/translateResponseMessage")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const resolveError = require("../../utils/errors/resolveError")
+const UnauthorizedError = require("../../utils/errors/UnauthorizedError")
 
 
 module.exports={
     getThemes:async (req,res)=>{
+        
         try{
+            let activeOrder = await sails.services.parenthomeservice.canAccessCoachingVideos(req)
+            if(!activeOrder){
+                throw new UnauthorizedError()
+            }
+        
             const themes = await Theme.findAll({
             })
             return DataHandlor(req,themes,res)
         }catch(e){
-            return ErrorHandlor(req,new SqlError(e),res)
+            return ErrorHandlor(req,resolveError(e),res)
         }
     },
     getCoachingVideos:async (req,res)=>{
+        
         try{
+            let activeOrder = await sails.services.parenthomeservice.canAccessCoachingVideos(req)
+            if(!activeOrder){
+                throw new UnauthorizedError()
+            }
             const {theme_id} = req.query
             let where={}
             if(theme_id){
@@ -34,10 +46,22 @@ module.exports={
             }),res)
     
         }catch(e){
-            return ErrorHandlor(req,new SqlError(e),res)
+            return ErrorHandlor(req,resolveError(e),res)
         }
 
 
+    },
+    canAccessCoachingVideos:async (req,res)=>{
+        try{
+            let activeOrder = await sails.services.parenthomeservice.canAccessCoachingVideos(req)
+            let canAccessCv= false
+            if(activeOrder){
+                canAccessCv=true
+            }
+           return DataHandlor(req,{canAccessCv},res)
+        }catch(e){
+            return ErrorHandlor(req,new SqlError(e),res)
+        }
     },
     getMatieres:(req,res)=>{
         const {StudentId,NiveauScolaireId} = req.query
@@ -936,7 +960,8 @@ module.exports={
             return ErrorHandlor(req,resolveError(e),res)
         }   
 
-    }
+    },
+    
     
 
 

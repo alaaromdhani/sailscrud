@@ -592,7 +592,7 @@ module.exports = {
 
     },
     
-    calculateScore:async (req,as,object)=>{
+    calculateScore:async (req,as,object,agent)=>{
         let course
         let {student} =sails.config.custom.roles         
         if(req.role.name!=student.name){
@@ -618,8 +618,36 @@ module.exports = {
                             through:'trimestres_modules',
                             attributes:['id']
                         }
-                    }
+                    },
                 }
+             }).then(c=>{
+                course = c
+                return CustomStatement.findAll({where:{
+                    [sequelize.Op.and]:[
+                        {c_interactive_id:course.id},
+                        {agent_id:agent.id  },
+                        {[sequelize.Op.or]:[
+                            {  name:{
+                                    [sequelize.Op.like]:'%/NA'
+                                }  
+                            },{
+                                name:{
+                                    [sequelize.Op.like]:'%/TA'
+                                }
+                            }
+                        ]}
+                      ] 
+                }}).then(c=>{
+                   if(c.length){
+                    let grouped = {}
+                    Object.keys().reduce((prev,curr)=>{
+                        return prev+curr
+                      },0)
+                    }
+                   else{
+                    return 0
+                   }
+                })
              }).then((c)=>{
                 course = c
                 return StudentScore.findOne({where:{
@@ -636,7 +664,6 @@ module.exports = {
                 if(score){
                     let updated = {currentScore:sentScore}
                     if(!score.dataValues.trimestre_id){
-                        console.log('cheking if the courses trimestres are the same as the current ',currenTrimestre.id,"with courses trimestres :",course.Course.Module.Trimestres.map(i=>i.id))
                         if(course.Course.Module.Trimestres.map(i=>i.id).includes(currenTrimestre.id)){
                             updated.trimestre_id = currenTrimestre.id
                         }

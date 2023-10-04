@@ -56,7 +56,8 @@ const {
             type:DataTypes.INTEGER,
             defaultValue:0
         
-        }
+        },
+    
     },
     associations : function(){
        ActivityState.belongsTo(Agent,{

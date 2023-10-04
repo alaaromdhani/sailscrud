@@ -660,10 +660,12 @@ module.exports={
                 })
             return DataHandlor(req,scores,res )
           } catch(e){
-            console.log(e)
-            return ErrorHandlor(req,new SqlError(e),res)
+              return ErrorHandlor(req,new SqlError(e),res)
           }
-        }
+        },
+        
+
+
         
        
 
