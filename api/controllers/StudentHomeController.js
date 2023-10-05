@@ -558,7 +558,8 @@ module.exports={
 
         },
         getAccessUtils:async (req,res)=>{
-           return Agent.findOne({where:{user_id:req.user.id}}).then(agent=>{
+         try{
+            return DataHandlor(req,await  Agent.findOne({where:{user_id:req.user.id}}).then(agent=>{
                 if(!agent){
                     return Agent.create({
                         mbox:req.user.email,account_homepage:sails.config.custom.baseUrl,account_name:req.user.username,user_id:req.user.id
@@ -575,7 +576,10 @@ module.exports={
                 })
                 let endpoint = sails.config.custom.lrsStudentEndPoint
                 return {agent:tincanActor,lrsendpoint:endpoint}
-            })
+            }),res)
+         }catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
+         }
         },
         accessCourse:async(req,res)=>{
                 try{
