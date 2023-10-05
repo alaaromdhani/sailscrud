@@ -120,6 +120,10 @@ module.exports = {
     nbQuestion:{
       type:DataTypes.INTEGER,
       defaultValue:0
+    },
+    addedScript:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
     }
  
 

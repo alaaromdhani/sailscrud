@@ -7,8 +7,6 @@ const databaseCredentials = require('../../utils/constants');
 const sessionStore = require('express-session-sequelize')(expressSession.Store)
 const {initConnections,datastores,Sequelize} = require('../../utils/sequelize');
 const path = require('path');
-const { ErrorHandlor } = require('../../utils/translateResponseMessage');
-const RecordNotFoundErr = require('../../utils/errors/recordNotFound');
 let connections = initConnections()
 let sequelizeSessionStore = new sessionStore({
   db:connections['default'],
@@ -106,9 +104,7 @@ module.exports = {
         console.log('setting static files')
         return async function(req,res,next){
           if(req.headers && req.headers.accept && req.headers.accept.includes('text/html')){
-            console.log(req.query)
-            console.log('content :',req.headers['sec-fetch-dest'])
-            
+            console.log(req.url)
             
          }
           
@@ -127,7 +123,6 @@ module.exports = {
 
     })(),
     ex_session:(()=>{
-      console.log('the session hook for sails have been disaibled ...')
       return function(req,res,next){
          
         return expressSession({

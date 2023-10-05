@@ -764,6 +764,21 @@ module.exports = {
                 return Promise.reject(new RecordNotFoundErr())
             }
 
+          }).then(c=>{
+            console.log(c)
+            if(!c.dataValues.addedScript){
+                return sails.services.lrsservice.addScript(c.dataValues.url,'course').then(()=>{
+                    return c.update({addedScript:true})
+                })
+            }else{
+                return c
+            }
+          }).then(c=>{
+            console.log(c)
+            return {
+                  endpoint:sails.config.custom.baseUrl+'courses/'+c.dataValues.url+"/"+'index_lms.html'
+                 
+            }
           })
     }
     

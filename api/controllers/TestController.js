@@ -1,6 +1,7 @@
 const {ErrorHandlor, DataHandlor} = require('../../utils/translateResponseMessage');
 const ValidationError = require('../../utils/errors/validationErrors');
-const SqlError = require('../../utils/errors/sqlErrors')
+const SqlError = require('../../utils/errors/sqlErrors');
+const path = require('path');
 
 module.exports={
   getChildren:async (req,res)=>{
@@ -29,6 +30,11 @@ module.exports={
    else{
       return ErrorHandlor(req,new ValidationError({message:'uploads is required'}),res)
    }
+
+
+  },
+  testViews:(req,res)=>{
+    return res.sendFile(path.join(__dirname,'../../static/test/capital-quizz-v-3/index_lms.html'))
 
 
   }

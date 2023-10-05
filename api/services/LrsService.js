@@ -2,7 +2,10 @@ const  sequelize  = require("sequelize")
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound")
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
-
+const fs = require('fs')
+const path = require("path")
+const  Cheerio  = require("cheerio")
+const databaseCredentials = require("../../utils/constants")
 module.exports={
         generateAgent:async (user,callback)=>{
             try{
@@ -253,5 +256,57 @@ module.exports={
             })
 
          },
+         addScript:(url,type)=>{
+            try{
+                let p 
+            if(type==='course'){
+                p ='../../static/courses/'+url+'/index_lms.html' 
+            }            
+            if(type==='softskills'){
+                p ='../../static/softskills'+url+'/index_lms.html'
+            }
+            if(type==='others'){
+                p ='../../static/other/'+url+'/index_lms.html'
+            }
+            
+            var html = fs.readFileSync(path.join(__dirname,p), 'utf8');
+            var $ = Cheerio.load(html);
+            
+            var scriptNode = `<script>
+            window.addEventListener('message',e=>{
+              if(e.origin!='http://localhost:1337'&&e.origin!=${databaseCredentials.frontUrl} ){
+                return 
+              }
+              try{
+                
+                let data = JSON.parse(e.data)
+                console.log(data)   
+                window.GetPlayer().SetVar('USERNAME',data.username)
+                window.GetPlayer().SetVar('SEXE',data.sex) 
+                console.log(window.GetPlayer().GetVar('USERNAME'))
+              }
+              catch(e){
+                return 
+              }
+              
+             })
+          </script>`;
+          $('body').append(scriptNode);
+             return new Promise((resolve,reject)=>{
+                fs.writeFile(path.join(__dirname,p),$.html(),(err,data)=>{
+                    if(!err){
+                      return resolve()                    
+                    }
+                    else{
+                        return reject(err)
+                    }
+                  })
+
+             })
+ 
+            }catch(e){
+                return Promise.reject(e)
+            }          
+         }
          
 }

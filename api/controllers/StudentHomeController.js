@@ -6,6 +6,7 @@ const { ErrorHandlor, DataHandlor } = require("../../utils/translateResponseMess
 const { Sequelize,Op } = require("sequelize")
 const resolveError = require("../../utils/errors/resolveError")
 const sequelize = require('sequelize')
+const fs = require('fs')
 module.exports={
     profileCallback:(req,res)=>{
         return DataHandlor(req,req.user,res)
@@ -556,11 +557,30 @@ module.exports={
         }
 
         },
+        getAccessUtils:async (req,res)=>{
+           return Agent.findOne({where:{user_id:req.user.id}}).then(agent=>{
+                if(!agent){
+                    return Agent.create({
+                        mbox:req.user.email,account_homepage:sails.config.custom.baseUrl,account_name:req.user.username,user_id:req.user.id
+                    })  
+                } 
+                else{
+                    return agent.dataValues
+                }
+            }).then(agent=>{
+                let tincanActor = JSON.stringify({
+                    name: agent.account_name,
+                    account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                    objectType:'Agent'
+                })
+                let endpoint = sails.config.custom.lrsStudentEndPoint
+                return {agent:tincanActor,lrsendpoint:endpoint}
+            })
+        },
         accessCourse:async(req,res)=>{
                 try{
-                    let ci = await sails.services.subcourseservice.accessCourse(req)
-                      
-                    sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
+                   return DataHandlor(req, await sails.services.subcourseservice.accessCourse(req),res) 
+                    /*sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
                                 if(err){
                                     return ErrorHandlor(req,new SqlError(err),res)
                                 }
@@ -573,16 +593,16 @@ module.exports={
                                 let endpoint = sails.config.custom.lrsStudentEndPoint
                                 
                                 let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                                return res.view("pages/player.ejs",{
-                                    ci:ci,
-                                    url:fullUrl,
-                                    username:req.user.firstName+' '+req.user.lastName,
-                                    sex:req.user.sex.toLowerCase()
-                                    })
-                                }
+                                
+                                  var html = fs.readFileSync(__dirname +`../../static/courses/${ci.url}/index_lms.html`, 'utf8');
+                                var $ = Cheerio.load(html);
+                                var scriptNode = `<script> alert('hello world') </script>`;
+                                $('body').append(scriptNode);
+                                console.log($.html())
+                                 res.send($.html())
         
-        
-                    })
+                            }
+                    })*/
                 } catch(e){
                     console.log(e)
                     return ErrorHandlor(req,resolveError(e),res)

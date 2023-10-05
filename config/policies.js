@@ -50,7 +50,8 @@ module.exports.policies = {
   },
   TestController:{
     upload:['lang','dashboardPassport','passport','tokenVerifier','role','bulkUpload'],//adminonly
-    '*':['lang','dashboardPassport','passport','tokenVerifier','role']//adminonly
+    testViews:['lang'],
+    '*':['lang','dashboardPassport','passport','tokenVerifier','role']//adminonly,
   },
   UserController:{
     update:['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions','ppUploader'],//adminonly
