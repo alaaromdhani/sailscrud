@@ -207,32 +207,35 @@ module.exports = {
         }
 
     },
+    getAccessUtils:async (req,res)=>{
+        try{
+           return DataHandlor(req,await  Agent.findOne({where:{user_id:req.user.id}}).then(agent=>{
+               if(!agent){
+                   return Agent.create({
+                       mbox:req.user.email,account_homepage:sails.config.custom.baseUrl,account_name:req.user.username,user_id:req.user.id
+                   })  
+               } 
+               else{
+                   return agent.dataValues
+               }
+           }).then(agent=>{
+               let tincanActor = JSON.stringify({
+                   name: agent.account_name,
+                   account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
+                   objectType:'Agent'
+               })
+               
+               let endpoint = sails.config.custom.lrsEndPoint
+               return {agent:tincanActor,lrsendpoint:endpoint}
+           }),res)
+        }catch(e){
+           return ErrorHandlor(req,resolveError(e),res)
+        }
+       },
     accessCourse:async (req,res)=>{
         try{
-            let ci = await sails.services.teacherhomeservice.courses.accessCourse(req)
-            sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                    if(err){
-                        return ErrorHandlor(req,new SqlError(err),res)
-                    }
-                    else{
-                    const tincanActor = JSON.stringify({
-                        name: agent.account_name,
-                        account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                        objectType:'Agent'
-                    })
-                    let endpoint = sails.config.custom.lrsEndPoint
-                    
-                    let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                    return res.view("pages/player.ejs",{
-                        ci:ci,
-                        url:fullUrl,
-                        username:req.user.firstName+' '+req.user.lastName,
-                        sex:req.user.sex.toLowerCase()
-                        })
-                    }
-
-
-                })
+            return DataHandlor(req,await sails.services.teacherhomeservice.courses.accessCourse(req),res)
+            
         }catch(e){
           
             return ErrorHandlor(req,resolveError(e),res)

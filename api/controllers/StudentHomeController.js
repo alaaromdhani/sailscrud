@@ -574,6 +574,7 @@ module.exports={
                     account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
                     objectType:'Agent'
                 })
+                
                 let endpoint = sails.config.custom.lrsStudentEndPoint
                 return {agent:tincanActor,lrsendpoint:endpoint}
             }),res)

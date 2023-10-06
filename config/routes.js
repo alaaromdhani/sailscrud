@@ -203,7 +203,8 @@ module.exports.routes = {
   'GET /front/student/api/v1/score':'StudentHomeController.getCurrentPoints',
   'GET /front/404':'StudentHomeController.errorHtml',
   // xapi utils
-  'GET /front/api/v1/student/interactive/utils':'StudentHomeController.getAccessUtils'
+  'GET /front/api/v1/student/interactive/utils':'StudentHomeController.getAccessUtils',
+  'GET /front/api/v1/teacher/interactive/utils':'TeacherHomeController.getAccessUtils'
   
    
 
