@@ -584,35 +584,9 @@ module.exports={
         accessCourse:async(req,res)=>{
                 try{
                    return DataHandlor(req, await sails.services.subcourseservice.accessCourse(req),res) 
-                    /*sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                                if(err){
-                                    return ErrorHandlor(req,new SqlError(err),res)
-                                }
-                                else{
-                                const tincanActor = JSON.stringify({
-                                    name: agent.account_name,
-                                    account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                                    objectType:'Agent'
-                                })
-                                let endpoint = sails.config.custom.lrsStudentEndPoint
-                                
-                                let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                                
-                                  var html = fs.readFileSync(__dirname +`../../static/courses/${ci.url}/index_lms.html`, 'utf8');
-                                var $ = Cheerio.load(html);
-                                var scriptNode = `<script> alert('hello world') </script>`;
-                                $('body').append(scriptNode);
-                                console.log($.html())
-                                 res.send($.html())
-        
-                            }
-                    })*/
                 } catch(e){
-                    console.log(e)
                     return ErrorHandlor(req,resolveError(e),res)
                 }      
-            
-    
         },
         getCtypes:async (req,res)=>{
             try{

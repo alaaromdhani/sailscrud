@@ -521,7 +521,7 @@ module.exports = {
     })
 
 
-    }
+    },
     
 
 

@@ -774,10 +774,10 @@ module.exports = {
                 return c
             }
           }).then(c=>{
-            console.log(c)
             return {
-                  endpoint:sails.config.custom.baseUrl+'courses/'+c.dataValues.url+"/"+'index_lms.html'
-                 
+                  endpoint:sails.config.custom.baseUrl+'courses/'+c.dataValues.url+"/"+'index_lms.html',
+                  username:req.user.firstName+' '+req.user.lastName, 
+                  sex:req.user.sex  
             }
           })
     }
