@@ -765,7 +765,7 @@ module.exports = {
             }
 
           }).then(c=>{
-            console.log(c)
+            
             if(!c.dataValues.addedScript){
                 return sails.services.lrsservice.addScript(c.dataValues.url,'course').then(()=>{
                     return c.update({addedScript:true})
@@ -780,7 +780,8 @@ module.exports = {
                   sex:req.user.sex  
             }
           })
-    }
+    },
+
     
     
 

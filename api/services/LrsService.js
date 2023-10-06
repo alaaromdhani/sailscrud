@@ -272,24 +272,8 @@ module.exports={
             var html = fs.readFileSync(path.join(__dirname,p), 'utf8');
             var $ = Cheerio.load(html);
             
-            var scriptNode = `<script>
-            window.addEventListener('message',e=>{
-              if(e.origin!='http://localhost:1337'&&e.origin!=${databaseCredentials.frontUrl} ){
-                return 
-              }
-              try{
-                
-                let data = JSON.parse(e.data)
-                console.log(data)   
-                window.GetPlayer().SetVar('USERNAME',data.username)
-                window.GetPlayer().SetVar('SEXE',data.sex) 
-                console.log(window.GetPlayer().GetVar('USERNAME'))
-              }
-              catch(e){
-                return 
-              }
-              
-             })
+            var scriptNode = `<script src="${sails.config.custom.baseUrl}js/oneTimeScript.js">
+           
           </script>`;
           $('body').append(scriptNode);
              return new Promise((resolve,reject)=>{
