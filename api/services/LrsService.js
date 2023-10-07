@@ -50,13 +50,14 @@ module.exports={
                     const object =body.object
                     let courseId =object.id.split('/')[0]
                     let name =  object.id.split('/').slice(1).join('/')
-                    
+                    console.log('name',name,"jus came")
                     if(name && name.endsWith('QS/QS')){
                         return sails.services.lrsservice.saveProgress(req.user,object,courseId)
                     }else if(name ==='TOTAL_SCORE'){
                         return sails.services.lrsservice.saveScore(req.user,object,courseId)
                     }
-                    else if (name &&(name.endsWith('QS/NA') || name.endsWith('QS/TA') || name.endsWith('/RESULTS')) ){
+                    
+                    else if (name &&(name.endsWith('QS/NA') || name.endsWith('QS/TA') || name.endsWith('RESULTS') ||  name.endsWith('QST')) ){
                        
                         return Agent.findOne({where:{
                             user_id:req.user.id
