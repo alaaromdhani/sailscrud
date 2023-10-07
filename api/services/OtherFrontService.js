@@ -321,7 +321,6 @@ module.exports={
          
          if(canAccessPrivate){
         
-            console.log('viewing access' ,req.user.username)
             return OtherInteractive.findOne({
                 where:{
                     id:req.params.id
@@ -379,6 +378,33 @@ module.exports={
                 required:true
             }})
          }
+
+    },
+    accessOthers:(req)=>{
+        
+        return sails.services.otherfrontservice.accessCourse(req).then(o=>{
+            if(o){
+                return o
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+          }).then(c=>{
+            
+            if(!c.dataValues.addedScript){
+                return sails.services.lrsservice.addScript(c.dataValues.url,'others').then(()=>{
+                    return c.update({addedScript:true})
+                })
+            }else{
+                return c
+            }
+          }).then(c=>{
+            return {
+                  endpoint:sails.config.custom.baseUrl+'other/'+c.dataValues.url+"/"+'index_lms.html',
+                  username:req.user.firstName+' '+req.user.lastName, 
+                  sex:req.user.sex  
+            }
+          })
 
     }
 

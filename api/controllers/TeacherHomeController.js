@@ -1,3 +1,4 @@
+const { dash } = require("pdfkit")
 const resolveError = require("../../utils/errors/resolveError")
 const SqlError = require("../../utils/errors/sqlErrors")
 const ValidationError = require("../../utils/errors/validationErrors")
@@ -392,32 +393,9 @@ module.exports = {
       },
       accessExams:async (req,res)=>{
         try{
-            
+                return DataHandlor(req,await sails.services.teacherhomeservice.exams.accessExams(req),res)
        
-                let ci = await sails.services.teacherhomeservice.exams.accessExams(req)
-                sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                        if(err){
-                            return ErrorHandlor(req,new SqlError(err),res)
-                        }
-                        else{
-                        const tincanActor = JSON.stringify({
-                            name: agent.account_name,
-                            account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                            objectType:'Agent'
-                        })
-                        let endpoint = sails.config.custom.lrsEndPoint
-                        
-                        let fullUrl =  sails.config.custom.baseUrl+'courses/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                        return res.view("pages/player.ejs",{
-                            ci:ci,
-                            url:fullUrl,
-                            username:req.user.firstName+' '+req.user.lastName,
-                            sex:req.user.sex.toLowerCase()
-                            })
-                        }
-    
-    
-                    })
+                
             }catch(e){
               
                 return ErrorHandlor(req,resolveError(e),res)

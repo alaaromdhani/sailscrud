@@ -97,6 +97,10 @@ module.exports = {
         required: true,
          
     },
+    addedScript:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
+    }
 
 
   },

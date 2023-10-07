@@ -660,6 +660,47 @@ module.exports={
         })
 
 
+    },
+    accessSoftSkills:(req)=>{
+        return SoftSkillsInteractive.findOne({where:{
+            id:req.params.id,validity:true,active:true,
+         },include:{
+          model:SoftSkills,
+          foreignKey:'parent',
+          attributes:['id'],
+          include:{
+              model:NiveauScolaire,
+              through:'soft_skills_ns',
+              attributes:['id'],
+              where:{
+                 id:req.current_niveau_scolaire 
+              }
+            }
+        }
+      }).then(ci=>{
+            if(!ci){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+              return ci
+            }
+          }).then(c=>{
+          
+              if(!c.dataValues.addedScript){
+                  return sails.services.lrsservice.addScript(c.dataValues.url,'softskills').then(()=>{
+                      return c.update({addedScript:true})
+                  })
+              }else{
+                  return c
+              }
+            }).then(c=>{
+              return {
+                    endpoint:sails.config.custom.baseUrl+'softskills/'+c.dataValues.url+"/"+'story.html',
+                    username:req.user.firstName+' '+req.user.lastName, 
+                    sex:req.user.sex  
+              }
+            })
+
     }
     
 

@@ -405,49 +405,16 @@ module.exports={
         }
 
     },
-    accessSoftSkills:(req,res)=>{
+    accessSoftSkills:async (req,res)=>{
         const nbPaidTrimstres = req.user.AnneeNiveauUsers.filter(an=>an.dataValues.type==='paid')
         if(nbPaidTrimstres.length>2){
-             
-        
-            SoftSkillsInteractive.findOne({where:{
-              id:req.params.id,validity:true,active:true,include:{
-                model:NiveauScolaire,
-                through:'soft_skills_ns',
-                attributes:['id'],
-                where:{
-                   id:req.current_niveau_scolaire 
-                }
-              }
+             try{
+                return DataHandlor(req,await sails.services.softskillsservice.accessSoftSkills(req),res)
+             }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+            
               
-            }}).then(ci=>{
-              if(!ci){
-                  return ErrorHandlor(req,new RecordNotFoundErr(),res)
-              }
-              else{
-                  sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                            if(err){
-                                  return ErrorHandlor(req,err,res)
-                            }
-                            else{
-                            
-                              //console.log(ci.url)
-                              let fullUrl =  sails.config.custom.baseUrl+'softskills/'+ci.url+"/"+'index_lms.html'
-                              return res.view("pages/player.ejs",{
-                                    url:fullUrl,
-                                    username:req.user.firstName +' '+req.user.firstName,
-                                    sex:req.user.sex.toLowerCase()
-                              })
-                            }
-        
-        
-                  })
-              }
-            }).catch(e=>{
-        
-                 ErrorHandlor(req,new RecordNotFoundErr(),res)
-            })  
-        
         
         
           }else{
@@ -558,6 +525,7 @@ module.exports={
 
         },
         getAccessUtils:async (req,res)=>{
+            const {type}=req.query
          try{
             return DataHandlor(req,await  Agent.findOne({where:{user_id:req.user.id}}).then(agent=>{
                 if(!agent){
@@ -574,8 +542,14 @@ module.exports={
                     account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
                     objectType:'Agent'
                 })
-                
-                let endpoint = sails.config.custom.lrsStudentEndPoint
+                let endpoint
+                if(type && type==='others'){
+                    endpoint = sails.config.custom.lrsOtherPoint
+                    
+                }
+                else{
+                    endpoint = sails.config.custom.lrsStudentEndPoint
+                }
                 return {agent:tincanActor,lrsendpoint:endpoint}
             }),res)
          }catch(e){
@@ -618,33 +592,12 @@ module.exports={
         },
         accessOthersCourse:async (req,res)=>{
 
-            let ci = await sails.services.otherfrontservice.accessCourse(req)
-            if(!ci){
-                return ErrorHandlor(req,new RecordNotFoundErr(),res)
+            try{
+                return DataHandlor(req,await sails.services.otherfrontservice.accessOthers(req),res)
+           } catch(e){
+            return ErrorHandlor(req,resolveError(e),res)
             }
-            sails.services.lrsservice.generateAgent(req.user,(err,agent)=>{
-                            if(err){
-                                return ErrorHandlor(req,err,res)
-                            }
-                            else{
-                            const tincanActor = JSON.stringify({
-                                name: agent.account_name,
-                                account:[{accountName:agent.mbox,accountServiceHomePage:agent.account_name}],
-                                objectType:'Agent'
-                            })
-                            let endpoint = sails.config.custom.lrsOtherPoint
-                            
-                            let fullUrl =  sails.config.custom.baseUrl+'other/'+ci.url+"/"+'index_lms.html?actor='+tincanActor+"&endpoint="+endpoint
-                            return res.view("pages/player.ejs",{
-                                    ci:ci,
-                                    url:fullUrl,
-                                    username:req.user.firstName+' '+req.user.lastName,
-                                    sex:req.user.sex.toLowerCase()
-                            })
-                            }
-
-
-                })
+            
         },
         getCurrentPoints:async (req,res)=>{
           try{

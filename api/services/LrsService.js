@@ -263,7 +263,7 @@ module.exports={
                 p ='../../static/courses/'+url+'/index_lms.html' 
             }            
             if(type==='softskills'){
-                p ='../../static/softskills'+url+'/index_lms.html'
+                p ='../../static/softskills/'+url+'/story.html'
             }
             if(type==='others'){
                 p ='../../static/other/'+url+'/index_lms.html'
