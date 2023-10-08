@@ -403,7 +403,16 @@ module.exports = {
        
 
 
-      }
+      },
+      isRatedByUser:async (req,res)=>{
+        try{
+            const rateCount = await sails.services.subcourseservice.isRatedByUser(req)
+            return DataHandlor(req,{isRatedByUser:(rateCount>0)},res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    }
     
 
     

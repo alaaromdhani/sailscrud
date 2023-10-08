@@ -781,6 +781,59 @@ module.exports = {
             }
           })
     },
+    isRatedByUser:(req)=>{
+        let RateObject = {
+            coursinteractive:{
+                model:Rate,
+                foreignKey:'c_interactive_id',
+            },
+            coursvideo:{
+                model:Rate,
+                foreignKey:'c_video_id',
+            },
+            coursdocument:{
+                model:Rate,
+                foreignKey:'c_document_id',
+            },
+            softskillsinteractive:{
+                model:SoftSkillsRate,
+                foreignKey:'sk_interactive_id',
+            },
+            softskillsvideo:{
+                model:SoftSkillsRate,
+                foreignKey:'sk_video_id',
+            },
+            softskillsdocument:{
+                model:SoftSkillsRate,
+                foreignKey:'sk_document_id',
+            },
+            otherinteractive:{
+                model:CustomRate,
+                foreignKey:'other_interactive_id',
+            },
+            otherdocument:{
+                model:CustomRate,
+                foreignKey:'other_document_id',
+            },
+            othervideo:{
+                model:CustomRate,
+                foreignKey:'other_video_id',
+            }
+
+        }
+        if(!RateObject[req.params.type]){
+            return Promise.reject(new ValidationError())
+        }
+        let model = RateObject[req.params.type].model
+        let key = RateObject[req.params.type].foreignKey
+        
+
+        return model.count({where:{
+            ratedBy:req.user.id,
+            [key]:req.params.courseId
+        }})
+
+    }
 
     
     

@@ -615,6 +615,14 @@ module.exports={
               return ErrorHandlor(req,new SqlError(e),res)
           }
         },
+        isRatedByUser:async (req,res)=>{
+            try{
+                const rateCount = await sails.services.subcourseservice.isRatedByUser(req)
+                return DataHandlor(req,{isRatedByUser:(rateCount>0)},res)
+            }catch(e){
+                return ErrorHandlor(req,resolveError(e),res)
+            }
+        }
         
         
 
