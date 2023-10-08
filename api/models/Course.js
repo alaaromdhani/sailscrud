@@ -19,18 +19,19 @@ module.exports = {
         if(course.isNewRecord){
           course.rating=0
           course.active = false
-        }
-        if (course.order && course.module_id&& !course.trimestre_id){
+          if (course.order && course.module_id&& !course.trimestre_id){
          
-          course.type ="cours"
+            course.type ="cours"
+          }
+          else if (!course.order && !course.module_id&& course.trimestre_id){
+            course.type ="exam"
+          }
+          else{
+            throw new ValidationError({message:'valid configuration is required'})
+          }
+  
         }
-        else if (!course.order && !course.module_id&& course.trimestre_id){
-          course.type ="exam"
-        }
-        else{
-          throw new ValidationError({message:'valid configuration is required'})
-        }
-
+        
         
       },
       beforeDestroy:async (course,options)=>{

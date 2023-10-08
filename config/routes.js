@@ -207,8 +207,10 @@ module.exports.routes = {
   'GET /front/api/v1/teacher/interactive/utils':'TeacherHomeController.getAccessUtils',
   // rate front
    'GET /front/student/api/v1/isRatedBy/:type/:courseId':'StudentHomeController.isRatedByUser',
-   'GET /front/teacher/api/v1/isRatedBy/:type/:courseId':'TeacherHomeController.isRatedByUser'
-
+   'GET /front/teacher/api/v1/isRatedBy/:type/:courseId':'TeacherHomeController.isRatedByUser',
+   'POST /front/student/api/v1/rate/:type/:courseId':'StudentHomeController.rateCourse',
+   'POST /front/teacher/api/v1/rate/:type/:courseId':'TeacherHomeController.rateCourse'
+ 
 
 
 

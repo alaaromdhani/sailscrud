@@ -412,7 +412,15 @@ module.exports = {
             console.log(e)
             return ErrorHandlor(req,resolveError(e),res)
         }
-    }
+    },
+    rateCourse:async (req,res)=>{
+        try{
+            return DataHandlor(req,await sails.services.subcourseservice.rateCourse(req),res)
+        }catch(e){
+            console.log(e)
+            return ErrorHandlor(req,resolveError(e),res)
+        }
+    },
     
 
     

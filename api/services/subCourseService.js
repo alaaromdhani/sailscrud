@@ -833,6 +833,151 @@ module.exports = {
             [key]:req.params.courseId
         }})
 
+    },
+    rateCourse:(req)=>{
+        let RateObject = {
+            coursinteractive:{
+                rateModel:Rate,
+                foreignKey:'c_interactive_id',
+                courseModel:CoursInteractive,
+                parent:Course,
+                parentFK:'course_id'
+
+            },
+            coursvideo:{
+                rateModel:Rate,
+                foreignKey:'c_video_id',
+                courseModel:CoursVideo,
+                parent:Course,
+                parentFK:'course_id'
+            },
+            coursdocument:{
+                rateModel:Rate,
+                foreignKey:'c_document_id',
+                courseModel:CoursDocument,
+                parent:Course,
+                parentFK:'course_id'
+            },
+            softskillsinteractive:{
+                rateModel:SoftSkillsRate,
+                foreignKey:'sk_interactive_id',
+                courseModel:SoftSkillsInteractive,
+                parent:SoftSkills,
+                parentFK:'parent_sk'
+            },
+            softskillsvideo:{
+                rateModel:SoftSkillsRate,
+                foreignKey:'sk_video_id',
+                courseModel:SoftSkillsVideo,
+                parent:SoftSkills,
+                parentFK:'parent_sk'
+            },
+            softskillsdocument:{
+                rateModel:SoftSkillsRate,
+                foreignKey:'sk_document_id',
+                courseModel:SoftSkillsDocument,
+                parent:SoftSkills,
+                parentFK:'parent_sk'
+            },
+            otherinteractive:{
+                rateModel:CustomRate,
+                foreignKey:'other_interactive_id',
+                courseModel:OtherInteractive,
+                parent:OtherCourse,
+                parentFK:'other_course_id'
+            },
+            otherdocument:{
+                rateModel:CustomRate,
+                foreignKey:'other_document_id',
+                courseModel:OtherDocument,
+                parent:OtherCourse,
+                parentFK:'other_course_id'
+            },
+            othervideo:{
+                rateModel:CustomRate,
+                foreignKey:'other_video_id',
+                courseModel:OtherDocument,
+                parent:OtherCourse,
+                parentFK:'other_course_id'
+            }
+
+        }
+        const {type,courseId} = req.params
+        if(!RateObject[type]){
+            return Promise.reject(new ValidationError())
+        }
+        const {rateModel,foreignKey,courseModel,parent,parentFK} = RateObject[type]
+        let course,parentCourse
+        return courseModel.findByPk(courseId,{
+            include:{
+            model:parent,
+            attributes:['id'],
+            foreignKey:'parent'
+            },
+            attributes:['id','parent']
+         }).then(c=>{
+
+            if(!c){
+                return Promise.reject(new RecordNotFoundErr())
+            }
+            else{
+                course = c
+                if(type.startsWith('cours')){
+                    parentCourse = c.Course
+                }
+                if(type.startsWith('softskills')){
+                    parentCourse = c.SoftSkills
+                }
+                if(type.startsWith('other')){
+                    parentCourse = c.OtherCourse
+                }
+                return rateModel.findOrCreate({where:{
+                    ratedBy:req.user.id,
+                    [foreignKey]:courseId
+                },
+                defaults:{
+                    ratedBy:req.user.id,
+                    [foreignKey]:courseId,
+                    [parentFK]:c.parent,
+                    rating:req.body.rating,
+                }
+
+            })
+            }
+         }).then(([r,created])=>{
+            if(!created){
+                return r.update({rating:req.body.rating})
+            }
+            else{
+                return r
+            }
+         }).then(r=>{
+           return  Promise.all( [ rateModel.findAll({
+                where: {
+                [foreignKey]: courseId
+                },
+                attributes: [
+                [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating'],
+                ]
+            }),
+            rateModel.findAll({
+                where: {
+                [parentFK]: course.parent
+                },
+                attributes: [
+                [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating'],
+                ]
+            })
+            ])
+
+         }).then(([rateChild,rateParent])=>{
+            console.log('child',rateChild[0].dataValues,'parent',rateParent[0].dataValues)
+            return Promise.all([course.update({rating:rateChild[0].dataValues.avgRating}),parentCourse.update({rating:rateParent[0].dataValues.avgRating})]) 
+         }).then(result=>{
+            return result
+         })
+        
+
     }
 
     
