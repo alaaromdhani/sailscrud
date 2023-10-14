@@ -650,7 +650,7 @@ module.exports={
         }).then(([p,c])=>{
             callback(null,c)
         }).catch(e=>{
-            console.log(e)
+            
             if(e instanceof RecordNotFoundErr || e instanceof UnauthorizedError || e instanceof ValidationError){
                 callback(e,null)
             }
@@ -663,7 +663,7 @@ module.exports={
     },
     accessSoftSkills:(req)=>{
         return SoftSkillsInteractive.findOne({where:{
-            id:req.params.id,validity:true,active:true,
+            id:req.params.id,active:true,
          },include:{
           model:SoftSkills,
           foreignKey:'parent',

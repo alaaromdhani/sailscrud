@@ -80,7 +80,7 @@ module.exports={
                 let includeOptions = [{
                     model:Course,
                     foreignkey:'module_id',
-                    attributes:['id','name','rating','description'],
+                    attributes:['id','name','rating','description','order'],
                     where:{
                         active:true,
                         type:'cours'
