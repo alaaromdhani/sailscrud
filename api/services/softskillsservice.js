@@ -697,7 +697,10 @@ module.exports={
               return {
                     endpoint:sails.config.custom.baseUrl+'softskills/'+c.dataValues.url+"/"+'story.html',
                     username:req.user.firstName+' '+req.user.lastName, 
-                    sex:req.user.sex  
+                    sex:req.user.sex,  
+                    name:c.dataValues.name,
+                    description:c.dataValues.description,
+                    image:c.dataValues.thumbnail
               }
             })
 

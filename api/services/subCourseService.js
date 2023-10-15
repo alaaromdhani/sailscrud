@@ -778,6 +778,9 @@ module.exports = {
                   endpoint:sails.config.custom.baseUrl+'courses/'+c.dataValues.url+"/"+'index_lms.html',
                   username:req.user.firstName+' '+req.user.lastName, 
                   sex:req.user.sex,
+                  name:c.dataValues.name,
+                    description:c.dataValues.description,
+                    image:c.dataValues.thumbnail
                     
             }
           })
