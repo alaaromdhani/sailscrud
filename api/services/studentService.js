@@ -242,7 +242,28 @@ module.exports = {
 
 
     },
-    getStudentStatistics:(req)=>{
+    getStudentStatisticsFront:(req)=>{
+        return StudentScore.findAll({
+            include:[{
+                model:NiveauScolaire,
+                foreignKey:'niveau_scolaire_id',
+                attributes:['name_ar'],
+            },{
+                model:User,
+                foreignKey:'user_id',
+                attributes:['profilePicture','firstName','lastName'],
+            }],
+            attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total']],
+            group:'user_id',
+            order:[['userScore','DESC']],
+            limit:3
+
+        })        
+
+    },
+  
+
+    getStudentStatisticsBack:(req)=>{
         return new Promise((resolve,reject)=>{
             const validation = schemaValidation(scoreSchema)(req.query)
             if(validation.isValid){

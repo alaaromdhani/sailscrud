@@ -97,7 +97,7 @@ module.exports={
     },
     getTopStudent:async (req,res)=>{
       try{
-        return DataHandlor(req,await sails.services.studentservice.getStudentStatistics(req)
+        return DataHandlor(req,await sails.services.studentservice.getStudentStatisticsFront(req)
         ,res)
       }catch(e){
         console.log(e)
