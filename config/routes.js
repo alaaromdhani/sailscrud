@@ -215,6 +215,7 @@ module.exports.routes = {
   //blog_front
     'GET /front/public/api/v1/blogcategories':'HomeController.getBlogsCategories',
     'GET /front/public/api/v1/blogcategories/:slug':'HomeController.getBlogsByCategory',
+    'GET /front/public/api/v1/blogs':'HomeController.getBlogsByCategory',
     'GET /front/public/api/v1/blogs/:slug':'HomeController.getBlogsBySlug'
 
 

@@ -135,18 +135,9 @@ module.exports={
     },
     getBlogsByCategory:async (req,res)=>{
       try{
-        return DataHandlor(req,await Blog.findAll({
-         attributes:['title','slug'],
-         where: {status:true},
-         include:[{
-          model:BlogCategory,
-          foreignKey:'category_id',
-          where:{
-            slug:req.params.slug
-          },
-          attributes:['id'],
-         
-         },
+        const {slug} = req.params
+                
+        let include = [
          {
           model:Upload,
           foreignKey:'banner',
@@ -160,6 +151,22 @@ module.exports={
           attributes:['link']
         }
         ]
+        if(slug){
+          include.push({
+            model:BlogCategory,
+            foreignKey:'category_id',
+            where:{
+              slug
+            },
+            attributes:['id'],
+           
+           })
+        }
+        return DataHandlor(req,await Blog.findAll({
+         attributes:['title','slug'],
+         where: {status:true},
+         include
+         
         }),res)
       }catch(e){
         console.log(e)
