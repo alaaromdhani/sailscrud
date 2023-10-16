@@ -158,7 +158,16 @@ module.exports={
             where:{
               slug
             },
-            attributes:['id'],
+            attributes:['id','category_name'],
+           
+           })
+        }
+        else{
+          include.push({
+            model:BlogCategory,
+            foreignKey:'category_id',
+            
+            attributes:['id','category_name'],
            
            })
         }
