@@ -138,14 +138,28 @@ module.exports={
         return DataHandlor(req,await Blog.findAll({
          attributes:['title','slug'],
          where: {status:true},
-         include:{
+         include:[{
           model:BlogCategory,
           foreignKey:'category_id',
           where:{
             slug:req.params.slug
           },
-          attributes:['id']
-         }
+          attributes:['id'],
+         
+         },
+         {
+          model:Upload,
+          foreignKey:'banner',
+          as:'Banner',
+          attributes:['link']
+        },
+        {
+          model:Upload,
+          foreignKey:'meta_img',
+          as:'MetaImage',
+          attributes:['link']
+        }
+        ]
         }),res)
       }catch(e){
         console.log(e)
@@ -157,6 +171,20 @@ module.exports={
         return DataHandlor(req,await Blog.findOne({
          attributes:['title','slug','short_description','description','meta_title','meta_keywords','meta_description'],
          where: {status:true,slug:req.params.slug},
+         include:[{
+          model:Upload,
+          foreignKey:'banner',
+          as:'Banner',
+          attributes:['link']
+       
+        },
+        {
+          model:Upload,
+          foreignKey:'meta_img',
+          as:'MetaImage',
+          attributes:['link']
+       
+        }]
         }),res)
       }catch(e){
        return  ErrorHandlor(req,new SqlError(e),res)  
