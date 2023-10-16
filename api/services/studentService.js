@@ -243,7 +243,13 @@ module.exports = {
 
     },
     getStudentStatisticsFront:(req)=>{
+        const {niveau_scolaire_id} = req.query
+            let where={} 
+        if(niveau_scolaire_id){
+            where.niveau_scolaire_id = niveau_scolaire_id
+        }
         return StudentScore.findAll({
+            where,
             include:[{
                 model:NiveauScolaire,
                 foreignKey:'niveau_scolaire_id',
@@ -256,7 +262,7 @@ module.exports = {
             attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total']],
             group:'user_id',
             order:[['userScore','DESC']],
-            limit:3
+            limit:5
 
         })        
 

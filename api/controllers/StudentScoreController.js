@@ -6,6 +6,7 @@
  */
 
 const  Sequelize  = require("sequelize");
+const {DataHandlor} = require('../../utils/translateResponseMessage')
 
 
 module.exports = {
@@ -69,14 +70,14 @@ module.exports = {
 
     })
 
-      return res.json({
+      return DataHandlor(req,{
         success: true,
         data: rows,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         totalCount: count,
         totalPages: Math.ceil(count / parseInt(limit, 10)),
-      });
+      },res);
     } catch (error) {
       return res.serverError(error);
     }
