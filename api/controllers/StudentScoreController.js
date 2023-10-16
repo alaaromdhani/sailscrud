@@ -49,7 +49,7 @@ module.exports = {
               foreignKey:'user_id',
               attributes:['profilePicture','firstName','lastName'],
           }],
-          attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total'],'id'],
+          attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total'],[Sequelize.col('user_id'),'id']],
           group:'user_id',
           order:[['userScore','DESC']],
           limit:parseInt(limit),
@@ -59,6 +59,7 @@ module.exports = {
   
       }
       );
+
       let count=await StudentScore.count({
         where,
         distinct:true,
