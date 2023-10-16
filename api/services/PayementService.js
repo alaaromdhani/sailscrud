@@ -21,6 +21,7 @@ const converter= {
 
 module.exports = {
     updatemodel:(req,callback,withUpload)=>{
+        
             const {validation,hasUpload,uploadKey} = converter[req.options.model]
             const ModelReference = sails.models[req.options.model]
             let bodyData 
@@ -28,7 +29,7 @@ module.exports = {
                 let  modelValidation
                 if(hasUpload){
                         if(withUpload){
-                            console.log('with file')
+                           
                             bodyData = {}
                             if(!uploadKey){uploadKey ="upload"
                             }
@@ -38,7 +39,7 @@ module.exports = {
                             modelValidation = schemaValidation(validation.withFile)(bodyData)
                         }
                         else{
-                            console.log('without file')
+                            
 
                             modelValidation = schemaValidation(validation.withoutFile)(req.body)
                         }
@@ -205,7 +206,7 @@ module.exports = {
             }
           }  
           else{
-            console.log('here 2')
+          
             return Promise.reject(new RecordNotFoundErr())
           }
           
@@ -230,7 +231,7 @@ module.exports = {
                 return sails.services.payementservice.generatePdf(serie)
             }
             else{
-                console.log('here')
+               
                 return Promise.reject(RecordNotFoundErr())
             }
           })  

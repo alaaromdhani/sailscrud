@@ -200,6 +200,8 @@ module.exports.routes = {
   'GET /front/api/v1/teacher/exams/interactive/:id/:courseId':'TeacherHomeController.accessExams',
   //score 
   'GET /front/stats/api/v1/score':'HomeController.getTopStudent',
+  'GET /front/public/api/v1/packs':'HomeController.getPacks',
+  
   'GET /front/student/api/v1/score':'StudentHomeController.getCurrentPoints',
   'GET /front/404':'StudentHomeController.errorHtml',
   // xapi utils

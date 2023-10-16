@@ -198,7 +198,8 @@ module.exports.policies = {
     'profileCallback':['lang','passport','role','auth','teacher-parent'],
     'getMatiereByNiveau':['lang','passport','role','auth','normalUserOnly'],
     'getTrimestres':['lang','passport','role','auth','normalUserOnly'],
-    'getTopStudent':['lang','passport','role']
+    'getTopStudent':['lang','passport','role'],
+    'getPacks':['lang','passport','role']
    },
    StudentController:{
     'create':['lang','parentPassport','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly

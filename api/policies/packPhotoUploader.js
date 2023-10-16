@@ -24,6 +24,12 @@ const fileFilerOptions = async (req,file,cb)=>{
     if(req.body.price){
         req.body.price = parseFloat(req.body.price)
      }
+     if(req.body.initialPrice){
+      req.body.initialPrice = parseFloat(req.body.initialPrice)
+    }
+    if(req.body.reduction){
+      req.body.reduction = parseFloat(req.body.reduction)
+    }
      if(req.body.nbTrimestres){
         req.body.nbTrimestres = parseInt(req.body.nbTrimestres)
     }
@@ -40,6 +46,7 @@ const fileFilerOptions = async (req,file,cb)=>{
       if(req.body.seller_id){
         req.body.seller_id = parseInt(req.body.seller_id)
       }
+      
     let fileOptions = await sails.services.uploadservice.optionsGeneratorV2(file,{type:'images',isPublic:true});
       let model
       if(req.method=="PATCH"){

@@ -1,5 +1,5 @@
 const {
-    DataTypes, Op 
+    DataTypes, Op, Sequelize 
   } = require('sequelize'); 
   
  
@@ -29,6 +29,14 @@ const {
         price:{
             type: DataTypes.FLOAT,
             allowNull:false
+        },
+        initialPrice:{
+          type: DataTypes.FLOAT,
+          defaultValue:0
+        },
+        reduction:{
+          type: DataTypes.FLOAT,
+          defaultValue:0
         },
         nbTrimestres:{
           type:DataTypes.INTEGER,

@@ -105,6 +105,24 @@ module.exports={
 
       }
 
+    },
+    getPacks:async (req,res)=>{
+      try{
+        return DataHandlor(req,await Pack.findAll({
+          attributes:['name','price','initialPrice','nbTrimestres','reduction'],
+          include:{
+            model:Upload,
+            foreignKey:'photo',
+            attributes:['link']
+          }
+        })
+        ,res)
+      }catch(e){
+        console.log(e)
+        return ErrorHandlor(req,new SqlError(e),res)
+
+      }
+
     }
 
    

@@ -38,11 +38,18 @@ module.exports = {
         console.log('without file')
         try{
           if(req.body.price){
-            req.body.price = parseInt(req.body.price)
+            req.body.price = parseFloat(req.body.price)
             }
             if(req.body.nbTrimestres){
                 req.body.nbTrimestres = parseInt(req.body.nbTrimestres)
             }
+            if(req.body.initialPrice){
+              req.body.initialPrice = parseFloat(req.body.initialPrice)
+              }
+              if(req.body.reduction){
+                  req.body.reduction = parseFloat(req.body.reduction)
+              }
+             
             const PackValidation = schemaValidation(PackShemaWithoutFile)(req.body)
               let pack = req.body 
               pack.addedBy = req.user.id 
@@ -158,6 +165,12 @@ module.exports = {
       if(req.body.photo){
         req.body.photo = parseInt(req.body.photo)
       }
+      if(req.body.initialPrice){
+        req.body.initialPrice = parseFloat(req.body.initialPrice)
+        }
+        if(req.body.reduction){
+            req.body.reduction = parseFloat(req.body.reduction)
+        }
         sails.services.payementservice.updatemodel(req,(err,data)=>{
           if(err){
             return ErrorHandlor(req,err,res)
