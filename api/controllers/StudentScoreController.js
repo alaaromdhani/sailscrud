@@ -49,7 +49,7 @@ module.exports = {
               foreignKey:'user_id',
               attributes:['profilePicture','firstName','lastName'],
           }],
-          attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total']],
+          attributes:[[Sequelize.fn('sum',Sequelize.col('currentScore')),'userScore'],[Sequelize.fn('sum',Sequelize.col('totalScore')),'total'],'id'],
           group:'user_id',
           order:[['userScore','DESC']],
           limit:parseInt(limit),
