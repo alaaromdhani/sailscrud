@@ -163,7 +163,7 @@ module.exports={
            })
         }
         return DataHandlor(req,await Blog.findAll({
-         attributes:['title','slug','createdAt'],
+         attributes:['title','slug','createdAt','short_description'],
          where: {status:true},
          include
          
