@@ -163,7 +163,7 @@ module.exports={
            })
         }
         return DataHandlor(req,await Blog.findAll({
-         attributes:['title','slug'],
+         attributes:['title','slug','createdAt'],
          where: {status:true},
          include
          
@@ -176,7 +176,7 @@ module.exports={
     getBlogsBySlug:async (req,res)=>{
       try{
         return DataHandlor(req,await Blog.findOne({
-         attributes:['title','slug','short_description','description','meta_title','meta_keywords','meta_description'],
+         attributes:['title','slug','short_description','description','meta_title','meta_keywords','meta_description','createdAt'],
          where: {status:true,slug:req.params.slug},
          include:[{
           model:Upload,
