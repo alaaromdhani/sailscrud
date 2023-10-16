@@ -123,7 +123,46 @@ module.exports={
 
       }
 
+    },
+    getBlogsCategories:async (req,res)=>{
+      try{
+        return DataHandlor(req,await BlogCategory.findAll({
+          attributes:['category_name','slug']
+        }),res)
+      }catch(e){
+       return  ErrorHandlor(req,new SqlError(e),res)  
+      }
+    },
+    getBlogsByCategory:async (req,res)=>{
+      try{
+        return DataHandlor(req,await Blog.findAll({
+         attributes:['title','slug'],
+         where: {status:true},
+         include:{
+          model:BlogCategory,
+          foreignKey:'category_id',
+          where:{
+            slug:req.params.slug
+          },
+          attributes:['id']
+         }
+        }),res)
+      }catch(e){
+        console.log(e)
+       return  ErrorHandlor(req,new SqlError(e),res)  
+      }
+    },
+    getBlogsBySlug:async (req,res)=>{
+      try{
+        return DataHandlor(req,await Blog.findOne({
+         attributes:['title','slug','short_description','description','meta_title','meta_keywords','meta_description'],
+         where: {status:true,slug:req.params.slug},
+        }),res)
+      }catch(e){
+       return  ErrorHandlor(req,new SqlError(e),res)  
+      }
     }
+
 
    
     

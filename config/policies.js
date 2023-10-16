@@ -199,7 +199,10 @@ module.exports.policies = {
     'getMatiereByNiveau':['lang','passport','role','auth','normalUserOnly'],
     'getTrimestres':['lang','passport','role','auth','normalUserOnly'],
     'getTopStudent':['lang','passport','role'],
-    'getPacks':['lang','passport','role']
+    'getPacks':['lang','passport','role'],
+    'getBlogsCategories':['lang','passport','role'],
+    'getBlogsByCategory':['lang','passport','role'],
+    'getBlogsBySlug':['lang','passport','role']
    },
    StudentController:{
     'create':['lang','parentPassport','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly

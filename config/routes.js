@@ -211,8 +211,11 @@ module.exports.routes = {
    'GET /front/student/api/v1/isRatedBy/:type/:courseId':'StudentHomeController.isRatedByUser',
    'GET /front/teacher/api/v1/isRatedBy/:type/:courseId':'TeacherHomeController.isRatedByUser',
    'POST /front/student/api/v1/rate/:type/:courseId':'StudentHomeController.rateCourse',
-   'POST /front/teacher/api/v1/rate/:type/:courseId':'TeacherHomeController.rateCourse'
- 
+   'POST /front/teacher/api/v1/rate/:type/:courseId':'TeacherHomeController.rateCourse',
+  //blog_front
+    'GET /front/public/api/v1/blogcategories':'HomeController.getBlogsCategories',
+    'GET /front/public/api/v1/blogcategories/:slug':'HomeController.getBlogsByCategory',
+    'GET /front/public/api/v1/blogs/:slug':'HomeController.getBlogsBySlug'
 
 
 

@@ -51,7 +51,7 @@ module.exports = {
       minLength: 1
     },
     short_description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       required: true,
       minLength: 10
     },
