@@ -982,7 +982,52 @@ module.exports = {
          })
         
 
-    }
+    },
+    accessPublicCourse:(req)=>{
+        const {id,type} = req.params
+        return CoursInteractive.findOne({
+            attributes:['name','description','thumbnail','url','addedScript'],
+                
+            where:{
+                
+                id,
+                status:'public'
+            },include:{
+                attributes:['id'],
+               
+                model:Course,
+                where:{
+                
+                    type
+                }
+            }
+        }).then(c=>{
+            
+            if(c){
+                if(!c.dataValues.addedScript){
+                    return sails.services.lrsservice.addScript(c.dataValues.url,'course').then(()=>{
+                        return c.update({addedScript:true})
+                    })
+                }else{
+                    return c
+                }
+            }
+            else{
+                return Promise.reject(new RecordNotFoundErr())
+            }
+          }).then(c=>{
+            return {
+                  endpoint:sails.config.custom.baseUrl+'courses/'+c.dataValues.url+"/"+'story.html',
+                  sex:'m',
+                  username:'زائر',
+                  name:c.dataValues.name,
+                  
+                  description:c.dataValues.description,
+                  image:c.dataValues.thumbnail
+                    
+            }
+          })
+    },
 
     
     

@@ -704,6 +704,9 @@ module.exports={
               }
             })
 
+    },
+    accessPublicCours:(req,res)=>{
+        
     }
     
 

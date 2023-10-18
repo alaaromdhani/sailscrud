@@ -4,6 +4,7 @@ const SqlError = require("../../utils/errors/sqlErrors");
 const UnkownError = require("../../utils/errors/UnknownError");
 const ValidationError = require("../../utils/errors/validationErrors");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
+const resolveError = require("../../utils/errors/resolveError");
 module.exports={
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
@@ -204,6 +205,13 @@ module.exports={
         }),res)
       }catch(e){
        return  ErrorHandlor(req,new SqlError(e),res)  
+      }
+    },
+    accessPublicCourse:async (req,res)=>{
+      try{
+        return DataHandlor(req,await sails.services.subcourseservice.accessPublicCourse(req),res)
+      }catch(e){
+        return ErrorHandlor(req,resolveError(e),res)
       }
     }
 

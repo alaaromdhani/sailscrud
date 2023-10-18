@@ -72,7 +72,7 @@ module.exports.bootstrap = async function() {
   await othersseerders()
   await nivauScolaireSeeders()
   await packseeders()
-  await extraSeeders()
+  //await extraSeeders()
   //await usersSeeders()
 //  await documentSeeders()
  }
