@@ -64,6 +64,9 @@ module.exports.routes = {
  
   'PUT /lrs/other/activities/state':'OtherLrsController.putState',
   'PUT /lrs/other/statements':'OtherLrsController.putStatement',
+   //stats_back
+   'GET /api/v1/stats':'StatsController.count',
+
   //front_routes 
   'POST /front/api/v1/activate_account': 'AuthController.activateAccount',
   'GET /front/api/v1/resend/:type': 'AuthController.resendCallback',
@@ -216,8 +219,8 @@ module.exports.routes = {
     'GET /front/public/api/v1/blogcategories':'HomeController.getBlogsCategories',
     'GET /front/public/api/v1/blogcategories/:slug':'HomeController.getBlogsByCategory',
     'GET /front/public/api/v1/blogs':'HomeController.getBlogsByCategory',
-    'GET /front/public/api/v1/blogs/:slug':'HomeController.getBlogsBySlug'
-
+    'GET /front/public/api/v1/blogs/:slug':'HomeController.getBlogsBySlug',
+   
 
 
 

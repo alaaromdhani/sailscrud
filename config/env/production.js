@@ -19,7 +19,7 @@ module.exports = {
 
   models: {
 
-    migrate: 'alter',
+    migrate: 'safe',
 
 
 
@@ -284,10 +284,10 @@ module.exports = {
           value:1,
           unit:'minute'
         }
-      }
+      },
       //m for minutes h for hours D for days W for week 
-      /*authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
-      sender:'2160000'*/
+      authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
+      sender:'2160000'
 
     },
     ratings:{

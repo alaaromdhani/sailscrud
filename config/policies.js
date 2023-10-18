@@ -23,6 +23,9 @@ module.exports.policies = {
     profileUpdater:['lang','dashboardPassport','passport','role','auth','adminonly','ppUploader'],//shared
 
   },
+  StatsController:{
+    '*':['lang','dashboardPassport','passport','role','auth','adminonly']
+  },
   
   BlogController:{
     '*':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions'],//adminonly

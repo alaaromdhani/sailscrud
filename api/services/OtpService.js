@@ -28,18 +28,9 @@ module.exports = {
 
     },
     sendSms:async (sms)=>{
-            let phonenumbers =  await sails.services.otpservice.beforeSend(sms)
-            console.log('sending sms to ',phonenumbers)
-            return new Promise((resolve,reject)=>{
-                    if(1>0){
-                        resolve()
-                    }
-                    else{
-                        reject(new UnkownError())
-                    }
-            }) 
+          
        
-        /*try{
+        try{
             let phonenumbers =  await sails.services.otpservice.beforeSend(sms)
             let token = await sails.services.otpservice.login()
              await   Promise.all(phonenumbers.map(p=>axios.post('https://api.orange.com/smsmessaging/v1/outbound/tel%3A%2B'+sails.config.custom.otpconf.sender+'/requests',{
@@ -65,7 +56,7 @@ module.exports = {
         catch(e){
                 console.log('error in sending sms',e)
                 throw new UnkownError()
-        }*/
+        }
     },
     beforeSend:async (sms)=>{
         let phonenumbers 
