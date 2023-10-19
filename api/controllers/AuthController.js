@@ -53,7 +53,7 @@ module.exports = {
               ErrorHandlor(req,new UnkownError(),res);
             }
             else{
-              let Session = sails.config.custom.database.session.store.Session
+              const  {Session} =require('../../utils/sequelize/DatabaseSession') 
               req.session.authenticated = true;
               const activeSession = req.sessionID
               const userSessionData = '%\"passport\":{\"user\":'+data.user.id+'}%'
@@ -92,7 +92,7 @@ module.exports = {
         const currentSession = req.sessionID
         req.session.authenticated = false;
         delete req.user;
-        let Session = sails.config.custom.database.session.store.Session
+        const  {Session} =require('../../utils/sequelize/DatabaseSession') 
         await Session.destroy({
           where:{
               session_id:currentSession

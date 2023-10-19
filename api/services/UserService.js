@@ -1157,7 +1157,7 @@ module.exports = {
         const currentSession = req.sessionID
         req.session.authenticated = false;
         delete req.user;
-        let Session = sails.config.custom.database.session.store.Session
+        const  {Session} =require('../../utils/sequelize/DatabaseSession') 
         await Session.destroy({
           where:{
               session_id:currentSession

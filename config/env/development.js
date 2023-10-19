@@ -1,16 +1,11 @@
 
 const bodyParser = require('body-parser');
 const serveStatic = require('serve-static')
-
-const expressSession = require('../../node_modules/sails/node_modules/express-session');
 const databaseCredentials = require('../../utils/constants');
-const sessionStore = require('express-session-sequelize')(expressSession.Store)
-const {initConnections,datastores,Sequelize} = require('../../utils/sequelize');
+const {datastores} = require('../../utils/sequelize');
 const path = require('path');
-let connections = initConnections()
-let sequelizeSessionStore = new sessionStore({
-  db:connections['default'],
-})
+
+
 
 module.exports = {
   datastores:datastores,
@@ -125,12 +120,12 @@ module.exports = {
     })(),
     ex_session:(()=>{
       return function(req,res,next){
-         
+         let {databaseSessionStore,expressSession} = require('../../utils/sequelize/DatabaseSession')
         return expressSession({
           secret: 'hhh try-hack-me',
           resave: false,
           saveUninitialized: true,
-          store:sequelizeSessionStore,
+          store:databaseSessionStore,
           cookie:{
             //httpOnly: false,
        //  sameSite:'none',
@@ -183,13 +178,7 @@ module.exports = {
         key:'6LfzbI0nAAAAAJVjT9_5O40dEwPsWT9G5NtJhXJ7'
       }
     },
-    database:{
-      connections,
-      session:{
-        store:sequelizeSessionStore
-      },
-      sequelize:Sequelize
-    },
+ 
     payment:{
       username:'1160070015',
       password:'pFym63C9',

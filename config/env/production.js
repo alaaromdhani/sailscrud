@@ -1,16 +1,8 @@
-
 const bodyParser = require('body-parser');
 const serveStatic = require('serve-static')
-
-const expressSession = require('../../node_modules/sails/node_modules/express-session');
 const databaseCredentials = require('../../utils/constants');
-const sessionStore = require('express-session-sequelize')(expressSession.Store)
-const {initConnections,datastores,Sequelize} = require('../../utils/sequelize');
+const {datastores} = require('../../utils/sequelize');
 const path = require('path');
-let connections = initConnections()
-let sequelizeSessionStore = new sessionStore({
-  db:connections['default'],
-})
 module.exports = {
 //  port:8008,
   datastores:datastores,
@@ -19,7 +11,7 @@ module.exports = {
 
   models: {
 
-    migrate: 'safe',
+    migrate: 'alter',
 
 
 
@@ -54,7 +46,7 @@ module.exports = {
     secret: '7c9b93a38b567fe0836335056ccb3bb8',
     resave: false,
     saveUninitialized: true,
-   
+
 
 
 
@@ -62,10 +54,10 @@ module.exports = {
 
 
 
- 
+
   sockets: {
     onlyAllowOrigins: ["http://www.mydeployedapp.com", "http://mydeployedapp.com"]
-  
+
   },
 
 
@@ -84,8 +76,8 @@ module.exports = {
           inflate: true,
           limit: '100kb',
           type: 'application/octet-stream'
-      } 
-    
+      }
+
 
     return (req,res,next)=>{
         if(req.headers['content-type']=='application/octet-stream'){
@@ -94,7 +86,7 @@ module.exports = {
             return octetStreamBodyParser(req,res,next)
         }
         else{
-        
+
           return bodyParser()(req,res,next)
         }
     }
@@ -103,9 +95,9 @@ module.exports = {
     })(),
     statics:(()=>{
       return function(req,res,next){
-       
-        
-        
+
+
+
         function setCustomCacheControl (res, path) {
           if (serveStatic.mime.lookup(path) === 'text/html') {
             // Custom Cache-Control for HTML files
@@ -130,11 +122,11 @@ module.exports = {
           saveUninitialized: true,
           store:sequelizeSessionStore,
           cookie:{
-            
+            domain: '.madar.tn',
             sameSite:'none',
             secure:sails.config.environment==="production"
           }
-          
+
         })(req,res,next)
       }
 
@@ -257,7 +249,7 @@ module.exports = {
     lrsEndPoint:databaseCredentials.baseUrl+"lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
     lrsOtherPoint:databaseCredentials.baseUrl+"lrs/other/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
     lrsStudentEndPoint:databaseCredentials.baseUrl+"lrs/student/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
-    
+
     baseUrl: databaseCredentials.baseUrl,
     internalEmailAddress: databaseCredentials.internalEmailAddress,
 
@@ -285,7 +277,7 @@ module.exports = {
           unit:'minute'
         }
       },
-      //m for minutes h for hours D for days W for week 
+      //m for minutes h for hours D for days W for week
       authorization_header:'Basic TG5yZFFaU09Ca2I2NVZQeHU1QUdkRmFvcDFSQTY2a1E6YUpzVERNbmhBR3BQQVR1eA==',
       sender:'2160000'
 
@@ -316,4 +308,3 @@ module.exports = {
 
 
 };
-

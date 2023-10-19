@@ -56,6 +56,7 @@ for (connectionName in datastores) {
 }
 return connections
 }
+let connections = initConnections()
 module.exports={
-    initConnections,datastores,Sequelize
+    connections,datastores,Sequelize
 }

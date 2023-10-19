@@ -1,7 +1,5 @@
 module.exports = sails => {
-    const Sequelize = sails.config.custom.database.sequelize
-
-    // keep a ref to the original sails model loader function
+    const {Sequelize} = require('../../../utils/sequelize')
     const originalLoadModels = sails.modules.loadModels;
 
     return {
@@ -66,10 +64,10 @@ module.exports = sails => {
         },
 
         reload(next) {
-            let connections;
+            let {connections} = require('../../../utils/sequelize');
             const self = this;
 
-            connections = sails.config.custom.database.connections
+             
 
             if (sails.config[this.configKey].exposeToGlobal) {
                 sails.log.verbose('Exposing Sequelize connections globally');
