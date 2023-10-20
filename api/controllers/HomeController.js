@@ -5,6 +5,7 @@ const UnkownError = require("../../utils/errors/UnknownError");
 const ValidationError = require("../../utils/errors/validationErrors");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const resolveError = require("../../utils/errors/resolveError");
+const { Op } = require("sequelize");
 module.exports={
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
@@ -127,6 +128,8 @@ module.exports={
     },
     getBlogsCategories:async (req,res)=>{
       try{
+        
+       
         return DataHandlor(req,await BlogCategory.findAll({
           attributes:['category_name','slug']
         }),res)
@@ -136,8 +139,16 @@ module.exports={
     },
     getBlogsByCategory:async (req,res)=>{
       try{
-        const {slug} = req.params
-                
+        const {slug} = req.query
+        const page = parseInt(req.query.page)+1 || 1;
+        const limit = 8;
+        const search = req.query.search;
+        let where= {status:true}
+        if(search){
+          where.title = {
+            [Op.like]:'%'+search+'%'
+          }
+        }
         let include = [
          {
           model:Upload,
@@ -152,6 +163,7 @@ module.exports={
           attributes:['link']
         }
         ]
+        
         if(slug){
           include.push({
             model:BlogCategory,
@@ -172,12 +184,40 @@ module.exports={
            
            })
         }
-        return DataHandlor(req,await Blog.findAll({
-         attributes:['title','slug','createdAt','short_description'],
-         where: {status:true},
-         include
-         
-        }),res)
+        
+       
+         const {count,rows} = await Blog.findAndCountAll({
+          attributes:['title','slug','createdAt','short_description'],
+          where,
+          include,
+          order:[['createdAt','desc']],
+          limit: parseInt(limit, 10),
+          offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+        });
+        let recentBlogs 
+        if(page!==1){
+          recentBlogs =
+          await Blog.findAndCountAll({
+            attributes:['title','slug','createdAt','short_description'],
+            where,
+            include,
+            order:[['createdAt','desc']],
+            limit: 3,
+          }); 
+        }
+        else{
+          recentBlogs =rows.splice(0,3)
+        }
+
+        return DataHandlor(req,{
+          success: true,
+          data: rows,
+          recentBlogs,
+          page: parseInt(page, 10),
+          limit: parseInt(limit, 10),
+          totalCount: count,
+          totalPages: Math.ceil(count / parseInt(limit, 10)),
+        },res)
       }catch(e){
         console.log(e)
        return  ErrorHandlor(req,new SqlError(e),res)  
