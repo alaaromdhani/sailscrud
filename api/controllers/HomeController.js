@@ -196,22 +196,13 @@ module.exports={
           offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
         });
         
-        let recentBlogs 
-        if(page!==1){
-          recentBlogs =await Blog.findAll({
-            attributes:['title','slug','createdAt','short_description'],
-            where,
-            include,
-            order:[['createdAt','desc']],
-            limit: 3,
-          }); 
-        }
-
-        else{
-          recentBlogs =JSON.parse(JSON.stringify(rows)).splice(0,3)
-          
-     
-        }
+        let recentBlogs=await Blog.findAll({
+          attributes:['title','slug','createdAt','short_description'],
+          where:{status:true},
+          include,
+          order:[['createdAt','desc']],
+          limit: 3,
+        });  
         
 
 
