@@ -209,7 +209,7 @@ module.exports={
         return DataHandlor(req,{
           success: true,
           recentBlogs,
-          data: rows.splice(0,3),
+          data: rows,
           
           page: parseInt(page, 10),
           limit: parseInt(limit, 10),
