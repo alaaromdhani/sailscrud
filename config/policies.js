@@ -32,7 +32,7 @@ module.exports.policies = {
     'create':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions','blogfileUploader']//adminonly
   },
   ModuleController:{
-    '*':['lang','passport','role','tokenVerifier','adminonly','permissions'],//adminonly
+    '*':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly','permissions'],//adminonly
     'find':['lang','dashboardPassport','passport','role','tokenVerifier','adminonly']//adminonly
   },
   ChapitreController:{
