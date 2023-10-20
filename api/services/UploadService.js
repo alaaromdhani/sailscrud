@@ -260,7 +260,7 @@ module.exports = {
     });
   },
   zipFileUploader:(req,callback,homePath,type)=>{
-      console.log("type",type)
+      
       if(req.operation){
           if(!type){
             type="interactive"
@@ -333,37 +333,7 @@ module.exports = {
                               return  callback(new SqlError(err),null)
                               }
                               else{
-                                       if(entry.fileName==='tincan.xml'){
-                                           readStream.on('data',async chunk=>{
-                                             await parser.parseString(chunk,(err,result)=>{
-                                                 if(!err){
-                                                 try{
-                                                  result.tincan.activities[0].activity.forEach(element => {
-                                                    if(type!='softskills'){
-                                                      objs.push({
-                                                        id:element.$.id,
-                                                        type:element.$.type,
-                                                        name:element.name[0]._,
-                                                        description:element.name[0]._,
-                                                        course_id:null
-                                                    })
-                                                    }
-                                            
-                                                    if(element.launch){
-                                                    courseId =element.$.id
-                                                    }
-                                                  });
-                                                 }
-                                                 catch(e){
-                                                  console.log(e)
-                                                 }
-                                                 }
-                                                 else{
-                                                   console.log(err)
-                                                 }
-                                             })
-                                           })
-                                         }
+                                       
                                        try{
                                            readStream.on("end",()=>{
                                              zipFile.readEntry()
@@ -472,7 +442,7 @@ module.exports = {
                   return callback(new ValidationError({message:'valid xapi course is required'}))    
                 }
                 else{
-                  console.log(Object.keys(result))
+                  
                   
                   result.tincan.activities[0].activity.forEach(element => {
                 

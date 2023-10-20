@@ -292,6 +292,56 @@ module.exports={
             }catch(e){
                 return Promise.reject(e)
             }          
+         },
+         addScriptTagToFile:(p)=>{
+            var html = fs.readFileSync(path.join(__dirname,p), 'utf8');
+            var $ = Cheerio.load(html);
+            var scriptNode = `<script src="${sails.config.custom.baseUrl}js/oneTimeScript.js">
+            </script>`;
+            $('body').append(scriptNode);
+            return new Promise((resolve,reject)=>{
+                fs.writeFile(path.join(__dirname,p),$.html(),(err,data)=>{
+                    if(!err){
+                    return resolve()                    
+                    }
+                    else{
+                        return reject(err)
+                    }
+                })
+
+            })
+
+         },
+         addPublicScript:(url,type)=>{
+                try{
+                    let p,p2 
+                if(type==='course'){
+                    p ='../../static/courses/'+url+'/index_lms.html' 
+                    p2 ='../../static/courses/'+url+'/story.html' 
+                    
+                }            
+                if(type==='softskills'){
+                    p ='../../static/softskills/'+url+'/story.html'
+                    
+                }
+                if(type==='others'){
+                    p ='../../static/other/'+url+'/index_lms.html'
+                    p2 ='../../static/courses/'+url+'/story.html' 
+                    
+                }
+               
+                return sails.services.lrsservice.addScriptTagToFile(p).then(()=>{
+                    if(p2){
+                        return sails.services.lrsservice.addScriptTagToFile(p2)
+                    }
+                    else{
+                        return Promise.resolve()
+                    }
+                })   
+                
+            }catch(e){
+                return Promise.reject(new SqlError(e))
+            }
          }
          
 }

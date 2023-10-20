@@ -115,20 +115,20 @@ module.exports = {
   })(),
     ex_session:(()=>{
       return function(req,res,next){
-          console.log('req usest is ')
-        return expressSession({
-          secret: 'hhh try-hack-me',
-          resave: false,
-          saveUninitialized: true,
-          store:sequelizeSessionStore,
-          cookie:{
-            domain: '.madar.tn',
-            sameSite:'none',
-            secure:sails.config.environment==="production"
-          }
-
-        })(req,res,next)
-      }
+        let {databaseSessionStore,expressSession} = require('../../utils/sequelize/DatabaseSession')
+       return expressSession({
+         secret: 'hhh try-hack-me',
+         resave: false,
+         saveUninitialized: true,
+         store:databaseSessionStore,
+         cookie:{
+           //httpOnly: false,
+      //  sameSite:'none',
+         secure:sails.config.environment==="production"
+         }
+         
+       })(req,res,next)
+     }
 
 
 
@@ -181,13 +181,7 @@ module.exports = {
         key:'6LfzbI0nAAAAAJVjT9_5O40dEwPsWT9G5NtJhXJ7'
       }
     },
-    database:{
-      connections,
-      session:{
-        store:sequelizeSessionStore
-      },
-      sequelize:Sequelize
-    },
+    
     payment:{
       username:'1160070015',
       password:'pFym63C9',

@@ -1005,7 +1005,7 @@ module.exports = {
             
             if(c){
                 if(!c.dataValues.addedScript){
-                    return sails.services.lrsservice.addScript(c.dataValues.url,'course').then(()=>{
+                    return sails.services.lrsservice.addPublicScript(c.dataValues.url,'course').then(()=>{
                         return c.update({addedScript:true})
                     })
                 }else{

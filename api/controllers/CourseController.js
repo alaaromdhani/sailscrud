@@ -323,13 +323,22 @@ module.exports = {
                   }
                 })
               }
-                return DataHandlor(req,{rows:await Module.findAll({
-                  where:{
-                      matiere_niveau_id:matiere_niveau.id
-                  },
-                  include:includeOptions
-  
-                }),rtl:matiere_niveau.Matiere.rtl},res)
+              let result = (await Module.findAll({
+                where:{
+                    matiere_niveau_id:matiere_niveau.id
+                },
+                include:includeOptions,
+                
+
+              }))
+              result.forEach(m=>{
+                m.dataValues.Courses.forEach(c=>{
+                  c.dataValues.CoursInteractives = c.dataValues.CoursInteractives.sort((a,b)=>a.dataValues.order-b.dataValues.order)
+
+                })                
+              })
+                return DataHandlor(req,{rows:result,
+                  rtl:matiere_niveau.Matiere.rtl},res)
   
             }
             else{

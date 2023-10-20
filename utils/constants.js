@@ -1,7 +1,7 @@
 
 const databaseCredentials = {
-  user:'madaruser',
-  password:'madar2023*',
+  user:'root',
+  password:'',
 
   options:{
     port:'3306',
