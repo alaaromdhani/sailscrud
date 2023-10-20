@@ -6,6 +6,7 @@ const ValidationError = require("../../utils/errors/validationErrors");
 const RecordNotFoundErr = require("../../utils/errors/recordNotFound");
 const resolveError = require("../../utils/errors/resolveError");
 const { Op } = require("sequelize");
+const { Json } = require("sequelize/lib/utils");
 module.exports={
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
@@ -141,7 +142,7 @@ module.exports={
       try{
         const {slug} = req.query
         const page = parseInt(req.query.page)+1 || 1;
-        const limit = 8;
+        const limit = 7;
         const search = req.query.search;
         let where= {status:true}
         if(search){
@@ -194,10 +195,10 @@ module.exports={
           limit: parseInt(limit, 10),
           offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
         });
+        
         let recentBlogs 
         if(page!==1){
-          recentBlogs =
-          await Blog.findAndCountAll({
+          recentBlogs =await Blog.findAll({
             attributes:['title','slug','createdAt','short_description'],
             where,
             include,
@@ -205,14 +206,20 @@ module.exports={
             limit: 3,
           }); 
         }
+
         else{
-          recentBlogs =rows.splice(0,3)
+          recentBlogs =JSON.parse(JSON.stringify(rows)).splice(0,3)
+          
+     
         }
+        
+
 
         return DataHandlor(req,{
           success: true,
-          data: rows,
           recentBlogs,
+          data: rows.splice(0,3),
+          
           page: parseInt(page, 10),
           limit: parseInt(limit, 10),
           totalCount: count,
