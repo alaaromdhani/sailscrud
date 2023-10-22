@@ -14,7 +14,7 @@ const { ErrorHandlor, DataHandlor } = require('../../utils/translateResponseMess
 
 module.exports = {
   async create (req, res) {
-    console.log('am here')
+    
 
     //  return DataHandlor(req,req.files,res)
 

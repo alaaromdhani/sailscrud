@@ -222,7 +222,7 @@ module.exports.routes = {
     'GET /front/public/api/v1/blogs/:slug':'HomeController.getBlogsBySlug',
     //public_courses
     'GET /front/public/api/v1/coursinteractive/:type/:id':'HomeController.accessPublicCourse',
-   
+    'GET /front/public/api/v1/sitemapinfo':'HomeController.getSlugs' 
 
 
 

@@ -206,7 +206,8 @@ module.exports.policies = {
     'getBlogsCategories':['lang','passport','role'],
     'getBlogsByCategory':['lang','passport','role'],
     'getBlogsBySlug':['lang','passport','role'],
-    'accessPublicCourse':['lang','passport','role']
+    'accessPublicCourse':['lang','passport','role'],
+    'getSlugs':['lang','passport','role']
    },
    StudentController:{
     'create':['lang','parentPassport','passport','role','tokenVerifier','parent','ppUploader'],//normaluseronly

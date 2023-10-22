@@ -73,6 +73,16 @@ module.exports={
       }
       
     },
+    getSlugs:async (req,res)=>{
+     try{
+      return DataHandlor(req,await Blog.findAll({
+        attributes:['slug']
+      }),res)
+     }catch(e){
+      return ErrorHandlor(req,new SqlError(e),res)
+     }
+
+    },
     
     updatePhoneNumber:(req,res)=>{
         sails.services.userservice.updatePhoneNumber(req,(err,data)=>{

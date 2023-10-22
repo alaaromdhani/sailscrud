@@ -26,7 +26,7 @@ module.exports = {
         if(blog.isNewRecord){
             blog.status =true
         }
-        blog.slug = getSlug(blog.title)+''+(Math.flour)
+        blog.slug = getSlug(blog.title)
       },
     }
   },
