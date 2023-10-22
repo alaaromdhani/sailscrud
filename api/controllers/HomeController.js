@@ -152,7 +152,7 @@ module.exports={
       try{
         const {slug} = req.query
         const page = parseInt(req.query.page)+1 || 1;
-        const limit = 7;
+        const limit = 4;
         const search = req.query.search;
         let where= {status:true}
         if(search){
@@ -202,7 +202,7 @@ module.exports={
           where,
           include,
           order:[['createdAt','desc']],
-          limit: parseInt(limit, 10),
+          limit,
           offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
         });
         
