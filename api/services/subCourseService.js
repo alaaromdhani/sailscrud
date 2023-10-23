@@ -751,7 +751,7 @@ module.exports = {
                             trimestres = c.dataValues.Course.dataValues.Module.dataValues.Trimestres.map(t=>t.dataValues.id)
                         }
                            
-                        if(req.user.AnneeNiveauUsers.filter(ann=>ann.type='paid').map(d=>d.dataValues.trimestre_id).some(d=>trimestres.includes(d))){
+                        if(req.user.AnneeNiveauUsers.filter(ann=>ann.type==='paid').map(d=>d.dataValues.trimestre_id).some(d=>trimestres.includes(d))){
                             return c
                         }
                         else{
