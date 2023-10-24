@@ -12,7 +12,6 @@ module.exports={
     DataHandlor(req,req.user,res);
   },
     updateProfile:async (req,res)=>{
-      //console.log(req.body)
         if(req.operation){
             if(req.operation.data){
                   return DataHandlor(req,req.operation.data,res)

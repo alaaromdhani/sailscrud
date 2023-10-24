@@ -198,7 +198,7 @@ module.exports.policies = {
    HomeController:{
     'updateProfile':['lang','passport','role','auth','normalUserOnly','ppUploadernormalUser'],//normaluseronly
     'updatePhoneNumber':['lang','passport','role','auth','normalUserOnly'],//normaluseronly
-    'profileCallback':['lang','passport','role','auth','teacher-parent'],
+    'profileCallback':['lang','passport','role','auth'],
     'getMatiereByNiveau':['lang','passport','role','auth','normalUserOnly'],
     'getTrimestres':['lang','passport','role','auth','normalUserOnly'],
     'getTopStudent':['lang','passport','role'],

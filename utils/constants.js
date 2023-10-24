@@ -11,8 +11,8 @@ const databaseCredentials = {
             KeepAliveQuery: 'SELECT 1',
   },
   database:'madar',
-  baseUrl:'https://api.madar.tn/',
-  allowedUrlOnCors: ['https://madar-landing-page.vercel.app','https://www.madar.tn','https://madar.tn','https://www.office.madar.tn','https://office.madar.tn'],
+  baseUrl:'http://localhost:1337/',
+  allowedUrlOnCors: ['https://madar-landing-page.vercel.app','https://www.madar.tn','https://madar.tn','https://www.office.madar.tn','https://office.madar.tn','http://localhost:5500'],
   internalEmailAddress: 'support@example.com',
   registrationCode:'454568789742558',
   frontUrl:'https://madar.tn'
