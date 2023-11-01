@@ -42,7 +42,7 @@ module.exports={
                 include:[{
                     model:CoursInteractive,
                     foreignKey:'parent',
-                    attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
+                    attributes:['id','name','description','thumbnail','rating','status','nbQuestion','tracked'],
                     where:{
                         validity:true,
                         active:true 

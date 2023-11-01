@@ -603,7 +603,7 @@ module.exports={
                model:CoursInteractive,
                
                foreignkey:'parent',
-               attributes:['id','name','description','thumbnail','rating','status','nbQuestion','order'],
+               attributes:['id','name','description','thumbnail','rating','status','nbQuestion','order','tracked'],
                where:{
                   validity:true,
                   active:true 
@@ -713,7 +713,7 @@ module.exports={
                                         else{
                                             results.questions.push({
                                                 name:(i+1)+'QS',
-                                                experienced:grouped[(i+1)+'QS/TA']=='true'?true:false,
+                                                experienced:grouped[(i+1)+'QS/QS']=='true'?true:false,
                                             })
                                         }     
                                     }       
@@ -895,7 +895,7 @@ module.exports={
                     include:{
                         model:CoursInteractive,
                         foreignKey:'parent',
-                        attributes:['id','name','description','thumbnail','rating','status','nbQuestion'],
+                        attributes:['id','name','description','thumbnail','rating','status','nbQuestion','tracked'],
                         where:{
                             validity:true,
                             active:true 

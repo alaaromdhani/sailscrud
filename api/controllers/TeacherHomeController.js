@@ -295,7 +295,7 @@ module.exports = {
                                         else{
                                             results.questions.push({
                                                 name:(i+1)+'QS',
-                                                experienced:grouped[(i+1)+'QS/TA']=='true'?true:false,
+                                                experienced:grouped[(i+1)+'QS/QS']=='true'?true:false,
                                             })
                                         }     
                                     }       
