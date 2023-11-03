@@ -36,6 +36,9 @@ module.exports = {
     tableName: 'users',
     hooks:{
       beforeSave: async (user, options) => {
+        if(user.changed("sex") && user.sex ==='F' ){
+          user.profilePicture =sails.config.custom.baseUrl+sails.config.custom.files.routes.public+sails.config.custom.default_female_image.file_name
+        }
         if (user.changed('password') || user.isNewRecord) {
 
            if(user.isNewRecord){

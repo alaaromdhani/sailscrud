@@ -240,6 +240,11 @@ module.exports = {
       path: 'default',
 
     },
+    default_female_image:{
+      file_name:'default_female',
+      extension:'jpg',
+      path: 'default',
+    },
     lrsEndPoint:databaseCredentials.baseUrl+"lrs/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
     lrsOtherPoint:databaseCredentials.baseUrl+"lrs/other/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
     lrsStudentEndPoint:databaseCredentials.baseUrl+"lrs/student/&auth=Basic&registration=dc186dc5-5c92-4d78-8855-04e985d3554a",
