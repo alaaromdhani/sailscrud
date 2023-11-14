@@ -11,6 +11,9 @@ module.exports={
   profileCallback:(req,res)=>{
     DataHandlor(req,req.user,res);
   },
+  profileTpCallback:(req,res)=>{
+    DataHandlor(req,req.user,res);
+  },
     updateProfile:async (req,res)=>{
         if(req.operation){
             if(req.operation.data){

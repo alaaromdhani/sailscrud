@@ -116,18 +116,18 @@ module.exports = {
     ex_session:(()=>{
       return function(req,res,next){
         let {databaseSessionStore,expressSession} = require('../../utils/sequelize/DatabaseSession')
-       return expressSession({
-         secret: 'hhh try-hack-me',
-         resave: false,
-         saveUninitialized: true,
-         store:databaseSessionStore,
-         cookie:{
-           //httpOnly: false,
-      //  sameSite:'none',
-         secure:sails.config.environment==="production"
-         }
-         
-       })(req,res,next)
+        return expressSession({
+          secret: 'hhh try-hack-me',
+          resave: false,
+          saveUninitialized: true,
+          store:databaseSessionStore,
+          cookie:{
+            //httpOnly: false,
+       //  sameSite:'none',
+          secure:sails.config.environment==="production"
+          }
+          
+        })(req,res,next)
      }
 
 

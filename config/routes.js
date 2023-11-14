@@ -133,10 +133,11 @@ module.exports.routes = {
   'GET /front/parent/api/v1/themes': 'ParentHomeController.getThemes',
   'GET /front/parent/api/v1/coachingvideos': 'ParentHomeController.getCoachingVideos',
   'GET /front/parent/api/v1/coachingvideos/access': 'ParentHomeController.canAccessCoachingVideos',
- 
+  
   //normal user profile 
   'GET /front/api/v1/profile':'HomeController.profileCallback',
   'GET /front/api/v1/country':'HomeController.getMyCountry',
+  'GET /front/tp/api/v1/profile':'HomeController.profileTpCallback',
  
   'PATCH /front/api/v1/profile':'HomeController.updateProfile',
   'PATCH /front/api/v1/profile/phonenumber':'HomeController.updatePhoneNumber',

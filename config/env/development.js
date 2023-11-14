@@ -1,6 +1,7 @@
 
 const bodyParser = require('body-parser');
-const serveStatic = require('serve-static')
+const serveStatic = require('serve-static');
+const fs = require('fs')
 const databaseCredentials = require('../../utils/constants');
 const {datastores} = require('../../utils/sequelize');
 const path = require('path');
@@ -99,20 +100,41 @@ module.exports = {
        
         console.log('setting static files')
         return async function(req,res,next){
-          if(req.headers && req.headers.accept && req.headers.accept.includes('text/html')){
+            if(req.headers.range){
+              const fileSize =  fs.statSync(path.join(__dirname,`../../static${req.url}`)).size;
+                  console.log(`requesting the url ${req.url} with range ${req.headers.range} but the original file size is ${fileSize}`)
+                  const chunksize = 10**5;
+                  let intervale = req.headers.range.replace('bytes=','').split('-');
+                  const start = parseInt(intervale[0]);
+                  const end = Math.min(start+chunksize,fileSize-1);        
+                  const headers = {
+                      "Content-Range":`bytes ${start}-${end}/${fileSize}`,
+                      "Accept-Ranges":`bytes`,
+                      "Content-Length":(end-start)+1,
+                      "Content-Type":`audio/mpeg`,
+                      
+                  }
+                  res.writeHead(206,headers)        
+                  const audio = fs.createReadStream(path.join(__dirname,`../../static${req.url}`),{start,end})
+                  return audio.pipe(res)
+            }
+            else{
+              return serveStatic(path.join(__dirname, '../../static'), {
+                maxAge: '1m',
+            
+              })(req,res,next)
+            }
+          /*  if(req.headers && req.headers.accept && req.headers.accept.includes('text/html')){
             console.log(req.url)
             
-         }
+         }  
           
             function setCustomCacheControl (res, path) {
               if (serveStatic.mime.lookup(path) === 'text/html') {
                 res.setHeader('Cache-Control', 'public, max-age=0')
               }
-            }
-            return serveStatic(path.join(__dirname, '../../static'), {
-              maxAge: '1m',
-              setHeaders: setCustomCacheControl
-            })(req,res,next)
+            }*/
+            
           
         }
 
