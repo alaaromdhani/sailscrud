@@ -174,7 +174,43 @@ module.exports={
     payUsingPrepaidCart:(req)=>{
         return sails.services.orderfrontservice.payUsingPrepaidCart(req)
 
+    },
+    deleteOrder(req){
+        let order
+        Order.findOne({where:{
+            code:req.params.id,
+            addedBy:req.user.id,
+            status:'onhold'
+        }}).then(o=>{
+           if(o){
+            order =o
+            if(o.coupon_id){return Coupon.findByPk(o.coupon_id)}
+            else{return}
+           }
+           else{
+            return Promise.reject(new RecordNotFoundErr()) 
+           }
+         }).then(o=>{
+            if(o){
+                return o.update({used:o.used-1})
+            }
+            else{
+                return 
+            }
+        }).then(o=>{
+            return TeacherPurchase.findAll({where:{order_id:order.dataValues.id}})
+        }).then(ans=>{
+            return Promise.all(ans.map(a=>a.update({order_id:null})))
+        }).then((ans)=>{
+            return order.update({status:'expired',coupon_id:null})
+        
+        }).then(a=>{
+          callback(null,{})  
+         }).catch(e=>{
+            callback(new SqlError(e))
+        })
     }
+
 
 
     

@@ -230,6 +230,7 @@ module.exports = sails => {
                             }));
 
                         } else {
+
                             syncTasks.push(connections[syncConnectionName].sync({
                                 force: forceSyncFlag,
                                 alter: alterFlag
