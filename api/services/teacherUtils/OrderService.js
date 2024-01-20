@@ -175,7 +175,7 @@ module.exports={
         return sails.services.orderfrontservice.payUsingPrepaidCart(req)
 
     },
-    deleteOrder(req){
+    deleteOrder(req,callback){
         let order
         Order.findOne({where:{
             code:req.params.id,

@@ -92,11 +92,14 @@ module.exports = {
 
     },
     deleteOrder:async (req,res)=>{
-        try{
-            return DataHandlor(req,await sails.services.teacherhomeservice.order.deleteOrder(req),res)
-        }catch(e){
-            return ErrorHandlor(req,resolveError(e),res)
-        }
+        sails.services.parenthomeservice.deleteOrder(req,(err,data)=>{
+            if(err){
+                return ErrorHandlor(req,err,res)
+            }
+            else{
+                return DataHandlor(req,data,res)
+            }
+        })
     },
     getOrder:async (req,res)=>{
         try{
